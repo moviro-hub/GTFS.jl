@@ -249,7 +249,7 @@ and contain the expected data based on the official GTFS examples.
                 # Test validation
                 result = validate(gtfs)
                 @test result !== nothing
-                @test isa(result.errors, Vector{ValidationError})
+                @test isa(result.messages, Vector{ValidationMessage})
 
                 # Print summary
                 println("✓ $(example.name): $(example.description)")
@@ -261,7 +261,7 @@ and contain the expected data based on the official GTFS examples.
                 end
 
                 # Print warnings if any (for debugging)
-                warnings = filter(e -> e.severity == :warning, result.errors)
+                warnings = filter(e -> e.severity == :warning, result.messages)
                 if !isempty(warnings)
                     println("Warnings in $(example.name):")
                     for warning in warnings

@@ -270,7 +270,7 @@ const ENUM_VALUES = Dict(
     # Additional enum values for optional files
     "payment_method" => [0, 1],
     "transfers" => [0, 1, 2, nothing],
-    "transfer_type" => [0, 1, 2, 3],
+    "transfer_type" => [0, 1, 2, 3, 4, 5],
     "pathway_mode" => [1, 2, 3, 4, 5, 6, 7],
     "is_bidirectional" => [0, 1],
     "exact_times" => [0, 1],
@@ -283,12 +283,10 @@ const ENUM_VALUES = Dict(
 # Structure: (file, field, condition_type, condition_field, condition_values, message)
 const CONDITIONAL_FIELD_RULES = [
     # stops.txt conditional requirements
-    ("stops.txt", "stop_lat", :required_when, "location_type", [0, nothing, missing], "Required when location_type is 0 or empty"),
-    ("stops.txt", "stop_lon", :required_when, "location_type", [0, nothing, missing], "Required when location_type is 0 or empty"),
+    ("stops.txt", "stop_lat", :required_when, "location_type", [0, 1, 2, nothing, missing], "Required when location_type is 0, 1, 2, or empty"),
+    ("stops.txt", "stop_lon", :required_when, "location_type", [0, 1, 2, nothing, missing], "Required when location_type is 0, 1, 2, or empty"),
     ("stops.txt", "parent_station", :required_when, "location_type", [2, 3, 4], "Required when location_type is 2, 3, or 4"),
-    ("stops.txt", "stop_lat", :forbidden_when, "location_type", [1], "Forbidden when location_type is 1 (station)"),
-    ("stops.txt", "stop_lon", :forbidden_when, "location_type", [1], "Forbidden when location_type is 1 (station)"),
-    ("stops.txt", "parent_station", :forbidden_when, "location_type", [0, 1], "Forbidden when location_type is 0 or 1"),
+    ("stops.txt", "parent_station", :forbidden_when, "location_type", [1], "Forbidden when location_type is 1 (station)"),
 
     # routes.txt conditional requirements
     ("routes.txt", ["route_short_name", "route_long_name"], :at_least_one, nothing, nothing, "At least one of route_short_name or route_long_name must be present"),
@@ -309,13 +307,6 @@ const CONDITIONAL_FIELD_RULES = [
     ("translations.txt", "record_sub_id", :required_when, "table_name", ["stop_times"], "Required when table_name is stop_times"),
     ("translations.txt", "field_value", :required_when, "translation_type", ["field_value"], "Required when translation_type is field_value"),
 
-    # pathways.txt conditional requirements
-    ("pathways.txt", "traversal_time", :required_when, "pathway_mode", [1, 2, 3, 4, 5, 6], "Required for most pathway modes"),
-    ("pathways.txt", "max_slope", :required_when, "pathway_mode", [1, 2, 3, 4, 5, 6], "Required for most pathway modes"),
-    ("pathways.txt", "min_width", :required_when, "pathway_mode", [1, 2, 3, 4, 5, 6], "Required for most pathway modes"),
-    ("pathways.txt", "signposted_as", :required_when, "pathway_mode", [1, 2, 3, 4, 5, 6], "Required for most pathway modes"),
-    ("pathways.txt", "reversed_signposted_as", :required_when, "pathway_mode", [1, 2, 3, 4, 5, 6], "Required for most pathway modes"),
-
     # Fares v2 conditional requirements
     ("fare_leg_rules.txt", "fare_product_id", :required_when, "leg_group_id", [nothing, missing], "Required when leg_group_id is not specified"),
     ("fare_leg_rules.txt", "leg_group_id", :required_when, "fare_product_id", [nothing, missing], "Required when fare_product_id is not specified"),
@@ -330,7 +321,6 @@ const CROSS_FILE_CONDITIONAL_RULES = [
     ("routes.txt", "agency_id", "agency.txt", :required_when_multiple_records, nothing, "Required when multiple agencies exist"),
 
     # stop_times.txt cross-file requirements
-    ("stop_times.txt", "shape_dist_traveled", "trips.txt", :required_when_field_present, "shape_id", "Required when trip has shape_id"),
 
     # stops.txt cross-file requirements
     ("stops.txt", "level_id", "pathways.txt", :required_when_file_exists, nothing, "Required when pathways.txt exists and stop is referenced"),
@@ -371,13 +361,7 @@ const FILE_LEVEL_CONDITIONAL_RULES = [
 # Structure: (file, field, condition_type, condition_field, condition_values, message)
 const CONDITIONALLY_FORBIDDEN_RULES = [
     # stops.txt forbidden rules
-    ("stops.txt", "parent_station", :forbidden_when, "location_type", [0, 1], "Forbidden when location_type is 0 or 1"),
-    ("stops.txt", "stop_lat", :forbidden_when, "location_type", [1], "Forbidden when location_type is 1 (station)"),
-    ("stops.txt", "stop_lon", :forbidden_when, "location_type", [1], "Forbidden when location_type is 1 (station)"),
-
-    # stop_times.txt forbidden rules
-    ("stop_times.txt", "arrival_time", :forbidden_when, "timepoint", [0], "Forbidden when timepoint is 0 (interpolated)"),
-    ("stop_times.txt", "departure_time", :forbidden_when, "timepoint", [0], "Forbidden when timepoint is 0 (interpolated)"),
+    ("stops.txt", "parent_station", :forbidden_when, "location_type", [1], "Forbidden when location_type is 1 (station)"),
 
     # trips.txt forbidden rules (conflicts with routes.txt)
     ("trips.txt", "bikes_allowed", :forbidden_when_conflicts, "routes.txt", "bikes_allowed", "Should not override route-level bikes_allowed without justification")
@@ -422,7 +406,7 @@ const FOREIGN_KEYS = [
 const TYPE_PATTERNS = Dict(
     "Color" => r"^[0-9A-Fa-f]{6}$",
     "Date" => r"^\d{8}$",
-    "Time" => r"^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
+    "Time" => r"^([0-9]|[0-1][0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]):[0-5][0-9]:[0-5][0-9]$",
     "Email" => r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
     "URL" => r"^https?://.+",
     "Latitude" => r"^-?([1-8]?[0-9](\.[0-9]+)?|90(\.0+)?)$",

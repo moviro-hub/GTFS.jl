@@ -286,12 +286,12 @@ Tests GeoJSON reading, advanced validation, and other specialized features.
                 gtfs = read_gtfs(temp_dir)
                 result = validate(gtfs)
 
-                warnings = filter(e -> e.severity == :warning, result.errors)
-                @test length(warnings) > 0
+                errors = filter(e -> e.severity == :error, result.messages)
+                @test length(errors) > 0
 
-                # Should have warnings for multiple issues
-                warning_files = unique([w.file for w in warnings])
-                @test length(warning_files) > 1
+                # Should have errors for multiple issues
+                error_files = unique([e.file for e in errors])
+                @test length(error_files) > 1
             end
 
             @testset "Fares v2 Conditional Rules" begin
@@ -321,8 +321,8 @@ Tests GeoJSON reading, advanced validation, and other specialized features.
                 gtfs = read_gtfs(temp_dir)
                 result = validate(gtfs)
 
-                warnings = filter(e -> e.severity == :warning, result.errors)
-                @test any(w -> w.file == "fare_leg_rules.txt", warnings)
+                errors = filter(e -> e.severity == :error, result.messages)
+                @test any(e -> e.file == "fare_leg_rules.txt", errors)
             end
 
             @testset "Pathways Conditional Rules" begin
@@ -352,8 +352,8 @@ Tests GeoJSON reading, advanced validation, and other specialized features.
                 gtfs = read_gtfs(temp_dir)
                 result = validate(gtfs)
 
-                warnings = filter(e -> e.severity == :warning, result.errors)
-                @test any(w -> w.file == "levels.txt", warnings)
+                errors = filter(e -> e.severity == :error, result.messages)
+                @test any(e -> e.file == "levels.txt", errors)
             end
         finally
             rm(temp_dir, recursive=true)
@@ -430,7 +430,7 @@ Tests GeoJSON reading, advanced validation, and other specialized features.
                 validation_time = time() - start_time
 
                 @test result !== nothing
-                @test isa(result.errors, Vector{ValidationError})
+                @test isa(result.messages, Vector{ValidationMessage})
 
                 # Performance should be reasonable (less than 10 seconds for this dataset)
                 @test read_time < 10.0

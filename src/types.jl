@@ -123,21 +123,21 @@ struct GTFSSchedule
 end
 
 """
-    ValidationError
+    ValidationMessage
 
-Represents a specific validation error with context.
+Represents a specific validation message with context.
 
 # Fields
-- `file::String`: Name of the GTFS file where the error occurred
+- `file::String`: Name of the GTFS file where the message occurred
 - `field::Union{String, Nothing}`: Name of the field (if applicable)
-- `message::String`: Error message
-- `severity::Symbol`: Error severity (:error, :warning)
+- `message::String`: Message text
+- `severity::Symbol`: Message severity (:error, :warning, or :info)
 """
-struct ValidationError
+struct ValidationMessage
     file::String
     field::Union{String, Nothing}
     message::String
-    severity::Symbol
+    severity::Symbol  # :error, :warning, or :info
 end
 
 """
@@ -147,65 +147,87 @@ Result of GTFS validation containing errors and warnings.
 
 # Fields
 - `is_valid::Bool`: Whether the GTFS feed is valid
-- `errors::Vector{ValidationError}`: List of validation errors and warnings
+- `messages::Vector{ValidationMessage}`: List of validation messages
 - `summary::String`: Summary of validation results
 """
 struct ValidationResult
     is_valid::Bool
-    errors::Vector{ValidationError}
+    messages::Vector{ValidationMessage}
     summary::String
 end
 
 # Constructor for ValidationResult
-function ValidationResult(errors::Vector{ValidationError})
-    error_count = count(e -> e.severity == :error, errors)
-    warning_count = count(e -> e.severity == :warning, errors)
+    function ValidationResult(messages::Vector{ValidationMessage})
+        error_count = count(e -> e.severity == :error, messages)
+        warning_count = count(e -> e.severity == :warning, messages)
+        info_count = count(e -> e.severity == :info, messages)
 
-    is_valid = error_count == 0
+        is_valid = error_count == 0
 
-    summary = if is_valid
-        if warning_count == 0
-            "GTFS feed is valid with no issues."
+        summary = if is_valid
+            if warning_count == 0 && info_count == 0
+                "GTFS feed is valid with no issues."
+            elseif warning_count == 0
+                "GTFS feed is valid with $info_count info message(s)."
+            elseif info_count == 0
+                "GTFS feed is valid with $warning_count warning(s)."
+            else
+                "GTFS feed is valid with $warning_count warning(s) and $info_count info message(s)."
+            end
         else
-            "GTFS feed is valid with $warning_count warning(s)."
+            if warning_count == 0 && info_count == 0
+                "GTFS feed has $error_count error(s)."
+            elseif warning_count == 0
+                "GTFS feed has $error_count error(s) and $info_count info message(s)."
+            elseif info_count == 0
+                "GTFS feed has $error_count error(s) and $warning_count warning(s)."
+            else
+                "GTFS feed has $error_count error(s), $warning_count warning(s), and $info_count info message(s)."
+            end
         end
-    else
-        "GTFS feed has $error_count error(s) and $warning_count warning(s)."
-    end
 
-    return ValidationResult(is_valid, errors, summary)
-end
+        return ValidationResult(is_valid, messages, summary)
+    end
 
 # Pretty printing for ValidationResult
-function Base.show(io::IO, result::ValidationResult)
-    println(io, result.summary)
+    function Base.show(io::IO, result::ValidationResult)
+        println(io, result.summary)
 
-    errors = filter(e -> e.severity == :error, result.errors)
-    warnings = filter(e -> e.severity == :warning, result.errors)
+        errors = filter(e -> e.severity == :error, result.messages)
+        warnings = filter(e -> e.severity == :warning, result.messages)
+        infos = filter(e -> e.severity == :info, result.messages)
 
-    if !isempty(errors)
-        println(io, "\nErrors:")
-        for (i, error) in enumerate(errors)
-            location = error.field !== nothing ? "$(error.file):$(error.field)" : error.file
-            println(io, "  $i. [$location] $(error.message)")
+        if !isempty(errors)
+            println(io, "\nErrors:")
+            for (i, error) in enumerate(errors)
+                location = error.field !== nothing ? "$(error.file):$(error.field)" : error.file
+                println(io, "  $i. [$location] $(error.message)")
+            end
+        end
+
+        if !isempty(warnings)
+            println(io, "\nWarnings:")
+            for (i, warning) in enumerate(warnings)
+                location = warning.field !== nothing ? "$(warning.file):$(warning.field)" : warning.file
+                println(io, "  $i. [$location] $(warning.message)")
+            end
+        end
+
+        if !isempty(infos)
+            println(io, "\nInfo:")
+            for (i, info) in enumerate(infos)
+                location = info.field !== nothing ? "$(info.file):$(info.field)" : info.file
+                println(io, "  $i. [$location] $(info.message)")
+            end
         end
     end
 
-    if !isempty(warnings)
-        println(io, "\nWarnings:")
-        for (i, warning) in enumerate(warnings)
-            location = warning.field !== nothing ? "$(warning.file):$(warning.field)" : warning.file
-            println(io, "  $i. [$location] $(warning.message)")
-        end
-    end
-end
-
-# Pretty printing for ValidationError
-function Base.show(io::IO, error::ValidationError)
-    location = if error.field !== nothing
-        "$(error.file):$(error.field)"
+# Pretty printing for ValidationMessage
+function Base.show(io::IO, message::ValidationMessage)
+    location = if message.field !== nothing
+        "$(message.file):$(message.field)"
     else
-        error.file
+        message.file
     end
-    println(io, "[$(error.severity)] $location: $(error.message)")
+    println(io, "[$(message.severity)] $location: $(message.message)")
 end

@@ -1,9 +1,9 @@
 # GTFS.jl
 
+[Documentation](https://moviro-hub.github.io/GTFS.jl)
+
 A Julia package for reading and validating GTFS (General Transit Feed Specification) Schedule data.
 
-[![CI](https://github.com/yourusername/GTFS.jl/workflows/CI/badge.svg)](https://github.com/yourusername/GTFS.jl/actions)
-[![Coverage](https://codecov.io/gh/yourusername/GTFS.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/GTFS.jl)
 
 ## Features
 

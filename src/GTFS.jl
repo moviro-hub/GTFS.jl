@@ -53,7 +53,7 @@ using CSV: CSV
 using JSON3: JSON3
 
 # Export main types and functions
-export GTFSSchedule, ValidationResult, ValidationError
+export GTFSSchedule, ValidationResult, ValidationMessage
 export read_gtfs, validate, list_gtfs_files, validate_gtfs_structure
 
 # Include submodules

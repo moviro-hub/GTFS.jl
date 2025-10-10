@@ -28,10 +28,10 @@ Main data structure containing all GTFS tables as DataFrames:
 ### `ValidationResult`
 Validation results with:
 - `is_valid::Bool`
-- `errors::Vector{ValidationError}`
+- `errors::Vector{ValidationMessage}`
 - `summary::String`
 
-### `ValidationError`
+### `ValidationMessage`
 Individual validation issue with:
 - `file::String`
 - `field::Union{String, Nothing}`

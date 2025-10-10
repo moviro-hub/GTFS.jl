@@ -7,32 +7,32 @@ Tests the fundamental reading, validation, and data structure functionality.
 @testset "Core Functionality" begin
     # Test data structures
     @testset "Data Structures" begin
-        @testset "ValidationError" begin
-            error = ValidationError("test.txt", "field1", "Test message", :error)
+        @testset "ValidationMessage" begin
+            error = ValidationMessage("test.txt", "field1", "Test message", :error)
             @test error.file == "test.txt"
             @test error.field == "field1"
             @test error.message == "Test message"
             @test error.severity == :error
 
             # Test with no field
-            error2 = ValidationError("test.txt", nothing, "Test message", :warning)
+            error2 = ValidationMessage("test.txt", nothing, "Test message", :warning)
             @test error2.field === nothing
         end
 
         @testset "ValidationResult" begin
             errors = [
-                ValidationError("test.txt", "field1", "Test error", :error),
-                ValidationError("test.txt", "field2", "Test warning", :warning)
+                ValidationMessage("test.txt", "field1", "Test error", :error),
+                ValidationMessage("test.txt", "field2", "Test warning", :warning)
             ]
             result = ValidationResult(errors)
 
             @test !result.is_valid
-            @test length(result.errors) == 2
+            @test length(result.messages) == 2
             @test result.summary !== nothing
 
             # Test filtering
-            error_list = filter(e -> e.severity == :error, result.errors)
-            warning_list = filter(e -> e.severity == :warning, result.errors)
+            error_list = filter(e -> e.severity == :error, result.messages)
+            warning_list = filter(e -> e.severity == :warning, result.messages)
             @test length(error_list) == 1
             @test length(warning_list) == 1
         end

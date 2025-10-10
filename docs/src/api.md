@@ -11,7 +11,7 @@ The API reference below is generated directly from the package's docstrings.
 ```@docs
 GTFSSchedule
 ValidationResult
-ValidationError
+ValidationMessage
 ```
 
 ## Functions
