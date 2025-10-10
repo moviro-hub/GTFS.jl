@@ -330,6 +330,19 @@ function _read_csv_file(dir_path::String, filename::String; required::Bool=false
             end
         end
 
+        # ID columns to be strings to ensure consistency
+        id_columns = ["stop_id", "trip_id", "route_id", "agency_id", "service_id", "shape_id",
+                     "parent_station", "level_id", "fare_id", "from_stop_id", "to_stop_id",
+                     "from_route_id", "to_route_id", "from_trip_id", "to_trip_id", "pathway_id",
+                     "from_leg_group_id", "to_leg_group_id", "fare_product_id", "leg_group_id",
+                     "network_id", "attribution_id", "record_id", "record_sub_id"]
+
+        for col in id_columns
+            if col in DataFrames.names(df)
+                df[!, col] = [ismissing(x) ? missing : string(x) for x in df[!, col]]
+            end
+        end
+
         return df
     catch e
         if required
