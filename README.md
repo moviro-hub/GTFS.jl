@@ -15,7 +15,7 @@ A Julia package for reading and validating GTFS (General Transit Feed Specificat
 
 ```julia
 using Pkg
-Pkg.add("GTFS")
+Pkg.add(url="https://github.com/moviro-hub/GTFS.jl.git")
 ```
 
 ## Quick Start
