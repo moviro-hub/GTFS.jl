@@ -321,7 +321,15 @@ function _read_csv_file(dir_path::String, filename::String; required::Bool=false
 
     try
         # Read the file content
-        df = CSV.read(file_path, DataFrames.DataFrames.DataFrames.DataFrame; stringtype=String)
+        df = CSV.read(file_path, DataFrames.DataFrames.DataFrames.DataFrame; stringtype=String, missingstring="")
+
+        # Convert empty strings to missing for better validation
+        for col in DataFrames.names(df)
+            if DataFrames.eltype(df[!, col]) == String
+                df[!, col] = [x == "" ? missing : x for x in df[!, col]]
+            end
+        end
+
         return df
     catch e
         if required

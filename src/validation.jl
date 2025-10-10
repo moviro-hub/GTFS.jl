@@ -7,6 +7,29 @@ comply with the official GTFS Schedule specification.
 
 # DataFrames.DataFrames imported in main module
 
+# Safe boolean helpers for handling missing and nothing values
+function safe_in(value, collection)
+    if ismissing(value)
+        # Check if missing is in the collection by iterating
+        return any(x -> ismissing(x), collection)
+    elseif value === nothing
+        return any(x -> x === nothing, collection)
+    else
+        result = value in collection
+        return ismissing(result) ? false : result
+    end
+end
+
+function safe_not_in(value, collection)
+    return !safe_in(value, collection)
+end
+
+safe_any(collection) = any(x -> !ismissing(x) && x !== nothing && x, collection)
+safe_all(collection) = all(x -> ismissing(x) || x === nothing || x, collection)
+safe_equals(a, b) = (ismissing(a) || ismissing(b) || a === nothing || b === nothing) ? false : (a == b)
+safe_not_equals(a, b) = (ismissing(a) || ismissing(b) || a === nothing || b === nothing) ? false : (a != b)
+safe_greater(a, b) = (ismissing(a) || ismissing(b) || a === nothing || b === nothing) ? false : (a > b)
+
 """
     validate(gtfs::GTFSSchedule; max_warnings_per_file::Int=100) -> ValidationResult
 
@@ -75,7 +98,7 @@ function validate_required_files(gtfs::GTFSSchedule)
     end
 
     # Check conditionally required files
-    if gtfs.calendar === nothing && gtfs.calendar_dates === nothing
+    if safe_all([gtfs.calendar === nothing, gtfs.calendar_dates === nothing])
         push!(errors, ValidationError("calendar", nothing, "At least one of calendar.txt or calendar_dates.txt must be present", :error))
     end
 
@@ -98,7 +121,7 @@ function validate_required_fields(gtfs::GTFSSchedule)
         end
 
         for (field_name, (_, presence, _)) in field_defs
-            if presence == "Required" && !(field_name in DataFrames.names(df))
+            if presence == "Required" && safe_not_in(field_name, DataFrames.names(df))
                 push!(errors, ValidationError(filename, field_name, "Required field is missing", :error))
             end
         end
@@ -217,19 +240,19 @@ function validate_file_level_conditional_rules(gtfs::GTFSSchedule)
         if condition_type == :at_least_one
             # Check if at least one file exists
             files_exist = [_get_dataframe(gtfs, file) !== nothing for file in files]
-            if !any(files_exist)
+            if !safe_any(files_exist)
                 push!(warnings, ValidationError(files[1], nothing, message, :warning))
             end
         elseif condition_type == :required_if_exists
             # Check if required file exists when related files exist
-            related_exists = all([_get_dataframe(gtfs, file) !== nothing for file in related_files])
+            related_exists = safe_all([_get_dataframe(gtfs, file) !== nothing for file in related_files])
             if related_exists && _get_dataframe(gtfs, files) === nothing
                 push!(warnings, ValidationError(files, nothing, message, :warning))
             end
         elseif condition_type == :required_if_pathways_exist
             # Special case for levels.txt when pathways.txt exists and references level_id
             pathways_df = _get_dataframe(gtfs, "pathways.txt")
-            if pathways_df !== nothing && :level_id in DataFrames.names(pathways_df)
+            if pathways_df !== nothing && safe_in(:level_id, DataFrames.names(pathways_df))
                 levels_df = _get_dataframe(gtfs, "levels.txt")
                 if levels_df === nothing
                     push!(warnings, ValidationError("levels.txt", nothing, message, :warning))
@@ -298,7 +321,7 @@ function validate_field_types(gtfs::GTFSSchedule)
         end
 
         for (field_name, (field_type, _, _)) in field_defs
-            if !(field_name in DataFrames.names(df))
+            if safe_not_in(field_name, DataFrames.names(df))
                 continue
             end
 
@@ -332,8 +355,9 @@ function validate_foreign_keys(gtfs::GTFSSchedule)
     if gtfs.trips !== nothing && gtfs.routes !== nothing
         valid_route_ids = Set(gtfs.routes.route_id)
         for row in eachrow(gtfs.trips)
-            if !(row.route_id in valid_route_ids)
-                push!(errors, ValidationError("trips.txt", "route_id", "References non-existent route_id: $(row.route_id)", :error))
+            route_id = row.route_id
+            if safe_not_in(route_id, valid_route_ids)
+                push!(errors, ValidationError("trips.txt", "route_id", "References non-existent route_id: $route_id", :error))
             end
         end
     end
@@ -342,8 +366,9 @@ function validate_foreign_keys(gtfs::GTFSSchedule)
     if gtfs.stop_times !== nothing && gtfs.trips !== nothing
         valid_trip_ids = Set(gtfs.trips.trip_id)
         for row in eachrow(gtfs.stop_times)
-            if !(row.trip_id in valid_trip_ids)
-                push!(errors, ValidationError("stop_times.txt", "trip_id", "References non-existent trip_id: $(row.trip_id)", :error))
+            trip_id = row.trip_id
+            if safe_not_in(trip_id, valid_trip_ids)
+                push!(errors, ValidationError("stop_times.txt", "trip_id", "References non-existent trip_id: $trip_id", :error))
             end
         end
     end
@@ -352,8 +377,9 @@ function validate_foreign_keys(gtfs::GTFSSchedule)
     if gtfs.stop_times !== nothing && gtfs.stops !== nothing
         valid_stop_ids = Set(gtfs.stops.stop_id)
         for row in eachrow(gtfs.stop_times)
-            if !(row.stop_id in valid_stop_ids)
-                push!(errors, ValidationError("stop_times.txt", "stop_id", "References non-existent stop_id: $(row.stop_id)", :error))
+            stop_id = row.stop_id
+            if safe_not_in(stop_id, valid_stop_ids)
+                push!(errors, ValidationError("stop_times.txt", "stop_id", "References non-existent stop_id: $stop_id", :error))
             end
         end
     end
@@ -363,7 +389,7 @@ function validate_foreign_keys(gtfs::GTFSSchedule)
         valid_stop_ids = Set(gtfs.stops.stop_id)
         for row in eachrow(gtfs.stops)
             parent_station = get(row, :parent_station, nothing)
-            if parent_station !== nothing && !ismissing(parent_station) && !(parent_station in valid_stop_ids)
+            if parent_station !== nothing && safe_not_in(parent_station, valid_stop_ids)
                 push!(errors, ValidationError("stops.txt", "parent_station", "References non-existent stop_id: $parent_station", :error))
             end
         end
@@ -387,7 +413,7 @@ function validate_enums(gtfs::GTFSSchedule)
         end
 
         for (field_name, (field_type, _, _)) in field_defs
-            if !(field_name in DataFrames.names(df)) || !(field_name in keys(ENUM_VALUES))
+            if safe_not_in(field_name, DataFrames.names(df)) || safe_not_in(field_name, keys(ENUM_VALUES))
                 continue
             end
 
@@ -398,7 +424,7 @@ function validate_enums(gtfs::GTFSSchedule)
                     continue
                 end
 
-                if !(value in valid_values)
+                if safe_not_in(value, valid_values)
                     push!(errors, ValidationError(filename, field_name, "Row $row_idx: Invalid enum value '$value'. Valid values: $valid_values", :error))
                 end
             end
@@ -425,8 +451,15 @@ function validate_data_consistency(gtfs::GTFSSchedule)
             expected_sequence = 1:DataFrames.nrow(trip_stops)
             actual_sequence = trip_stops.stop_sequence
 
-            if actual_sequence != collect(expected_sequence)
-                push!(errors, ValidationError("stop_times.txt", "stop_sequence", "Trip $trip_id has non-sequential stop_sequence", :warning))
+            # Check if any stop_sequence values are missing
+            if safe_any(ismissing.(actual_sequence))
+                push!(errors, ValidationError("stop_times.txt", "stop_sequence", "Trip $trip_id has missing stop_sequence values", :warning))
+            else
+                # Check if sequences are equal (handling missing values properly)
+                expected_seq = collect(expected_sequence)
+                if safe_not_equals(actual_sequence, expected_seq)
+                    push!(errors, ValidationError("stop_times.txt", "stop_sequence", "Trip $trip_id has non-sequential stop_sequence", :warning))
+                end
             end
         end
     end
@@ -439,7 +472,8 @@ function validate_data_consistency(gtfs::GTFSSchedule)
 
             if arrival_time !== nothing && departure_time !== nothing &&
                !ismissing(arrival_time) && !ismissing(departure_time)
-                if arrival_time > departure_time
+                # Compare times safely (handling missing values)
+                if safe_greater(arrival_time, departure_time)
                     push!(errors, ValidationError("stop_times.txt", "arrival_time/departure_time", "Row $row_idx: arrival_time > departure_time", :warning))
                 end
             end
@@ -556,7 +590,14 @@ function _validate_required_when(df, file, field, condition_field, condition_val
         end
 
         condition_value = get(row, Symbol(condition_field), nothing)
-        if condition_value !== missing && condition_value in condition_values
+        # Handle missing values properly
+        condition_matches = if ismissing(condition_value)
+            safe_in(missing, condition_values)
+        else
+            safe_in(condition_value, condition_values)
+        end
+
+        if condition_matches
             field_value = get(row, Symbol(field), missing)
             if ismissing(field_value) || field_value === nothing
                 push!(warnings, ValidationError(file, field, "$message (row $row_idx)", :warning))
@@ -584,7 +625,14 @@ function _validate_forbidden_when(df, file, field, condition_field, condition_va
         end
 
         condition_value = get(row, Symbol(condition_field), nothing)
-        if condition_value !== missing && condition_value in condition_values
+        # Handle missing values properly
+        condition_matches = if ismissing(condition_value)
+            safe_in(missing, condition_values)
+        else
+            safe_in(condition_value, condition_values)
+        end
+
+        if condition_matches
             field_value = get(row, Symbol(field), missing)
             if !ismissing(field_value) && field_value !== nothing
                 push!(warnings, ValidationError(file, field, "$message (row $row_idx)", :warning))
@@ -620,7 +668,7 @@ function _validate_at_least_one(df, file, fields, message, warnings, warning_cou
             end
         end
 
-        if all_missing
+        if all_missing === true
             field_names = isa(fields, Vector) ? join(fields, "/") : string(fields)
             push!(warnings, ValidationError(file, field_names, "$message (row $row_idx)", :warning))
             warning_counts[file] = get(warning_counts, file, 0) + 1
@@ -637,7 +685,7 @@ Helper function to validate required_when_multiple_records conditions.
 """
 function _validate_required_when_multiple_records(df, file, field, message, warnings, warning_counts, max_warnings_per_file)
     if DataFrames.nrow(df) > 1
-        if !(field in DataFrames.names(df))
+        if safe_not_in(field, DataFrames.names(df))
             push!(warnings, ValidationError(file, field, message, :warning))
             warning_counts[file] = get(warning_counts, file, 0) + 1
         end
@@ -654,7 +702,7 @@ Helper function to validate required_when_multiple_agencies conditions.
 function _validate_required_when_multiple_agencies(gtfs, file, field, message, warnings, warning_counts, max_warnings_per_file)
     if gtfs.agency !== nothing && DataFrames.nrow(gtfs.agency) > 1
         df = _get_dataframe(gtfs, file)
-        if df !== nothing && !(field in DataFrames.names(df))
+        if df !== nothing && safe_not_in(field, DataFrames.names(df))
             push!(warnings, ValidationError(file, field, message, :warning))
             warning_counts[file] = get(warning_counts, file, 0) + 1
         end
@@ -669,7 +717,7 @@ end
 Helper function to validate when a field is missing in a file.
 """
 function _validate_field_missing_in_file(df, file, field, message, warnings, warning_counts, max_warnings_per_file)
-    if !(field in DataFrames.names(df))
+    if safe_not_in(field, DataFrames.names(df))
         push!(warnings, ValidationError(file, field, message, :warning))
         warning_counts[file] = get(warning_counts, file, 0) + 1
     end
@@ -688,7 +736,7 @@ function _validate_required_when_field_present(gtfs, target_file, target_field, 
         return warnings
     end
 
-    if condition_field in DataFrames.names(condition_df)
+    if safe_in(condition_field, DataFrames.names(condition_df))
         target_df = _get_dataframe(gtfs, target_file)
         if target_df !== nothing
             warnings = _validate_field_missing_in_file(target_df, target_file, target_field, message, warnings, warning_counts, max_warnings_per_file)
@@ -712,7 +760,7 @@ function _validate_forbidden_when_conflicts(gtfs, file, field, condition_field, 
     end
 
     # For now, just check if the field exists and warn about potential conflicts
-    if field in DataFrames.names(df)
+    if safe_in(field, DataFrames.names(df))
         push!(warnings, ValidationError(file, field, message, :warning))
         warning_counts[file] = get(warning_counts, file, 0) + 1
     end
