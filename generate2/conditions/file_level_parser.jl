@@ -15,33 +15,44 @@ Extract the "Conditionally Required:" section from a file description.
 """
 function extract_condition_section(description::String)
     # Find the start of the conditionally required section
-    start_pattern = r"Conditionally Required:"
-    match_result = findfirst(start_pattern, description)
+    # Handle both "Conditionally Required:" and "Conditionally Forbidden:"
+    patterns = [r"Conditionally Required:", r"Conditionally Forbidden:"]
 
-    if match_result === nothing
-        return ""
+    for pattern in patterns
+        match_result = findfirst(pattern, description)
+        if match_result !== nothing
+            # Extract everything after the pattern
+            start_pos = last(match_result)
+            section = description[start_pos:end]
+
+            # Clean up HTML tags and normalize
+            section = replace(section, "<br>" => "\n")
+            section = replace(section, "<br><br>" => "\n")
+
+            return section
+        end
     end
 
-    # Extract everything after "Conditionally Required:"
-    start_pos = last(match_result)
-    section = description[start_pos:end]
-
-    # Clean up HTML tags and normalize
-    section = replace(section, "<br>" => "\n")
-    section = replace(section, "<br><br>" => "\n")
-
-    return section
+    return ""
 end
 
 """
-    parse_file_level_condition_line(line::String) -> Union{FileLevelConditionalRequirement, Nothing}
+    parse_file_level_condition_line(line::String, presence::String) -> Union{FileRelation, Nothing}
 
-Parse a single condition line into a FileLevelConditionalRequirement.
+Parse a single condition line into a FileRelation.
 """
-function parse_file_level_condition_line(line::String)
-    # Determine if this is a required or optional case
-    is_required = occursin("**Required**", line) ||
-                  (occursin("Required", line) && !occursin("Optional", line))
+function parse_file_level_condition_line(line::String, presence::String)
+    # Determine required and forbidden flags based on presence type
+    if presence == "Conditionally Required"
+        required = true
+        forbidden = false
+    elseif presence == "Conditionally Forbidden"
+        required = false
+        forbidden = true
+    else
+        required = false
+        forbidden = false
+    end
 
     # Extract references
     files = extract_file_references(line)
@@ -56,6 +67,17 @@ function parse_file_level_condition_line(line::String)
             push!(conditions, FileCondition(file, false))  # file must not exist
         else
             push!(conditions, FileCondition(file, true))   # file must exist
+        end
+    end
+
+    # Special handling for GeoJSON files
+    # Check if this condition mentions locations.geojson specifically
+    if occursin(r"locations\.geojson", line)
+        # For GeoJSON files, we need to check if they have content/features
+        if occursin("defined", lowercase(line)) || occursin("provided", lowercase(line))
+            push!(conditions, FileCondition("locations.geojson", true))
+        elseif occursin("not defined", lowercase(line)) || occursin("not provided", lowercase(line))
+            push!(conditions, FileCondition("locations.geojson", false))
         end
     end
 
@@ -76,27 +98,27 @@ function parse_file_level_condition_line(line::String)
         return nothing
     end
 
-    return FileLevelConditionalRequirement(is_required, conditions)
+    return FileRelation(required, forbidden, conditions)
 end
 
 """
-    parse_file_level_conditional_requirements(dataset_file::DatasetFileDefinition) -> Vector{FileLevelConditionalRequirement}
+    parse_file_level_conditional_requirements(dataset_file::DatasetFileDefinition) -> Vector{FileRelation}
 
 Parse file-level conditional requirements from a dataset file definition.
 """
 function parse_file_level_conditional_requirements(dataset_file::DatasetFileDefinition)
-    if dataset_file.presence != "Conditionally Required"
-        return FileLevelConditionalRequirement[]
+    if !(dataset_file.presence in ["Conditionally Required", "Conditionally Forbidden"])
+        return FileRelation[]
     end
 
     section = extract_condition_section(dataset_file.description)
     if isempty(section)
-        return FileLevelConditionalRequirement[]
+        return FileRelation[]
     end
 
     lines = filter(!isempty, strip.(split(section, r"<br>|\n")))
 
-    conditions = FileLevelConditionalRequirement[]
+    conditions = FileRelation[]
 
     for line in lines
         line_str = String(line)  # Convert SubString to String
@@ -105,7 +127,7 @@ function parse_file_level_conditional_requirements(dataset_file::DatasetFileDefi
         end
 
         # Parse the line
-        cond = parse_file_level_condition_line(line_str)
+        cond = parse_file_level_condition_line(line_str, dataset_file.presence)
         if cond !== nothing
             push!(conditions, cond)
         end

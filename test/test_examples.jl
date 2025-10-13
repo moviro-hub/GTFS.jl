@@ -10,21 +10,21 @@ and contain the expected data based on the official GTFS examples.
     examples = [
         (
             name = "basic-example",
-            description = "Complete GTFS feed with all core files",
-            expected_files = ["agency.txt", "stops.txt", "routes.txt", "trips.txt", "stop_times.txt", "calendar.txt", "shapes.txt", "feed_info.txt"],
+            description = "Official GTFS.org sample feed with all core files",
+            expected_files = ["agency.txt", "stops.txt", "routes.txt", "trips.txt", "stop_times.txt", "calendar.txt", "calendar_dates.txt", "fare_attributes.txt", "fare_rules.txt", "frequencies.txt", "shapes.txt"],
             expected_agencies = 1,
-            expected_stops = 6,
-            expected_routes = 3,
-            expected_trips = 5,
-            expected_stop_times = 12,
-            expected_shapes = 7,
-            has_feed_info = true,
+            expected_stops = 9,
+            expected_routes = 5,
+            expected_trips = 11,
+            expected_stop_times = 28,
+            expected_shapes = 0,
+            has_feed_info = false,
             has_attributions = false,
-            has_frequencies = false,
+            has_frequencies = true,
             has_pathways = false,
             has_transfers = false,
             has_translations = false,
-            has_fares = false
+            has_fares = true
         ),
         (
             name = "continuous-stops-example",
@@ -50,7 +50,7 @@ and contain the expected data based on the official GTFS examples.
             name = "attributions-example",
             description = "Dataset attribution examples",
             expected_files = ["agency.txt", "stops.txt", "routes.txt", "trips.txt", "stop_times.txt", "calendar.txt", "attributions.txt"],
-            expected_agencies = 1,
+            expected_agencies = 4,
             expected_stops = 2,
             expected_routes = 1,
             expected_trips = 1,
@@ -173,6 +173,25 @@ and contain the expected data based on the official GTFS examples.
             has_fares = true
         ),
         (
+            name = "fares-v2-example",
+            description = "Modern fare structure with fare products and media",
+            expected_files = ["agency.txt", "stops.txt", "routes.txt", "trips.txt", "stop_times.txt", "calendar.txt", "fare_media.txt", "fare_products.txt", "rider_categories.txt", "fare_leg_rules.txt"],
+            expected_agencies = 1,
+            expected_stops = 3,
+            expected_routes = 2,
+            expected_trips = 2,
+            expected_stop_times = 4,
+            expected_shapes = 0,
+            has_feed_info = false,
+            has_attributions = false,
+            has_frequencies = false,
+            has_pathways = false,
+            has_transfers = false,
+            has_translations = false,
+            has_fares = false,
+            has_fares_v2 = true
+        ),
+        (
             name = "shapes-example",
             description = "Detailed route geometry with shape points",
             expected_files = ["agency.txt", "stops.txt", "routes.txt", "trips.txt", "stop_times.txt", "calendar.txt", "shapes.txt"],
@@ -195,9 +214,9 @@ and contain the expected data based on the official GTFS examples.
     # Test each example dataset
     for example in examples
         @testset "$(example.name): $(example.description)" begin
-            feed_path = joinpath(@__DIR__, "fixtures", "$(example.name).zip")
+            feed_path = joinpath(@__DIR__, "fixtures", "$(example.name)")
 
-            if isfile(feed_path)
+            if isdir(feed_path)
                 # Test reading the feed
                 gtfs = read_gtfs(feed_path)
                 @test gtfs !== nothing
@@ -238,6 +257,12 @@ and contain the expected data based on the official GTFS examples.
                 if example.has_fares
                     @test gtfs.fare_attributes !== nothing
                     @test gtfs.fare_rules !== nothing
+                end
+                if hasfield(typeof(example), :has_fares_v2) && example.has_fares_v2
+                    @test gtfs.fare_media !== nothing
+                    @test gtfs.fare_products !== nothing
+                    @test gtfs.rider_categories !== nothing
+                    @test gtfs.fare_leg_rules !== nothing
                 end
 
                 # Test shapes if expected

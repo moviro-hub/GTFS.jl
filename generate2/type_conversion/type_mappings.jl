@@ -85,7 +85,7 @@ function get_base_julia_type(gtfs_type::String)
 
     # Date/Time types
     if occursin("date", type_lower)
-        return Date
+        return String  # Use String for dates to avoid dependency issues
     elseif occursin("time", type_lower)
         return String  # Use String for now due to > 24:00:00 support
     end

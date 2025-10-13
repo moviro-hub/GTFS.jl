@@ -54,12 +54,21 @@ using JSON3: JSON3
 
 # Export main types and functions
 export GTFSSchedule, ValidationResult, ValidationMessage
-export read_gtfs, validate, list_gtfs_files, validate_gtfs_structure
+export read_gtfs, COLUMN_TYPES
+export ENUM_VALID_VALUES, validate_enum
+export validate_file_presence
+export validate_field_presence
+export validate_field_values
 
 # Include submodules
-include("constants.jl")
-include("types.jl")
+include("validation_types.jl")
+include("gtfs_types.jl")
+include("column_types.jl")
+include("file_mapping.jl")
+include("enum_validator.jl")
+include("file_validator.jl")
+include("field_validator.jl")
+include("value_validator.jl")
 include("reader.jl")
-include("validation.jl")
 
 end

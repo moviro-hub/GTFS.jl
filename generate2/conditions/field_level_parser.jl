@@ -14,8 +14,13 @@ include("condition_utils.jl")
 Extract the "Conditionally Required:" or "Conditionally Forbidden:" section from a field description.
 """
 function extract_field_condition_section(description::String)
-    # Try "Conditionally Required:" first
-    patterns = [r"Conditionally Required:", r"Conditionally Forbidden:"]
+    # Try various patterns for conditionally required/forbidden sections
+    patterns = [
+        r"Conditionally Required:",
+        r"Conditionally Forbidden:",
+        r"\*\*Conditionally Required\*\*:",
+        r"\*\*Conditionally Forbidden\*\*:"
+    ]
 
     for pattern in patterns
         match_result = findfirst(pattern, description)
@@ -35,18 +40,21 @@ function extract_field_condition_section(description::String)
 end
 
 """
-    parse_field_level_condition_line(field_name::String, line::String, current_file::String, presence::String) -> Union{FieldLevelConditionalRequirement, Nothing}
+    parse_field_level_condition_line(field_name::String, line::String, current_file::String, presence::String) -> Union{FieldRelation, Nothing}
 
-Parse a single condition line for a field into a FieldLevelConditionalRequirement.
+Parse a single condition line for a field into a FieldRelation.
 """
 function parse_field_level_condition_line(field_name::String, line::String, current_file::String, presence::String)
-    # Determine if this is a required or forbidden case
-    is_required = occursin("**Required**", line) ||
-                  (occursin("Required", line) && !occursin("Optional", line) && !occursin("Forbidden", line))
-
-    # For Conditionally Forbidden, check if line says "Forbidden"
-    if presence == "Conditionally Forbidden" && occursin("Forbidden", line)
-        is_required = false  # Field is forbidden (not required)
+    # Determine required and forbidden flags based on presence type
+    if presence == "Conditionally Required"
+        required = true
+        forbidden = false
+    elseif presence == "Conditionally Forbidden"
+        required = false
+        forbidden = true
+    else
+        required = false
+        forbidden = false
     end
 
     # Extract field references from backticks
@@ -57,12 +65,27 @@ function parse_field_level_condition_line(field_name::String, line::String, curr
 
     # Parse field conditions (same-file references)
     for field_str in fields
+        # Handle field references that include file prefix (e.g., "stop_times.stop_id")
+        if occursin(".", field_str)
+            parts = split(field_str, ".")
+            if length(parts) >= 2
+                ref_file = parts[1] * ".txt"
+                ref_field_name = parts[2]
+            else
+                ref_file = current_file
+                ref_field_name = field_str
+            end
+        else
+            ref_file = current_file
+            ref_field_name = field_str
+        end
+
         if occursin("=", field_str)
             parts = split(field_str, "=")
             if length(parts) >= 2
                 ref_field_name = String(strip(parts[1]))
                 ref_field_value = String(strip(parts[2]))
-                push!(conditions, FieldCondition(current_file, ref_field_name, ref_field_value, true))
+                push!(conditions, FieldCondition(ref_file, ref_field_name, ref_field_value, true))
             end
         elseif !isempty(field_str)
             # Field mentioned without value - check for "is X or Y" pattern
@@ -73,8 +96,12 @@ function parse_field_level_condition_line(field_name::String, line::String, curr
             if !isempty(values)
                 # Create condition for each value (OR logic represented as separate conditions)
                 for value in values
-                    push!(conditions, FieldCondition(current_file, field_str, value, true))
+                    push!(conditions, FieldCondition(ref_file, ref_field_name, value, true))
                 end
+            else
+                # For forbidden conditions, we need to check if the field is defined
+                # This is a special case for "Forbidden if X is defined" conditions
+                push!(conditions, FieldCondition(ref_file, ref_field_name, "defined", true))
             end
         end
     end
@@ -83,16 +110,16 @@ function parse_field_level_condition_line(field_name::String, line::String, curr
         return nothing
     end
 
-    return FieldLevelConditionalRequirement(current_file, field_name, presence, is_required, conditions)
+    return FieldRelation(current_file, field_name, presence, required, forbidden, conditions)
 end
 
 """
-    parse_field_level_conditional_requirements(file_def::FileDefinition) -> Vector{FieldLevelConditionalRequirement}
+    parse_field_level_conditional_requirements(file_def::FileDefinition) -> Vector{FieldRelation}
 
 Parse field-level conditional requirements for all fields in a file definition.
 """
 function parse_field_level_conditional_requirements(file_def::FileDefinition)
-    field_requirements = FieldLevelConditionalRequirement[]
+    field_requirements = FieldRelation[]
 
     for field in file_def.fields
         # Only process fields with conditional presence

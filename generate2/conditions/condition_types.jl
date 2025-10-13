@@ -24,36 +24,46 @@ struct FieldCondition <: Condition
 end
 
 # File-level conditional requirements
-struct FileLevelConditionalRequirement
-    file_is_required::Bool              # true = file is required, false = file is optional
+struct FileRelation
+    required::Bool                       # true = file is required
+    forbidden::Bool                      # true = file is forbidden
     when_all_conditions::Vector{Condition}  # ALL conditions must be true
+    # Logic: required=true,forbidden=false → required
+    #        required=false,forbidden=true → forbidden
+    #        required=false,forbidden=false → optional
+    #        Both true is invalid (document only, no validation)
 end
 
 struct ParsedFileLevelConditions
     filename::String
     presence::String
-    conditions::Vector{FileLevelConditionalRequirement}
+    conditions::Vector{FileRelation}
 end
 
 # Field-level conditional requirements
-struct FieldLevelConditionalRequirement
+struct FieldRelation
     file::String                        # Which file this field belongs to
     field::String                       # Field name
     presence::String                    # "Required", "Optional", "Conditionally Required", etc.
-    field_is_required::Bool             # true = required, false = optional/forbidden
+    required::Bool                      # true = field is required
+    forbidden::Bool                     # true = field is forbidden
     when_all_conditions::Vector{Condition}  # Conditions that must be true
+    # Logic: required=true,forbidden=false → required
+    #        required=false,forbidden=true → forbidden
+    #        required=false,forbidden=false → optional
+    #        Both true is invalid (document only, no validation)
 end
 
 struct ParsedFieldLevelConditions
     filename::String
-    fields::Vector{FieldLevelConditionalRequirement}
+    fields::Vector{FieldRelation}
 end
 
 # Exports
 export Condition
 export FileCondition
 export FieldCondition
-export FileLevelConditionalRequirement
+export FileRelation
 export ParsedFileLevelConditions
-export FieldLevelConditionalRequirement
+export FieldRelation
 export ParsedFieldLevelConditions

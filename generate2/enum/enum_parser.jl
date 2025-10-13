@@ -5,19 +5,8 @@ Parses enum values and their descriptions from GTFS field descriptions
 where field_type is "Enum".
 """
 
+include("types.jl")
 include("../ingestion/types.jl")
-
-# Data structures for enum values
-struct EnumValue
-    value::String          # e.g., "0", "1", "empty"
-    description::String    # e.g., "Tram, Streetcar, Light rail"
-end
-
-struct ParsedEnumField
-    file::String           # e.g., "routes.txt"
-    field::String          # e.g., "route_type"
-    enum_values::Vector{EnumValue}
-end
 
 """
     extract_enum_section(description::String) -> String
@@ -141,8 +130,6 @@ end
 
 
 # Exports
-export EnumValue
-export ParsedEnumField
 export extract_enum_section
 export parse_enum_line
 export parse_enum_field

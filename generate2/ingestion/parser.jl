@@ -335,7 +335,7 @@ function parse_field_row(line::String)
     cleaned_parts = [strip(part) for part in parts if !isempty(strip(part))]
 
     if length(cleaned_parts) >= 3  # At least Field Name, Type, Presence
-        field_name = cleaned_parts[1]
+        field_name = replace(cleaned_parts[1], "`" => "")  # Remove backticks from field names
         field_type = cleaned_parts[2]
         presence = length(cleaned_parts) >= 3 ? cleaned_parts[3] : ""
         description = length(cleaned_parts) >= 4 ? cleaned_parts[4] : ""
