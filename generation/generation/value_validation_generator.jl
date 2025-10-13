@@ -4,7 +4,7 @@ Value Validation Generator
 Generates Julia source code for field value validation functions based on GTFS field types.
 """
 
-include("../type_conversion/type_mappings.jl")
+include("../extraction/julia_type.jl")
 
 """
     generate_value_validation_code(gtfs_type::String, field_name::String) -> String
@@ -15,7 +15,7 @@ function generate_value_validation_code(gtfs_type::String, field_name::String)
     type_lower = lowercase(gtfs_type)
 
     # Date validation (YYYYMMDD format)
-    if occursin("date", type_lower)
+    if occursin("date", type_lower) && !occursin("foreign id", type_lower)
         return """
     # Validate date format (YYYYMMDD)
     for (idx, val) in enumerate(field_data)
@@ -29,7 +29,7 @@ function generate_value_validation_code(gtfs_type::String, field_name::String)
     end
 
     # Time validation (HH:MM:SS format, supports >24 hours)
-    if occursin("time", type_lower) && !occursin("timeframe", type_lower)
+    if occursin("time", type_lower) && !occursin("timeframe", type_lower) && !occursin("timezone", type_lower)
         return """
     # Validate time format (HH:MM:SS)
     for (idx, val) in enumerate(field_data)
@@ -37,6 +37,35 @@ function generate_value_validation_code(gtfs_type::String, field_name::String)
             val_str = string(val)
             if !occursin(r"^\\d{1,2}:\\d{2}:\\d{2}\$", val_str)
                 push!(validation_errors, "Row \$idx: Invalid time format '\$val_str' (expected HH:MM:SS)")
+            end
+        end
+    end"""
+    end
+
+    # Timezone validation (IANA timezone format)
+    if occursin("timezone", type_lower)
+        return """
+    # Validate timezone format (IANA timezone)
+    for (idx, val) in enumerate(field_data)
+        if !ismissing(val)
+            val_str = string(val)
+            # Basic timezone format validation (should be like America/New_York, Europe/London, etc.)
+            if !occursin(r"^[A-Za-z_]+/[A-Za-z_]+\$", val_str)
+                push!(validation_errors, "Row \$idx: Invalid timezone format '\$val_str' (expected IANA timezone like America/New_York)")
+            end
+        end
+    end"""
+    end
+
+    # Foreign ID validation (string references to other tables)
+    if occursin("foreign id", type_lower)
+        return """
+    # Validate foreign ID format (non-empty string)
+    for (idx, val) in enumerate(field_data)
+        if !ismissing(val)
+            val_str = string(val)
+            if isempty(val_str)
+                push!(validation_errors, "Row \$idx: Foreign ID cannot be empty")
             end
         end
     end"""
@@ -209,7 +238,7 @@ Generate validation function for a single field's values.
 function generate_value_validation_function(file::String, field::String, gtfs_type::String)
     # Create function name
     clean_file = replace(file, ".txt" => "")
-    clean_file = replace(clean_file, ".geojson" => "_geojson")
+    clean_file = replace(clean_file, ".geojson" => "")
     clean_file = replace(clean_file, "." => "_")
 
     # Clean field name - remove HTML entities and special characters
@@ -352,7 +381,7 @@ function generate_comprehensive_value_validator(type_mappings::Vector{FieldTypeM
     # Generate calls to individual value validators
     for mapping in type_mappings
         clean_file = replace(mapping.file, ".txt" => "")
-        clean_file = replace(clean_file, ".geojson" => "_geojson")
+        clean_file = replace(clean_file, ".geojson" => "")
         clean_file = replace(clean_file, "." => "_")
 
         # Clean field name - remove HTML entities and special characters
@@ -479,7 +508,7 @@ function write_value_validator_file(output_path::String, type_mappings::Vector{F
     for mapping in type_mappings
         # Create function name
         clean_file = replace(mapping.file, ".txt" => "")
-        clean_file = replace(clean_file, ".geojson" => "_geojson")
+        clean_file = replace(clean_file, ".geojson" => "")
         clean_file = replace(clean_file, "." => "_")
 
         # Clean field name - remove HTML entities and special characters

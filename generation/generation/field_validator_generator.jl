@@ -4,7 +4,7 @@ Field Validator Generator
 Generates Julia source code for field-level validation functions based on parsed field-level conditions.
 """
 
-include("../conditions/condition_types.jl")
+include("../extraction/condition_types.jl")
 
 """
     generate_field_condition_check(condition::Condition) -> String
@@ -14,7 +14,7 @@ Generate Julia code to check a single field condition.
 function generate_field_condition_check(condition::Condition)
     if isa(condition, FileCondition)
         file_field = replace(condition.file, ".txt" => "")
-        file_field = replace(file_field, ".geojson" => "_geojson")
+        file_field = replace(file_field, ".geojson" => "")
         file_field = replace(file_field, "." => "_")
         if condition.must_exist
             return "hasproperty(gtfs, :$file_field) && gtfs.$file_field !== nothing"
@@ -23,7 +23,7 @@ function generate_field_condition_check(condition::Condition)
         end
     elseif isa(condition, FieldCondition)
         file_field = replace(condition.file, ".txt" => "")
-        file_field = replace(file_field, ".geojson" => "_geojson")
+        file_field = replace(file_field, ".geojson" => "")
         file_field = replace(file_field, "." => "_")
         clean_condition_field = condition.field  # Backticks already removed in parser
         # Handle numeric field names by prefixing with underscore
@@ -55,7 +55,7 @@ function generate_field_validation_function(field_relation::FieldRelation)
 
     # Create function name
     clean_file = replace(file_name, ".txt" => "")
-    clean_file = replace(clean_file, ".geojson" => "_geojson")
+    clean_file = replace(clean_file, ".geojson" => "")
     clean_file = replace(clean_file, "." => "_")
     clean_field = replace(field_name, "." => "_")
     clean_field = replace(clean_field, " " => "_")
@@ -170,7 +170,7 @@ function generate_file_field_validator(parsed_file::ParsedFieldLevelConditions)
 
     # Create function name
     clean_filename = replace(filename, ".txt" => "")
-    clean_filename = replace(clean_filename, ".geojson" => "_geojson")
+    clean_filename = replace(clean_filename, ".geojson" => "")
     clean_filename = replace(clean_filename, "." => "_")
     func_name = "validate_fields_$clean_filename"
 
@@ -230,7 +230,7 @@ function generate_comprehensive_field_validator(parsed_fields::Vector{ParsedFiel
     # Generate calls to file field validators
     for parsed_file in parsed_fields
         clean_filename = replace(parsed_file.filename, ".txt" => "")
-        clean_filename = replace(clean_filename, ".geojson" => "_geojson")
+        clean_filename = replace(clean_filename, ".geojson" => "")
         clean_filename = replace(clean_filename, "." => "_")
         file_func_name = "validate_fields_$clean_filename"
         push!(lines, "    # Validate fields in $(parsed_file.filename)")
@@ -327,7 +327,7 @@ function write_field_validator_file(output_path::String, parsed_fields::Vector{P
         for field_relation in parsed_file.fields
             # Create function name
             clean_file = replace(field_relation.file, ".txt" => "")
-            clean_file = replace(clean_file, ".geojson" => "_geojson")
+            clean_file = replace(clean_file, ".geojson" => "")
             clean_file = replace(clean_file, "." => "_")
             clean_field = replace(field_relation.field, "." => "_")
             clean_field = replace(clean_field, " " => "_")

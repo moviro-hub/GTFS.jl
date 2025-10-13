@@ -8,6 +8,51 @@ All file information is spec-driven - no hardcoded file lists!
 """
 
 # DataFrames, CSV, JSON3 imported in main module
+using GeoJSON
+
+"""
+    _read_geojson_file(filepath::String, filename::String) -> DataFrames.DataFrame
+
+Read a GeoJSON file and convert it to a DataFrame format.
+"""
+function _read_geojson_file(filepath::String, filename::String)
+    # Read the GeoJSON file using GeoJSON.jl
+    geojson_data = GeoJSON.read(read(filepath, String))
+
+    # Extract features array
+    features = geojson_data.features
+
+    if isempty(features)
+        # Return empty DataFrame with expected columns
+        return DataFrames.DataFrame(
+            id = String[],
+            type = String[],
+            geometry = String[],
+            properties = String[]
+        )
+    end
+
+    # Extract data from features
+    ids = String[]
+    types = String[]
+    geometries = String[]
+    properties = String[]
+
+    for feature in features
+        push!(ids, string(feature.id))
+        push!(types, string(feature.type))
+        push!(geometries, string(feature.geometry))
+        push!(properties, string(feature.properties))
+    end
+
+    # Create DataFrame
+    return DataFrames.DataFrame(
+        id = ids,
+        type = types,
+        geometry = geometries,
+        properties = properties
+    )
+end
 
 """
     read_gtfs(filepath::String) -> GTFSSchedule
@@ -109,7 +154,12 @@ function _read_gtfs_from_directory(dirpath::String)
         filepath = joinpath(dirpath, filename)
         if haskey(COLUMN_TYPES, filename)
             try
-                df = _read_csv_file(filepath, filename)
+                # Route to appropriate parser based on file extension
+                if endswith(filename, ".geojson")
+                    df = _read_geojson_file(filepath, filename)
+                else
+                    df = _read_csv_file(filepath, filename)
+                end
                 files_data[filename] = df
             catch e
                 @warn "Error reading $filename: $e"

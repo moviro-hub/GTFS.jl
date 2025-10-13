@@ -46,7 +46,7 @@ struct GTFSSchedule
     frequencies::Union{DataFrames.DataFrame, Nothing}
     location_group_stops::Union{DataFrames.DataFrame, Nothing}
     location_groups::Union{DataFrames.DataFrame, Nothing}
-    locations_geojson::Union{DataFrames.DataFrame, Nothing}
+    locations::Union{DataFrames.DataFrame, Nothing}
     networks::Union{DataFrames.DataFrame, Nothing}
     pathways::Union{DataFrames.DataFrame, Nothing}
     rider_categories::Union{DataFrames.DataFrame, Nothing}

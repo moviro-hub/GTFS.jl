@@ -4,7 +4,7 @@ Enum Validator Generator
 Generates Julia source code for enum validation functions based on parsed enum fields.
 """
 
-include("../enum/types.jl")
+include("../extraction/types.jl")
 
 """
     generate_enum_validator_function(parsed_enum::ParsedEnumField) -> String

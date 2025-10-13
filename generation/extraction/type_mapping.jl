@@ -4,7 +4,7 @@ GTFS to Julia Type Conversion
 Main conversion logic for mapping GTFS field types to Julia types.
 """
 
-include("type_mappings.jl")
+include("julia_type.jl")
 
 """
     convert_field_type(field::FieldDefinition, file::String) -> FieldTypeMapping

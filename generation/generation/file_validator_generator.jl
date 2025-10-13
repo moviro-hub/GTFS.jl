@@ -4,7 +4,7 @@ File Validator Generator
 Generates Julia source code for file presence validation functions based on parsed file-level conditions.
 """
 
-include("../conditions/condition_types.jl")
+include("../extraction/condition_types.jl")
 
 """
     generate_condition_check(condition::Condition) -> String
@@ -14,7 +14,7 @@ Generate Julia code to check a single condition.
 function generate_condition_check(condition::Condition)
     if isa(condition, FileCondition)
         file_field = replace(condition.file, ".txt" => "")
-        file_field = replace(file_field, ".geojson" => "_geojson")
+        file_field = replace(file_field, ".geojson" => "")
         file_field = replace(file_field, "." => "_")
         if condition.must_exist
             return "gtfs.$file_field !== nothing"
@@ -23,7 +23,7 @@ function generate_condition_check(condition::Condition)
         end
     elseif isa(condition, FieldCondition)
         file_field = replace(condition.file, ".txt" => "")
-        file_field = replace(file_field, ".geojson" => "_geojson")
+        file_field = replace(file_field, ".geojson" => "")
         file_field = replace(file_field, "." => "_")
         if condition.same_file
             # Field is in the same file being validated
@@ -49,7 +49,7 @@ function generate_file_validation_function(parsed_file::ParsedFileLevelCondition
 
     # Create function name
     clean_filename = replace(filename, ".txt" => "")
-    clean_filename = replace(clean_filename, ".geojson" => "_geojson")
+    clean_filename = replace(clean_filename, ".geojson" => "")
     clean_filename = replace(clean_filename, "." => "_")  # Replace any remaining dots
     func_name = "validate_file_$clean_filename"
 
@@ -169,7 +169,7 @@ function generate_comprehensive_validator(parsed_files::Vector{ParsedFileLevelCo
         push!(lines, "    # Validate required files")
         for parsed_file in required_files
             clean_filename = replace(parsed_file.filename, ".txt" => "")
-            clean_filename = replace(clean_filename, ".geojson" => "_geojson")
+            clean_filename = replace(clean_filename, ".geojson" => "")
             clean_filename = replace(clean_filename, "." => "_")
             push!(lines, "    push!(messages, validate_file_$clean_filename(gtfs))")
         end
@@ -180,7 +180,7 @@ function generate_comprehensive_validator(parsed_files::Vector{ParsedFileLevelCo
         push!(lines, "    # Validate conditionally required files")
         for parsed_file in conditionally_required
             clean_filename = replace(parsed_file.filename, ".txt" => "")
-            clean_filename = replace(clean_filename, ".geojson" => "_geojson")
+            clean_filename = replace(clean_filename, ".geojson" => "")
             clean_filename = replace(clean_filename, "." => "_")
             push!(lines, "    push!(messages, validate_file_$clean_filename(gtfs))")
         end
@@ -191,7 +191,7 @@ function generate_comprehensive_validator(parsed_files::Vector{ParsedFileLevelCo
         push!(lines, "    # Validate conditionally forbidden files")
         for parsed_file in conditionally_forbidden
             clean_filename = replace(parsed_file.filename, ".txt" => "")
-            clean_filename = replace(clean_filename, ".geojson" => "_geojson")
+            clean_filename = replace(clean_filename, ".geojson" => "")
             clean_filename = replace(clean_filename, "." => "_")
             push!(lines, "    push!(messages, validate_file_$clean_filename(gtfs))")
         end

@@ -14,7 +14,7 @@ Convert a GTFS filename to a Julia struct field name.
 function filename_to_field_name(filename::String)
     # Remove .txt extension
     base_name = replace(filename, ".txt" => "")
-    base_name = replace(base_name, ".geojson" => "_geojson")
+    base_name = replace(base_name, ".geojson" => "")
 
     # Convert to snake_case if needed
     return Symbol(base_name)

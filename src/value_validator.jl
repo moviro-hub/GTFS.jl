@@ -133,12 +133,13 @@ function validate_value_agency_agency_timezone(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.agency.agency_timezone
 
-# Validate time format (HH:MM:SS)
+# Validate timezone format (IANA timezone)
 for (idx, val) in enumerate(field_data)
     if !ismissing(val)
         val_str = string(val)
-        if !occursin(r"^\d{1,2}:\d{2}:\d{2}$", val_str)
-            push!(validation_errors, "Row $idx: Invalid time format '$val_str' (expected HH:MM:SS)")
+        # Basic timezone format validation (should be like America/New_York, Europe/London, etc.)
+        if !occursin(r"^[A-Za-z_]+/[A-Za-z_]+$", val_str)
+            push!(validation_errors, "Row $idx: Invalid timezone format '$val_str' (expected IANA timezone like America/New_York)")
         end
     end
 end
@@ -653,6 +654,16 @@ function validate_value_stops_parent_station(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stops.parent_station
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -681,12 +692,13 @@ function validate_value_stops_stop_timezone(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stops.stop_timezone
 
-# Validate time format (HH:MM:SS)
+# Validate timezone format (IANA timezone)
 for (idx, val) in enumerate(field_data)
     if !ismissing(val)
         val_str = string(val)
-        if !occursin(r"^\d{1,2}:\d{2}:\d{2}$", val_str)
-            push!(validation_errors, "Row $idx: Invalid time format '$val_str' (expected HH:MM:SS)")
+        # Basic timezone format validation (should be like America/New_York, Europe/London, etc.)
+        if !occursin(r"^[A-Za-z_]+/[A-Za-z_]+$", val_str)
+            push!(validation_errors, "Row $idx: Invalid timezone format '$val_str' (expected IANA timezone like America/New_York)")
         end
     end
 end
@@ -753,6 +765,16 @@ function validate_value_stops_level_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.stops.level_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -872,6 +894,16 @@ function validate_value_routes_agency_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.routes.agency_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -1309,6 +1341,16 @@ function validate_value_trips_route_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.trips.route_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -1337,12 +1379,12 @@ function validate_value_trips_service_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.trips.service_id
 
-# Validate date format (YYYYMMDD)
+# Validate foreign ID format (non-empty string)
 for (idx, val) in enumerate(field_data)
     if !ismissing(val)
         val_str = string(val)
-        if !occursin(r"^\d{8}$", val_str)
-            push!(validation_errors, "Row $idx: Invalid date format '$val_str' (expected YYYYMMDD)")
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
         end
     end
 end
@@ -1522,6 +1564,16 @@ function validate_value_trips_shape_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.trips.shape_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -1655,6 +1707,16 @@ function validate_value_stop_times_trip_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stop_times.trip_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -1759,6 +1821,16 @@ function validate_value_stop_times_stop_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stop_times.stop_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -1787,6 +1859,16 @@ function validate_value_stop_times_location_group_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stop_times.location_group_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -1814,6 +1896,16 @@ function validate_value_stop_times_location_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.stop_times.location_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -2206,6 +2298,16 @@ function validate_value_stop_times_pickup_booking_rule_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stop_times.pickup_booking_rule_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -2233,6 +2335,16 @@ function validate_value_stop_times_drop_off_booking_rule_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.stop_times.drop_off_booking_rule_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -2611,6 +2723,16 @@ function validate_value_calendar_dates_service_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.calendar_dates.service_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -2880,6 +3002,16 @@ function validate_value_fare_attributes_agency_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_attributes.agency_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -2950,6 +3082,16 @@ function validate_value_fare_rules_fare_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_rules.fare_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -2977,6 +3119,16 @@ function validate_value_fare_rules_route_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_rules.route_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3006,6 +3158,16 @@ function validate_value_fare_rules_origin_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_rules.origin_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3034,6 +3196,16 @@ function validate_value_fare_rules_destination_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_rules.destination_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3061,6 +3233,16 @@ function validate_value_fare_rules_contains_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_rules.contains_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3194,12 +3376,12 @@ function validate_value_timeframes_service_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.timeframes.service_id
 
-# Validate date format (YYYYMMDD)
+# Validate foreign ID format (non-empty string)
 for (idx, val) in enumerate(field_data)
     if !ismissing(val)
         val_str = string(val)
-        if !occursin(r"^\d{8}$", val_str)
-            push!(validation_errors, "Row $idx: Invalid date format '$val_str' (expected YYYYMMDD)")
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
         end
     end
 end
@@ -3508,6 +3690,16 @@ function validate_value_fare_products_rider_category_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_products.rider_category_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3535,6 +3727,16 @@ function validate_value_fare_products_fare_media_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_products.fare_media_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3648,6 +3850,16 @@ function validate_value_fare_leg_rules_network_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_leg_rules.network_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3675,6 +3887,16 @@ function validate_value_fare_leg_rules_from_area_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_leg_rules.from_area_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3704,6 +3926,16 @@ function validate_value_fare_leg_rules_to_area_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_leg_rules.to_area_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3731,6 +3963,16 @@ function validate_value_fare_leg_rules_from_timeframe_group_id(gtfs::GTFSSchedul
 
     # Get field data
     field_data = gtfs.fare_leg_rules.from_timeframe_group_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3760,6 +4002,16 @@ function validate_value_fare_leg_rules_to_timeframe_group_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_leg_rules.to_timeframe_group_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3787,6 +4039,16 @@ function validate_value_fare_leg_rules_fare_product_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_leg_rules.fare_product_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3858,6 +4120,16 @@ function validate_value_fare_leg_join_rules_from_network_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_leg_join_rules.from_network_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3885,6 +4157,16 @@ function validate_value_fare_leg_join_rules_to_network_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_leg_join_rules.to_network_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3914,6 +4196,16 @@ function validate_value_fare_leg_join_rules_from_stop_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_leg_join_rules.from_stop_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3941,6 +4233,16 @@ function validate_value_fare_leg_join_rules_to_stop_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_leg_join_rules.to_stop_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -3970,6 +4272,16 @@ function validate_value_fare_transfer_rules_from_leg_group_id(gtfs::GTFSSchedule
     # Get field data
     field_data = gtfs.fare_transfer_rules.from_leg_group_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -3997,6 +4309,16 @@ function validate_value_fare_transfer_rules_to_leg_group_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.fare_transfer_rules.to_leg_group_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -4177,6 +4499,16 @@ function validate_value_fare_transfer_rules_fare_product_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.fare_transfer_rules.fare_product_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4261,6 +4593,16 @@ function validate_value_stop_areas_area_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.stop_areas.area_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4288,6 +4630,16 @@ function validate_value_stop_areas_stop_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.stop_areas.stop_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -4373,6 +4725,16 @@ function validate_value_route_networks_network_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.route_networks.network_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4400,6 +4762,16 @@ function validate_value_route_networks_route_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.route_networks.route_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -4625,6 +4997,16 @@ function validate_value_frequencies_trip_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.frequencies.trip_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4806,6 +5188,16 @@ function validate_value_transfers_from_stop_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.transfers.from_stop_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4833,6 +5225,16 @@ function validate_value_transfers_to_stop_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.transfers.to_stop_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -4862,6 +5264,16 @@ function validate_value_transfers_from_route_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.transfers.from_route_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4889,6 +5301,16 @@ function validate_value_transfers_to_route_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.transfers.to_route_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -4918,6 +5340,16 @@ function validate_value_transfers_from_trip_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.transfers.from_trip_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -4945,6 +5377,16 @@ function validate_value_transfers_to_trip_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.transfers.to_trip_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -5079,6 +5521,16 @@ function validate_value_pathways_from_stop_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.pathways.from_stop_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -5106,6 +5558,16 @@ function validate_value_pathways_to_stop_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.pathways.to_stop_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -5613,6 +6075,16 @@ function validate_value_location_group_stops_location_group_id(gtfs::GTFSSchedul
     # Get field data
     field_data = gtfs.location_group_stops.location_group_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -5641,229 +6113,239 @@ function validate_value_location_group_stops_stop_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.location_group_stops.stop_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_type(gtfs::GTFSSchedule)
+    validate_value_locations_type(gtfs::GTFSSchedule)
 
 Validate values of field '-&nbsp;type' in locations.geojson based on GTFS field type 'String'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_type(gtfs::GTFSSchedule)
+function validate_value_locations_type(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "-&nbsp;type"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :type)
+    if !hasproperty(gtfs.locations, :type)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.type
+    field_data = gtfs.locations.type
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_features(gtfs::GTFSSchedule)
+    validate_value_locations_features(gtfs::GTFSSchedule)
 
 Validate values of field '-&nbsp;features' in locations.geojson based on GTFS field type 'Array'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_features(gtfs::GTFSSchedule)
+function validate_value_locations_features(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "-&nbsp;features"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :features)
+    if !hasproperty(gtfs.locations, :features)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.features
+    field_data = gtfs.locations.features
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_id(gtfs::GTFSSchedule)
+    validate_value_locations_id(gtfs::GTFSSchedule)
 
 Validate values of field '&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;id' in locations.geojson based on GTFS field type 'String'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_id(gtfs::GTFSSchedule)
+function validate_value_locations_id(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;id"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :id)
+    if !hasproperty(gtfs.locations, :id)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.id
+    field_data = gtfs.locations.id
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_properties(gtfs::GTFSSchedule)
+    validate_value_locations_properties(gtfs::GTFSSchedule)
 
 Validate values of field '&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;properties' in locations.geojson based on GTFS field type 'Object'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_properties(gtfs::GTFSSchedule)
+function validate_value_locations_properties(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;properties"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :properties)
+    if !hasproperty(gtfs.locations, :properties)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.properties
+    field_data = gtfs.locations.properties
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_stop_name(gtfs::GTFSSchedule)
+    validate_value_locations_stop_name(gtfs::GTFSSchedule)
 
 Validate values of field '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_name' in locations.geojson based on GTFS field type 'String'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_stop_name(gtfs::GTFSSchedule)
+function validate_value_locations_stop_name(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_name"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :stop_name)
+    if !hasproperty(gtfs.locations, :stop_name)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.stop_name
+    field_data = gtfs.locations.stop_name
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_stop_desc(gtfs::GTFSSchedule)
+    validate_value_locations_stop_desc(gtfs::GTFSSchedule)
 
 Validate values of field '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_desc' in locations.geojson based on GTFS field type 'String'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_stop_desc(gtfs::GTFSSchedule)
+function validate_value_locations_stop_desc(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_desc"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :stop_desc)
+    if !hasproperty(gtfs.locations, :stop_desc)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.stop_desc
+    field_data = gtfs.locations.stop_desc
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_geometry(gtfs::GTFSSchedule)
+    validate_value_locations_geometry(gtfs::GTFSSchedule)
 
 Validate values of field '&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;geometry' in locations.geojson based on GTFS field type 'Object'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_geometry(gtfs::GTFSSchedule)
+function validate_value_locations_geometry(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;geometry"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :geometry)
+    if !hasproperty(gtfs.locations, :geometry)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.geometry
+    field_data = gtfs.locations.geometry
 
     return validation_errors
 end
 
 """
-    validate_value_locations_geojson_coordinates(gtfs::GTFSSchedule)
+    validate_value_locations_coordinates(gtfs::GTFSSchedule)
 
 Validate values of field '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;coordinates' in locations.geojson based on GTFS field type 'Array'.
 Returns Vector{String} with validation error messages.
 """
-function validate_value_locations_geojson_coordinates(gtfs::GTFSSchedule)
+function validate_value_locations_coordinates(gtfs::GTFSSchedule)
     filename = "locations.geojson"
     field_name = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;coordinates"
-    file_field = :locations_geojson
+    file_field = :locations
     validation_errors = String[]
 
     # Check if file exists
-    if !hasproperty(gtfs, file_field) || gtfs.locations_geojson === nothing
+    if !hasproperty(gtfs, file_field) || gtfs.locations === nothing
         return validation_errors  # No file, no validation needed
     end
 
     # Check if field exists in DataFrame
-    if !hasproperty(gtfs.locations_geojson, :coordinates)
+    if !hasproperty(gtfs.locations, :coordinates)
         return validation_errors  # No field, no validation needed
     end
 
     # Get field data
-    field_data = gtfs.locations_geojson.coordinates
+    field_data = gtfs.locations.coordinates
 
     return validation_errors
 end
@@ -6187,6 +6669,16 @@ function validate_value_booking_rules_prior_notice_service_id(gtfs::GTFSSchedule
 
     # Get field data
     field_data = gtfs.booking_rules.prior_notice_service_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -6533,6 +7025,16 @@ function validate_value_translations_record_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.translations.record_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -6560,6 +7062,16 @@ function validate_value_translations_record_sub_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.translations.record_sub_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -6947,6 +7459,16 @@ function validate_value_attributions_agency_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.attributions.agency_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -6975,6 +7497,16 @@ function validate_value_attributions_route_id(gtfs::GTFSSchedule)
     # Get field data
     field_data = gtfs.attributions.route_id
 
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
+
     return validation_errors
 end
 
@@ -7002,6 +7534,16 @@ function validate_value_attributions_trip_id(gtfs::GTFSSchedule)
 
     # Get field data
     field_data = gtfs.attributions.trip_id
+
+# Validate foreign ID format (non-empty string)
+for (idx, val) in enumerate(field_data)
+    if !ismissing(val)
+        val_str = string(val)
+        if isempty(val_str)
+            push!(validation_errors, "Row $idx: Foreign ID cannot be empty")
+        end
+    end
+end
 
     return validation_errors
 end
@@ -8298,61 +8840,61 @@ function validate_field_values(gtfs::GTFSSchedule)
     end
 
     # Validate values in locations.geojson field -&nbsp;type
-    value_errors = validate_value_locations_geojson_type(gtfs)
+    value_errors = validate_value_locations_type(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "-&nbsp;type", error_msg, :error))
     end
 
     # Validate values in locations.geojson field -&nbsp;features
-    value_errors = validate_value_locations_geojson_features(gtfs)
+    value_errors = validate_value_locations_features(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "-&nbsp;features", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;type
-    value_errors = validate_value_locations_geojson_type(gtfs)
+    value_errors = validate_value_locations_type(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;type", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;id
-    value_errors = validate_value_locations_geojson_id(gtfs)
+    value_errors = validate_value_locations_id(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;id", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;properties
-    value_errors = validate_value_locations_geojson_properties(gtfs)
+    value_errors = validate_value_locations_properties(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;properties", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_name
-    value_errors = validate_value_locations_geojson_stop_name(gtfs)
+    value_errors = validate_value_locations_stop_name(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_name", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_desc
-    value_errors = validate_value_locations_geojson_stop_desc(gtfs)
+    value_errors = validate_value_locations_stop_desc(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;stop_desc", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;geometry
-    value_errors = validate_value_locations_geojson_geometry(gtfs)
+    value_errors = validate_value_locations_geometry(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;geometry", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;type
-    value_errors = validate_value_locations_geojson_type(gtfs)
+    value_errors = validate_value_locations_type(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;type", error_msg, :error))
     end
 
     # Validate values in locations.geojson field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;coordinates
-    value_errors = validate_value_locations_geojson_coordinates(gtfs)
+    value_errors = validate_value_locations_coordinates(gtfs)
     for error_msg in value_errors
         push!(messages, ValidationMessage("locations.geojson", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\\-&nbsp;coordinates", error_msg, :error))
     end

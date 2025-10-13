@@ -113,7 +113,7 @@ function validate_file_stops(gtfs::GTFSSchedule)
     condition_descriptions = String[]
 
     # File relation 1: required when all conditions met
-    if gtfs.locations_geojson !== nothing && gtfs.locations_geojson !== nothing
+    if gtfs.locations !== nothing && gtfs.locations !== nothing
         conditions_met = true
         push!(condition_descriptions, "File relation 1 met")
     end
@@ -636,15 +636,15 @@ function validate_file_location_group_stops(gtfs::GTFSSchedule)
 end
 
 """
-    validate_file_locations_geojson(gtfs::GTFSSchedule)
+    validate_file_locations(gtfs::GTFSSchedule)
 
 Validate presence of locations.geojson based on GTFS specification requirements.
 Base requirement: Optional
 Returns ValidationMessage with validation result.
 """
-function validate_file_locations_geojson(gtfs::GTFSSchedule)
+function validate_file_locations(gtfs::GTFSSchedule)
     filename = "locations.geojson"
-    file_field = :locations_geojson
+    file_field = :locations
     file_exists = hasproperty(gtfs, file_field) && getproperty(gtfs, file_field) !== nothing
 
     # Optional file - no validation needed

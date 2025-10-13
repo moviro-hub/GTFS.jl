@@ -4,7 +4,8 @@ Column Types Generator
 Generates Julia source code for column type mappings from GTFS field type mappings.
 """
 
-include("../type_conversion/type_mappings.jl")
+using Dates
+include("../extraction/julia_type.jl")
 
 """
     generate_column_types_dict(type_mappings::Vector{FieldTypeMapping}) -> Dict{String, Dict{String, Type}}
