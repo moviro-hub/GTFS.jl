@@ -33,3 +33,6 @@ JuliaLocalPreferences.toml
 
 # VSCode files
 .vscode
+
+# Temporary files
+tmp/
