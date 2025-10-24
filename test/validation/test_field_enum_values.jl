@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification and ENUM_RULES.
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 using CSV
 
@@ -311,8 +311,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("agency.txt", "cemv_support", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -320,16 +320,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("agency.txt", "cemv_support", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("agency.txt", "cemv_support")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -340,8 +340,8 @@ end
                 valid_values = [0, 1, 2, 3, 4]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stops.txt", "location_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -349,16 +349,16 @@ end
                 invalid_values = [99, -1, 5, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stops.txt", "location_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stops.txt", "location_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -367,8 +367,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stops.txt", "wheelchair_boarding", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -376,16 +376,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stops.txt", "wheelchair_boarding", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stops.txt", "wheelchair_boarding")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -394,8 +394,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stops.txt", "stop_access", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -403,16 +403,16 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stops.txt", "stop_access", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stops.txt", "stop_access")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -423,8 +423,8 @@ end
                 valid_values = [0, 1, 2, 3, 4, 5, 6, 7, 11, 12]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "route_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -432,16 +432,16 @@ end
                 invalid_values = [99, -1, 8, 9, 10, 13, 20]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "route_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("routes.txt", "route_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -450,8 +450,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "continuous_pickup", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -459,16 +459,16 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "continuous_pickup", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("routes.txt", "continuous_pickup")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -477,8 +477,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "continuous_drop_off", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -486,16 +486,16 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "continuous_drop_off", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("routes.txt", "continuous_drop_off")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -504,8 +504,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "cemv_support", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -513,16 +513,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("routes.txt", "cemv_support", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("routes.txt", "cemv_support")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -533,8 +533,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "direction_id", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -542,16 +542,16 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "direction_id", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("trips.txt", "direction_id")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -560,8 +560,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "wheelchair_accessible", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -569,16 +569,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "wheelchair_accessible", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("trips.txt", "wheelchair_accessible")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -587,8 +587,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "bikes_allowed", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -596,16 +596,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "bikes_allowed", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("trips.txt", "bikes_allowed")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -614,8 +614,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "cars_allowed", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -623,16 +623,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("trips.txt", "cars_allowed", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("trips.txt", "cars_allowed")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -643,8 +643,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "pickup_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -652,16 +652,16 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "pickup_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stop_times.txt", "pickup_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -670,8 +670,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "drop_off_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -679,16 +679,16 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "drop_off_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stop_times.txt", "drop_off_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -697,8 +697,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "continuous_pickup", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -706,16 +706,16 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "continuous_pickup", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stop_times.txt", "continuous_pickup")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -724,8 +724,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "continuous_drop_off", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -733,16 +733,16 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "continuous_drop_off", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stop_times.txt", "continuous_drop_off")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -751,8 +751,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "timepoint", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -760,16 +760,16 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("stop_times.txt", "timepoint", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=true, so missing should be valid
                 gtfs = create_gtfs_with_missing_field("stop_times.txt", "timepoint")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -780,8 +780,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("calendar.txt", "monday", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -789,16 +789,16 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("calendar.txt", "monday", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("calendar.txt", "monday")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -809,8 +809,8 @@ end
                 valid_values = [1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("calendar_dates.txt", "exception_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -818,16 +818,16 @@ end
                 invalid_values = [99, -1, 0, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("calendar_dates.txt", "exception_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("calendar_dates.txt", "exception_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -838,8 +838,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("fare_attributes.txt", "payment_method", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -847,16 +847,16 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("fare_attributes.txt", "payment_method", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("fare_attributes.txt", "payment_method")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -865,8 +865,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("fare_attributes.txt", "transfers", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -874,8 +874,8 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("fare_attributes.txt", "transfers", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -883,8 +883,8 @@ end
                 # allow_empty=true, so missing should be valid (field doesn't exist)
                 gtfs = create_basic_gtfs()
                 # Don't add transfers field at all
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -895,8 +895,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("rider_categories.txt", "is_default_fare_category", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -904,8 +904,8 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("rider_categories.txt", "is_default_fare_category", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -913,8 +913,8 @@ end
                 # allow_empty=true, so missing should be valid (field doesn't exist)
                 gtfs = create_basic_gtfs()
                 # Don't add is_default_fare_category field at all
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -925,8 +925,8 @@ end
                 valid_values = [0, 1, 2, 3, 4]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("fare_media.txt", "fare_media_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -934,16 +934,16 @@ end
                 invalid_values = [99, -1, 5, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("fare_media.txt", "fare_media_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("fare_media.txt", "fare_media_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -954,8 +954,8 @@ end
                 valid_values = [0, 1, 2, 3]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("fare_transfer_rules.txt", "duration_limit_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -963,8 +963,8 @@ end
                 invalid_values = [99, -1, 4, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("fare_transfer_rules.txt", "duration_limit_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -972,8 +972,8 @@ end
                 # allow_empty=true, so missing should be valid (field doesn't exist)
                 gtfs = create_basic_gtfs()
                 # Don't add duration_limit_type field at all
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -982,8 +982,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("fare_transfer_rules.txt", "fare_transfer_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -991,16 +991,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("fare_transfer_rules.txt", "fare_transfer_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("fare_transfer_rules.txt", "fare_transfer_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1011,8 +1011,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("frequencies.txt", "exact_times", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1020,8 +1020,8 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("frequencies.txt", "exact_times", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1029,8 +1029,8 @@ end
                 # allow_empty=true, so missing should be valid (field doesn't exist)
                 gtfs = create_basic_gtfs()
                 # Don't add exact_times field at all
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1041,8 +1041,8 @@ end
                 valid_values = [0, 1, 2, 3, 4, 5]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("transfers.txt", "transfer_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1050,8 +1050,8 @@ end
                 invalid_values = [99, -1, 6, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("transfers.txt", "transfer_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1059,8 +1059,8 @@ end
                 # allow_empty=true, so missing should be valid (field doesn't exist)
                 gtfs = create_basic_gtfs()
                 # Don't add transfer_type field at all
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1071,8 +1071,8 @@ end
                 valid_values = [1, 2, 3, 4, 5, 6, 7]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("pathways.txt", "pathway_mode", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1080,16 +1080,16 @@ end
                 invalid_values = [99, -1, 0, 8, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("pathways.txt", "pathway_mode", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("pathways.txt", "pathway_mode")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1100,8 +1100,8 @@ end
                 valid_values = [0, 1, 2]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("booking_rules.txt", "booking_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1109,16 +1109,16 @@ end
                 invalid_values = [99, -1, 3, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("booking_rules.txt", "booking_type", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
             @testset "Empty/Missing Values" begin
                 # allow_empty=false (REQUIRED), so missing should produce error
                 gtfs = create_gtfs_with_missing_field("booking_rules.txt", "booking_type")
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1129,8 +1129,8 @@ end
                 valid_values = [0, 1]
                 for value in valid_values
                     gtfs = create_gtfs_with_enum_field("attributions.txt", "is_producer", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test !GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test !GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1138,8 +1138,8 @@ end
                 invalid_values = [99, -1, 2, 10]
                 for value in invalid_values
                     gtfs = create_gtfs_with_enum_field("attributions.txt", "is_producer", value)
-                    result = GTFS.Validations.validate_enum_values(gtfs)
-                    @test GTFS.Validations.has_validation_errors(result)
+                    result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                    @test GTFSSchedules.Validations.has_validation_errors(result)
                 end
             end
 
@@ -1147,8 +1147,8 @@ end
                 # allow_empty=true, so missing should be valid (field doesn't exist)
                 gtfs = create_basic_gtfs()
                 # Don't add is_producer field at all
-                result = GTFS.Validations.validate_enum_values(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1156,9 +1156,9 @@ end
     @testset "Edge Cases" begin
         @testset "Empty GTFS Dataset" begin
             gtfs = GTFSSchedule()
-            result = GTFS.Validations.validate_enum_values(gtfs)
-            @test result isa GTFS.Validations.ValidationResult
-            @test !GTFS.Validations.has_validation_errors(result)  # No enum fields to validate
+            result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+            @test result isa GTFSSchedules.Validations.ValidationResult
+            @test !GTFSSchedules.Validations.has_validation_errors(result)  # No enum fields to validate
         end
 
         @testset "String Values in Integer Enum Fields" begin
@@ -1166,8 +1166,8 @@ end
             gtfs = create_basic_gtfs()
             df = gtfs["routes.txt"]
             df[!, :route_type] .= ["invalid"]  # String instead of integer
-            result = GTFS.Validations.validate_enum_values(gtfs)
-            @test GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Float Values in Integer Enum Fields" begin
@@ -1175,8 +1175,8 @@ end
             gtfs = create_basic_gtfs()
             df = gtfs["routes.txt"]
             df[!, :route_type] .= [3.5]  # Float instead of integer
-            result = GTFS.Validations.validate_enum_values(gtfs)
-            @test GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Multiple Invalid Values in Same Field" begin
@@ -1194,8 +1194,8 @@ end
                 cemv_support = [0, 0, 0]
             )
             gtfs["routes.txt"] = new_df
-            result = GTFS.Validations.validate_enum_values(gtfs)
-            @test GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_enum_values(gtfs)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
             # Should have multiple error messages
             @test length(result.messages) >= 3
         end

@@ -61,61 +61,71 @@ function validate_reference!(messages::Vector{ValidationMessage}, gtfs_feed::GTF
 
     column = df[!, Symbol(field_name)]
 
-    # For conditional references (e.g., "Foreign ID referencing X or ID"),
-    # allow any value - it can be either a foreign ID or an independent ID
+    # For conditional references, allow any value - it can be either a foreign ID or an independent ID
     if ref_rule.is_conditional
         return
     end
 
     # Build set of valid values from all referenced tables
-    valid_values = collect_valid_reference_values(gtfs_feed, ref_rule.references, ref_rule.is_conditional)
+    valid_values = _collect_valid_reference_values(gtfs_feed, ref_rule.references)
 
-    # Skip validation if no valid reference values (e.g., when calendar.txt is missing)
+    # Skip validation if no valid reference values (e.g., when referenced file is missing)
     isempty(valid_values) && return
 
-    # Check each value in the column
+    # Validate each value in the column
     for (idx, value) in enumerate(column)
-        ismissing(value) && continue
+        _validate_reference_value!(messages, filename, field_name, idx, value, valid_values, ref_rule.references)
+    end
+end
+
+"""
+    _validate_reference_value!(messages, filename, field_name, idx, value, valid_values, references)
+
+Validate a single reference value.
+"""
+function _validate_reference_value!(messages::Vector{ValidationMessage}, filename::String,
+                                  field_name::String, idx::Int, value, valid_values, references)
+    ismissing(value) && return
 
         # Allow empty values for optional foreign ID references
         if string(value) == "" || string(value) == "0"
-            continue
+        return
         end
 
-        if !is_valid_reference(value, valid_values)
-            ref_desc = format_reference_description(ref_rule.references)
+    if !(value in valid_values)
+        ref_desc = _format_reference_description(references)
+        _add_reference_error!(messages, filename, field_name, idx, value, ref_desc)
+    end
+end
+
+"""
+    _add_reference_error!(messages, filename, field_name, idx, value, ref_desc)
+
+Add error message for invalid reference.
+"""
+function _add_reference_error!(messages::Vector{ValidationMessage}, filename::String,
+                             field_name::String, idx::Int, value, ref_desc::String)
             push!(messages, ValidationMessage(
                 filename,
                 field_name,
                 "Row $idx: Value '$value' does not reference any valid ID in $ref_desc",
                 :error
             ))
-        end
-    end
 end
 
 """
-    collect_valid_reference_values(gtfs_feed, references, is_conditional)
+    _collect_valid_reference_values(gtfs_feed, references)
 
 Collect all valid values from referenced tables/fields.
 """
-function collect_valid_reference_values(gtfs_feed::GTFSSchedule, references, is_conditional::Bool)
+function _collect_valid_reference_values(gtfs_feed::GTFSSchedule, references)
     valid_values = Set()
 
     for ref in references
-        # Get referenced table filename
-        ref_filename = get_reference_filename(ref.table)
+        ref_filename = _get_reference_filename(ref.table)
         ref_df = get_dataframe(gtfs_feed, ref_filename)
-
-        # For conditional references, if the referenced file is missing, skip validation
-        if is_conditional && ref_df === nothing
-            # Referenced file is missing, this is valid for conditional references
-            continue
-        end
-
         ref_df === nothing && continue
 
-        # Get referenced field
         ref_field = Symbol(ref.field)
         !hasproperty(ref_df, ref_field) && continue
 
@@ -130,31 +140,21 @@ function collect_valid_reference_values(gtfs_feed::GTFSSchedule, references, is_
 end
 
 """
-    get_reference_filename(table_name)
+    _get_reference_filename(table_name)
 
 Convert table name to filename.
 """
-function get_reference_filename(table_name::String)
+function _get_reference_filename(table_name::String)
     # Handle special case for locations (geojson)
-    table_name == "locations" && return "locations.geojson"
-    return table_name * ".txt"
+    return table_name == "locations" ? "locations.geojson" : table_name * ".txt"
 end
 
 """
-    is_valid_reference(value, valid_values)
-
-Check if a value exists in the set of valid reference values.
-"""
-function is_valid_reference(value, valid_values::Set)
-    return value in valid_values
-end
-
-"""
-    format_reference_description(references)
+    _format_reference_description(references)
 
 Format a human-readable description of references.
 """
-function format_reference_description(references)
+function _format_reference_description(references)
     if length(references) == 1
         ref = references[1]
         return "$(ref.table).$(ref.field)"

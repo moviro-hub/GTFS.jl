@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification field types section.
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 
 # =============================================================================
@@ -118,9 +118,9 @@ end
             for color in valid_colors
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "routes.txt", "route_color", [color])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -130,9 +130,9 @@ end
             for color in invalid_colors
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "routes.txt", "route_color", [color])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -151,9 +151,9 @@ end
                     payment_method = [0],
                     transfers = [0]
                 )
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -169,9 +169,9 @@ end
                     payment_method = [0],
                     transfers = [0]
                 )
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -184,9 +184,9 @@ end
             for date in valid_dates
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "calendar.txt", "start_date", [date])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -196,9 +196,9 @@ end
             for date in invalid_dates
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "calendar.txt", "start_date", [date])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -211,9 +211,9 @@ end
             for email in valid_emails
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_email", [email])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -223,9 +223,9 @@ end
             for email in invalid_emails
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_email", [email])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -238,9 +238,9 @@ end
             for id_val in valid_ids
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_id", [id_val])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -250,9 +250,9 @@ end
             for id_val in invalid_ids
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_id", [id_val])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -265,9 +265,9 @@ end
             for code in valid_codes
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_lang", [code])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -277,9 +277,9 @@ end
             for code in invalid_codes
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_lang", [code])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -293,17 +293,17 @@ end
             for lat in valid_lats
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_lat", [lat])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             for lon in valid_lons
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_lon", [lon])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -314,17 +314,17 @@ end
             for lat in invalid_lats
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_lat", [lat])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             for lon in invalid_lons
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_lon", [lon])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -337,9 +337,9 @@ end
             for time in valid_times
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stop_times.txt", "arrival_time", [time])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -349,9 +349,9 @@ end
             for time in invalid_times
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stop_times.txt", "arrival_time", [time])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -364,9 +364,9 @@ end
             for tz in valid_timezones
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_timezone", [tz])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -376,9 +376,9 @@ end
             for tz in invalid_timezones
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_timezone", [tz])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -391,9 +391,9 @@ end
             for url in valid_urls
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_url", [url])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -403,9 +403,9 @@ end
             for url in invalid_urls
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_url", [url])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -418,9 +418,9 @@ end
             for phone in valid_phones
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_phone", [phone])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -431,7 +431,7 @@ end
             for phone in invalid_phones
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_phone", [phone])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
                 # Note: Phone validation might be lenient, so we check if errors occur
                 # The actual behavior depends on the validation implementation
@@ -453,9 +453,9 @@ end
                     shape_pt_sequence = [1],
                     shape_dist_traveled = [float_val]
                 )
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -466,9 +466,9 @@ end
             for int_val in valid_ints
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stop_times.txt", "stop_sequence", [int_val])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -477,101 +477,101 @@ end
         @testset "agency.txt types" begin
             @testset "Valid agency data" begin
                 gtfs = create_basic_gtfs()
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid agency timezone" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_timezone", ["Invalid/Timezone"])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid agency URL" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_url", ["not-a-url"])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
         @testset "stops.txt types" begin
             @testset "Valid stop data" begin
                 gtfs = create_basic_gtfs()
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid latitude" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_lat", [91.0])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid longitude" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_lon", [181.0])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
         @testset "routes.txt types" begin
             @testset "Valid route data" begin
                 gtfs = create_basic_gtfs()
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid route color" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "routes.txt", "route_color", ["INVALID"])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
         @testset "stop_times.txt types" begin
             @testset "Valid stop times data" begin
                 gtfs = create_basic_gtfs()
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid arrival time" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stop_times.txt", "arrival_time", ["12:60:00"])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
         @testset "calendar.txt types" begin
             @testset "Valid calendar data" begin
                 gtfs = create_basic_gtfs()
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid start date" begin
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "calendar.txt", "start_date", ["2024-13-01"])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -585,9 +585,9 @@ end
                     payment_method = [0],
                     transfers = [0]
                 )
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid currency type" begin
@@ -599,9 +599,9 @@ end
                     payment_method = [0],
                     transfers = [0]
                 )
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -611,18 +611,18 @@ end
             # Missing values should always be valid per GTFS spec
             gtfs = create_basic_gtfs()
             gtfs = create_gtfs_with_field_values(gtfs, "agency.txt", "agency_email", [missing])
-            result = GTFS.Validations.validate_field_types(gtfs)
+            result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Empty GTFS dataset" begin
             gtfs = GTFSSchedule()
-            result = GTFS.Validations.validate_field_types(gtfs)
+            result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-            @test result isa GTFS.Validations.ValidationResult
+            @test result isa GTFSSchedules.Validations.ValidationResult
             # Empty dataset should not have type validation errors
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Mixed valid and invalid values" begin
@@ -639,9 +639,9 @@ end
                 agency_timezone = ["America/New_York", "America/New_York", "America/New_York", "America/New_York"]
             )
 
-            result = GTFS.Validations.validate_field_types(gtfs)
+            result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Unicode text values" begin
@@ -651,9 +651,9 @@ end
             for text in unicode_text
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_with_field_values(gtfs, "stops.txt", "stop_name", [text])
-                result = GTFS.Validations.validate_field_types(gtfs)
+                result = GTFSSchedules.Validations.validate_field_types(gtfs)
 
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end

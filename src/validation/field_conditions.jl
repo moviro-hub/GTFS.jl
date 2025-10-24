@@ -120,10 +120,7 @@ function check_conditional_field!(messages::Vector{ValidationMessage}, gtfs::GTF
     cross_file_conditions = filter(c -> haskey(c, :file) && c[:file] != filename, conditions)
 
     # Evaluate cross-file conditions once (not per-row)
-    cross_file_met = isempty(cross_file_conditions) ||
-                     any(c -> _condition_holds_for_row_cross_file(gtfs, c), cross_file_conditions)
-
-    # If cross-file conditions not met, skip this rule entirely
+    cross_file_met = _evaluate_cross_file_conditions(gtfs, cross_file_conditions)
     if !cross_file_met
         return
     end
@@ -132,34 +129,83 @@ function check_conditional_field!(messages::Vector{ValidationMessage}, gtfs::GTF
     field_exists = df_has_column(df, Symbol(field_name))
     column = field_exists ? df[!, Symbol(field_name)] : nothing
 
-    # Iterate through each row for same-file conditions
+    # Validate each row
     for (row_idx, row) in enumerate(eachrow(df))
-        # Check same-file conditions for this specific row
-        # Use different logic based on rule type:
-        # - Required rules: use AND logic (all conditions must be true)
-        # - Forbidden rules: use OR logic (any condition being true triggers the rule)
-        if get(rule, :required, false)
-            same_file_met = isempty(same_file_conditions) ||
-                            all(cond -> _condition_holds_for_row(row, cond), same_file_conditions)
-        elseif get(rule, :forbidden, false)
-            same_file_met = isempty(same_file_conditions) ||
-                            any(cond -> _condition_holds_for_row(row, cond), same_file_conditions)
-        else
-            same_file_met = true  # Optional rules
-        end
+        _validate_conditional_row!(messages, gtfs, df, filename, rule, row, row_idx,
+                                 same_file_conditions, cross_file_met, field_exists, column)
+    end
+end
 
-        # Condition is met if both same-file and cross-file conditions are satisfied
+"""
+    _evaluate_cross_file_conditions(gtfs, cross_file_conditions) -> Bool
+
+Evaluate cross-file conditions once for the entire validation.
+"""
+function _evaluate_cross_file_conditions(gtfs::GTFSSchedule, cross_file_conditions)
+    return isempty(cross_file_conditions) ||
+           any(c -> _condition_holds_for_row_cross_file(gtfs, c), cross_file_conditions)
+end
+
+"""
+    _validate_conditional_row!(messages, gtfs, df, filename, rule, row, row_idx,
+                             same_file_conditions, cross_file_met, field_exists, column)
+
+Validate a single row for conditional field requirements.
+"""
+function _validate_conditional_row!(messages::Vector{ValidationMessage}, gtfs::GTFSSchedule, df,
+                                   filename::String, rule, row, row_idx,
+                                   same_file_conditions, cross_file_met, field_exists, column)
+    field_name = rule.field
+
+    # Evaluate same-file conditions for this row
+    same_file_met = _evaluate_same_file_conditions(row, same_file_conditions, rule)
+
+    # Both conditions must be met
         conditions_met = same_file_met && cross_file_met
 
-        if conditions_met
-            if field_exists
-                cell_value = column[row_idx]
-            else
-                cell_value = missing
+    if !conditions_met
+        return
+    end
+
+    # Get cell value
+    cell_value = field_exists ? column[row_idx] : missing
+
+    # Validate based on rule type
+    if get(rule, :required, false)
+        _validate_conditionally_required!(messages, filename, field_name, row_idx, cell_value)
+    elseif get(rule, :forbidden, false)
+        _validate_conditionally_forbidden!(messages, filename, field_name, row_idx, cell_value)
+    end
+end
+
+"""
+    _evaluate_same_file_conditions(row, same_file_conditions, rule) -> Bool
+
+Evaluate same-file conditions for a specific row.
+"""
+function _evaluate_same_file_conditions(row, same_file_conditions, rule)
+    if isempty(same_file_conditions)
+        return true
             end
 
             if get(rule, :required, false)
-                # Conditionally required: value must not be missing
+        # Required rules: use AND logic (all conditions must be true)
+        return all(cond -> _condition_holds_for_row(row, cond), same_file_conditions)
+    elseif get(rule, :forbidden, false)
+        # Forbidden rules: use OR logic (any condition being true triggers the rule)
+        return any(cond -> _condition_holds_for_row(row, cond), same_file_conditions)
+    else
+        return true  # Optional rules
+    end
+end
+
+"""
+    _validate_conditionally_required!(messages, filename, field_name, row_idx, cell_value)
+
+Validate a conditionally required field.
+"""
+function _validate_conditionally_required!(messages::Vector{ValidationMessage}, filename::String,
+                                          field_name::String, row_idx::Int, cell_value)
                 if ismissing(cell_value)
                     push!(messages, ValidationMessage(
                         filename,
@@ -168,8 +214,15 @@ function check_conditional_field!(messages::Vector{ValidationMessage}, gtfs::GTF
                         :error
                     ))
                 end
-            elseif get(rule, :forbidden, false)
-                # Conditionally forbidden: value must be missing or empty
+end
+
+"""
+    _validate_conditionally_forbidden!(messages, filename, field_name, row_idx, cell_value)
+
+Validate a conditionally forbidden field.
+"""
+function _validate_conditionally_forbidden!(messages::Vector{ValidationMessage}, filename::String,
+                                           field_name::String, row_idx::Int, cell_value)
                 if !ismissing(cell_value) && cell_value != ""
                     push!(messages, ValidationMessage(
                         filename,
@@ -177,124 +230,16 @@ function check_conditional_field!(messages::Vector{ValidationMessage}, gtfs::GTF
                         "Row $row_idx: Conditionally forbidden field '$field_name' has value '$cell_value' (condition met)",
                         :error
                     ))
-                end
-            end
-        end
     end
 end
 
-"""
-    should_skip_conditional_validation(gtfs, df, filename, rule)
 
-Determine if conditional validation should be skipped based on the actual data structure.
-This makes validation more lenient for real-world GTFS feeds by analyzing the rules and data dynamically.
-Uses both field_conditions.jl and field_enum_values.jl rules to make intelligent decisions.
-"""
-function should_skip_conditional_validation(gtfs::GTFSSchedule, df, filename::String, rule)
-    field_name = rule.field
-    conditions = get(rule, :conditions, [])
-
-    # Use enum rules to understand the field's purpose and requirements
-    enum_info = get_enum_info_for_field(filename, field_name)
-
-    # Analyze the conditions to understand what triggers the requirement
-    # This is completely data-driven - no hardcoded values
-
-    # Analyze conditions dynamically to understand what triggers the requirement
-    # This is completely data-driven - no hardcoded field names or filenames
-
-    # Extract the field that triggers the condition from the rules
-    trigger_field = nothing
-    trigger_values = Set()
-
-    for cond in conditions
-        if haskey(cond, :field) && haskey(cond, :value)
-            if trigger_field === nothing
-                trigger_field = cond[:field]
-            end
-            if trigger_field == cond[:field]
-                push!(trigger_values, cond[:value])
-            end
-        end
-    end
-
-    # If we found a trigger field and values, check if the data actually has those values
-    if trigger_field !== nothing && !isempty(trigger_values) && hasproperty(df, Symbol(trigger_field))
-        trigger_column = df[!, Symbol(trigger_field)]
-        has_triggering_values = any(row ->
-            !ismissing(getproperty(row, Symbol(trigger_field))) &&
-            string(getproperty(row, Symbol(trigger_field))) in trigger_values,
-            eachrow(df)
-        )
-
-        # Only validate if there are actually values that would trigger the requirement
-        return !has_triggering_values
-    end
-
-    # For other fields, use enum rules to determine if validation should be skipped
-    if enum_info !== nothing
-        # If the field has allow_empty = true, be more lenient with validation
-        if get(enum_info, :allow_empty, false)
-            # For fields that allow empty values, only validate if the field is actually used
-            # Check if there are any non-empty values in the field
-            if hasproperty(df, Symbol(field_name))
-                column = df[!, Symbol(field_name)]
-                has_non_empty_values = any(value -> !ismissing(value) && value != "", column)
-
-                # If field allows empty and has no non-empty values, skip validation
-                if !has_non_empty_values
-                    return true
-                end
-            end
-        end
-    end
-
-    # For fields that are conditionally required but the conditions are complex,
-    # be more lenient if the field is not actually used in the data
-    if hasproperty(df, Symbol(field_name))
-        column = df[!, Symbol(field_name)]
-        has_any_values = any(value -> !ismissing(value), column)
-
-        # If the field has no values at all, skip validation for conditional requirements
-        if !has_any_values
-            return true
-        end
-    end
-
-    # For other fields, analyze the conditions dynamically
-    # This could be extended for other field relationships
-
-    return false
-end
+# =============================================================================
+# CONDITION EVALUATION HELPERS
+# =============================================================================
 
 """
-    get_enum_info_for_field(filename, field_name)
-
-Get enum information for a specific field from the enum rules.
-"""
-function get_enum_info_for_field(filename::String, field_name::String)
-    # ENUM_RULES is already imported in the Validations module
-    try
-        # Check if the file has enum rules
-        if haskey(ENUM_RULES, filename)
-            file_rules = ENUM_RULES[filename]
-
-            # Find the rule for this specific field
-            for rule in file_rules
-                if rule.field == field_name
-                    return rule
-                end
-            end
-        end
-
-        return nothing
-    catch
-        return nothing
-    end
-end
-
-"""
-    _condition_holds_for_row(row, cond)
+    _condition_holds_for_row(row, cond) -> Bool
 
 Check if a condition holds for a specific row.
 """
@@ -304,27 +249,51 @@ function _condition_holds_for_row(row::DataFrames.DataFrameRow, cond)
     end
 
     if cond[:type] === :field
-        # Get the field value from the current row
-        field_name = cond[:field]
+        return _evaluate_field_condition_for_row(row, cond)
+    end
 
-        # Handle prefixed field names (e.g., "stop_times.location_type" -> "location_type")
-        if occursin(".", field_name)
-            field_name = split(field_name, ".")[end]
-        end
+    # For other condition types, return true (not row-specific)
+    return true
+end
 
-        # Check if field exists in this row
-        field_sym = Symbol(field_name)
-        if !hasproperty(row, field_sym)
-            # Field doesn't exist - treat as missing/empty
-            row_value = missing
-        else
-            # Get the value from this row
-            row_value = getproperty(row, field_sym)
-        end
+"""
+    _evaluate_field_condition_for_row(row, cond) -> Bool
 
+Evaluate a field condition for a specific row.
+"""
+function _evaluate_field_condition_for_row(row::DataFrames.DataFrameRow, cond)
+    field_name = _extract_field_name(cond[:field])
+    row_value = _get_row_field_value(row, field_name)
         expected_value = cond[:value]
 
-        # Handle different comparison cases
+    return _compare_field_values(row_value, expected_value)
+end
+
+"""
+    _extract_field_name(field_name) -> String
+
+Extract field name, handling prefixed names (e.g., "stop_times.location_type" -> "location_type").
+"""
+function _extract_field_name(field_name::String)
+    return occursin(".", field_name) ? split(field_name, ".")[end] : field_name
+end
+
+"""
+    _get_row_field_value(row, field_name) -> Any
+
+Get field value from row, returning missing if field doesn't exist.
+"""
+function _get_row_field_value(row::DataFrames.DataFrameRow, field_name::String)
+    field_sym = Symbol(field_name)
+    return hasproperty(row, field_sym) ? getproperty(row, field_sym) : missing
+end
+
+"""
+    _compare_field_values(row_value, expected_value) -> Bool
+
+Compare field values based on expected value type.
+"""
+function _compare_field_values(row_value, expected_value)
         if expected_value == ""
             # Empty string condition: check if field is missing or empty
             return ismissing(row_value) || string(row_value) == ""
@@ -333,42 +302,22 @@ function _condition_holds_for_row(row::DataFrames.DataFrameRow, cond)
             return !ismissing(row_value) && string(row_value) != ""
         else
             # Exact match: compare string representations
-            if ismissing(row_value)
-                return false
-            end
-            return string(row_value) == string(expected_value)
+        return !ismissing(row_value) && string(row_value) == string(expected_value)
         end
-    end
-
-    # For other condition types, return true (not row-specific)
-    return true
 end
 
 """
-    _condition_holds_for_row_cross_file(gtfs::GTFSSchedule, cond)
+    _condition_holds_for_row_cross_file(gtfs::GTFSSchedule, cond) -> Bool
 
 Handle conditions that reference other files by checking across the entire target file.
-
-# Arguments
-- `gtfs::GTFSSchedule`: The complete GTFS dataset
-- `cond`: The condition to evaluate
-
-# Returns
-- `Bool`: True if the condition is met
 """
 function _condition_holds_for_row_cross_file(gtfs::GTFSSchedule, cond)
-    # Handle conditions that reference other files
     if !haskey(cond, :type) || cond[:type] !== :field
         return true
     end
 
     target_file = cond[:file]
-    field_name = cond[:field]
-
-    # Strip table prefix from field name
-    if occursin(".", field_name)
-        field_name = split(field_name, ".")[end]
-    end
+    field_name = _extract_field_name(cond[:field])
 
     # Get the target dataframe
     df = get_dataframe(gtfs, target_file)
@@ -377,12 +326,19 @@ function _condition_holds_for_row_cross_file(gtfs::GTFSSchedule, cond)
     # Check if field exists
     field_sym = Symbol(field_name)
     if !df_has_column(df, field_sym)
-        # Field missing treated as empty for "" condition
-        return cond[:value] == ""
+        return cond[:value] == ""  # Field missing treated as empty for "" condition
     end
 
     # Check the condition across all rows in the target file
-    expected_value = cond[:value]
+    return _evaluate_cross_file_field_condition(df, field_sym, cond[:value])
+end
+
+"""
+    _evaluate_cross_file_field_condition(df, field_sym, expected_value) -> Bool
+
+Evaluate field condition across all rows in a cross-file reference.
+"""
+function _evaluate_cross_file_field_condition(df, field_sym::Symbol, expected_value)
     column = df[!, field_sym]
 
     if expected_value == ""

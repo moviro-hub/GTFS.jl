@@ -5,7 +5,7 @@ This module contains comprehensive tests for the GTFS package functionality.
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 
 @testset "GTFSSchedule.jl Tests" begin

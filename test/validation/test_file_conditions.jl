@@ -5,7 +5,7 @@ This module contains tests for the GTFS file presence validation functionality.
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 using CSV
 
@@ -127,10 +127,10 @@ end
     @testset "Required Files" begin
         @testset "All Required Files Present" begin
             gtfs = create_basic_gtfs()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test result isa GTFS.Validations.ValidationResult
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test result isa GTFSSchedules.Validations.ValidationResult
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Missing Required Files" begin
@@ -139,9 +139,9 @@ end
             for missing_file in required_files
                 gtfs = create_basic_gtfs()
                 gtfs = create_gtfs_without_file(gtfs, missing_file)
-                result = GTFS.Validations.validate_file_conditions(gtfs)
+                result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-                @test GTFS.Validations.has_validation_errors(result)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -155,25 +155,25 @@ end
                 shape_pt_lon = [-74.0],
                 shape_pt_sequence = [1]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Optional Files Absent" begin
             gtfs = create_basic_gtfs()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
     @testset "Conditionally Required: stops.txt" begin
         @testset "stops.txt present, locations.geojson absent" begin
             gtfs = create_basic_gtfs()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "stops.txt absent, locations.geojson present" begin
@@ -231,9 +231,9 @@ end
                 write(joinpath(temp_dir, "locations.geojson"), geojson_content)
 
                 # Read GTFS using the proper reader
-                gtfs = GTFS.read_gtfs(temp_dir)
-                result = GTFS.Validations.validate_file_conditions(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                gtfs = GTFSSchedules.read_gtfs(temp_dir)
+                result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             finally
                 rm(temp_dir, recursive=true)
             end
@@ -242,18 +242,18 @@ end
         @testset "Both stops.txt and locations.geojson absent" begin
             gtfs = create_basic_gtfs()
             gtfs = create_gtfs_without_file(gtfs, "stops.txt")
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
     @testset "Conditionally Required: calendar.txt/calendar_dates.txt" begin
         @testset "calendar.txt present, calendar_dates.txt absent" begin
             gtfs = create_basic_gtfs()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "calendar.txt absent, calendar_dates.txt present" begin
@@ -264,17 +264,17 @@ end
                 date = ["20240101"],
                 exception_type = [1]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Both calendar.txt and calendar_dates.txt absent" begin
             gtfs = create_basic_gtfs()
             gtfs = create_gtfs_without_file(gtfs, "calendar.txt")
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
@@ -286,23 +286,23 @@ end
                 level_index = [0.0],
                 level_name = ["Ground"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "levels.txt absent when pathways.txt has pathway_mode=5" begin
             gtfs = create_gtfs_with_pathway_mode(5)
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "levels.txt absent when pathways.txt has no pathway_mode=5" begin
             gtfs = create_gtfs_with_pathway_mode(1)  # Walkway, not elevator
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
@@ -320,9 +320,9 @@ end
                 language = ["es"],
                 translation = ["Parada 1"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "feed_info.txt absent when translations.txt present" begin
@@ -333,25 +333,25 @@ end
                 language = ["es"],
                 translation = ["Parada 1"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "feed_info.txt absent when translations.txt absent" begin
             gtfs = create_basic_gtfs()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
     @testset "Conditionally Forbidden: networks.txt" begin
         @testset "networks.txt absent when routes.txt has network_id field" begin
             gtfs = create_gtfs_with_network_id()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "networks.txt present when routes.txt has network_id field" begin
@@ -360,9 +360,9 @@ end
                 network_id = ["N1"],
                 network_name = ["Network 1"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "networks.txt present when routes.txt has no network_id field" begin
@@ -371,18 +371,18 @@ end
                 network_id = ["N1"],
                 network_name = ["Network 1"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
     @testset "Conditionally Forbidden: route_networks.txt" begin
         @testset "route_networks.txt absent when routes.txt has network_id field" begin
             gtfs = create_gtfs_with_network_id()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "route_networks.txt present when routes.txt has network_id field" begin
@@ -391,9 +391,9 @@ end
                 network_id = ["N1"],
                 route_id = ["R1"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test GTFS.Validations.has_validation_errors(result)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "route_networks.txt present when routes.txt has no network_id field" begin
@@ -402,28 +402,28 @@ end
                 network_id = ["N1"],
                 route_id = ["R1"]
             )
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 
     @testset "Edge Cases" begin
         @testset "Empty GTFS Dataset" begin
             gtfs = GTFSSchedule()
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
-            @test result isa GTFS.Validations.ValidationResult
-            @test GTFS.Validations.has_validation_errors(result)
+            @test result isa GTFSSchedules.Validations.ValidationResult
+            @test GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Invalid Field Values" begin
             # Test with invalid pathway_mode value
             gtfs = create_gtfs_with_pathway_mode(99)  # Invalid pathway mode
-            result = GTFS.Validations.validate_file_conditions(gtfs)
+            result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
 
             # Should not require levels.txt for invalid pathway_mode
-            @test !GTFS.Validations.has_validation_errors(result)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 end

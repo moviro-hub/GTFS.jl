@@ -56,21 +56,33 @@ function validate_constraint!(messages::Vector{ValidationMessage}, df, filename:
     validator === nothing && return
 
     column = df[!, Symbol(field_name)]
+    constraint_name = constraint_rule.constraint
 
-    # Different handling for per-column vs per-element validators
-    if constraint_rule.constraint == "Unique"
-        check_column_constraint!(messages, column, validator, filename, field_name, constraint_rule.constraint)
+    # Use unified constraint checking
+    _validate_field_constraint!(messages, column, validator, filename, field_name, constraint_name)
+end
+
+"""
+    _validate_field_constraint!(messages, column, validator, filename, field_name, constraint_name)
+
+Unified constraint validation that handles both column-level and element-level constraints.
+"""
+function _validate_field_constraint!(messages::Vector{ValidationMessage}, column, validator,
+                                   filename::String, field_name::String, constraint_name::String)
+    if constraint_name == "Unique"
+        _validate_column_constraint!(messages, column, validator, filename, field_name, constraint_name)
     else
-        check_element_constraint!(messages, column, validator, filename, field_name, constraint_rule.constraint)
+        _validate_element_constraint!(messages, column, validator, filename, field_name, constraint_name)
     end
 end
 
 """
-    check_column_constraint!(messages, column, validator, filename, field_name, constraint_name)
+    _validate_column_constraint!(messages, column, validator, filename, field_name, constraint_name)
 
-Check a constraint that applies to the entire column (e.g., Unique).
+Validate a constraint that applies to the entire column (e.g., Unique).
 """
-function check_column_constraint!(messages::Vector{ValidationMessage}, column, validator, filename::String, field_name::String, constraint_name::String)
+function _validate_column_constraint!(messages::Vector{ValidationMessage}, column, validator,
+                                   filename::String, field_name::String, constraint_name::String)
     if !validator(column)
         push!(messages, ValidationMessage(
             filename,
@@ -82,11 +94,12 @@ function check_column_constraint!(messages::Vector{ValidationMessage}, column, v
 end
 
 """
-    check_element_constraint!(messages, column, validator, filename, field_name, constraint_name)
+    _validate_element_constraint!(messages, column, validator, filename, field_name, constraint_name)
 
-Check a constraint that applies to individual elements (e.g., Non-negative, Positive).
+Validate a constraint that applies to individual elements (e.g., Non-negative, Positive).
 """
-function check_element_constraint!(messages::Vector{ValidationMessage}, column, validator, filename::String, field_name::String, constraint_name::String)
+function _validate_element_constraint!(messages::Vector{ValidationMessage}, column, validator,
+                                     filename::String, field_name::String, constraint_name::String)
     for (idx, value) in enumerate(column)
         ismissing(value) && continue
 

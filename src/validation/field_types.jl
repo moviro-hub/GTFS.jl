@@ -64,13 +64,25 @@ function validate_field!(messages::Vector{ValidationMessage}, df, field_info, fi
 
     for (idx, value) in enumerate(column)
         ismissing(value) && continue
-        validator(value) || push!(messages, ValidationMessage(
-            filename,
-            field_info.field,
-            "Row $idx: Value '$value' does not match expected type $type_name",
-            :error
-        ))
+        if !validator(value)
+            _add_type_validation_error!(messages, filename, field_info.field, idx, value, type_name)
+        end
     end
+end
+
+"""
+    _add_type_validation_error!(messages, filename, field_name, row_idx, value, type_name)
+
+Add a type validation error message.
+"""
+function _add_type_validation_error!(messages::Vector{ValidationMessage}, filename::String,
+                                    field_name::String, row_idx::Int, value, type_name::String)
+    push!(messages, ValidationMessage(
+        filename,
+        field_name,
+        "Row $row_idx: Value '$value' does not match expected type $type_name",
+        :error
+    ))
 end
 
 """
@@ -79,11 +91,6 @@ end
 Get the appropriate validation function for a field based on its type.
 """
 function get_validator_for_field(field_info)
-    # Use the type_symbol directly for validator lookup
     type_symbol = field_info.type_symbol
-
-    # Look up the validator in GTFS_TYPE_VALIDATORS
-    validator = get(GTFS_TYPE_VALIDATORS, type_symbol, nothing)
-
-    return validator
+    return get(GTFS_TYPE_VALIDATORS, type_symbol, nothing)
 end

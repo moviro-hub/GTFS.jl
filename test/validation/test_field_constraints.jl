@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification and FIELD_CONSTRAINTS.
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 
 # =============================================================================
@@ -91,8 +91,8 @@ end
                     agency_url = ["http://demo.com", "http://metro.com", "http://cta.com"],
                     agency_timezone = ["America/New_York", "America/Chicago", "America/Chicago"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -103,8 +103,8 @@ end
                     agency_url = ["http://demo.com", "http://demo2.com", "http://cta.com"],
                     agency_timezone = ["America/New_York", "America/New_York", "America/Chicago"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -115,8 +115,8 @@ end
                     agency_url = ["http://demo.com", "http://missing.com", "http://cta.com"],
                     agency_timezone = ["America/New_York", "America/New_York", "America/Chicago"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -131,8 +131,8 @@ end
                     stop_lat = [40.0, 40.1, 40.2],
                     stop_lon = [-74.0, -74.1, -74.2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -143,8 +143,8 @@ end
                     stop_lat = [40.0, 40.0, 40.2],
                     stop_lon = [-74.0, -74.0, -74.2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -155,8 +155,8 @@ end
                     stop_lat = [40.0, 40.0, 40.2],
                     stop_lon = [-74.0, -74.0, -74.2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -171,8 +171,8 @@ end
                     route_long_name = ["Route 1", "Route 2", "Route 3"],
                     route_type = [3, 3, 3]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -183,8 +183,8 @@ end
                     route_long_name = ["Route 1", "Route 1 Duplicate", "Route 3"],
                     route_type = [3, 3, 3]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -198,8 +198,8 @@ end
                     route_type = [3, 3, 3],
                     route_sort_order = [0, 1, 100]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -211,8 +211,8 @@ end
                     route_type = [3, 3, 3],
                     route_sort_order = [-1, 0, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -224,8 +224,8 @@ end
                     route_type = [3, 3, 3],
                     route_sort_order = [0, missing, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -239,8 +239,8 @@ end
                     service_id = ["S1", "S1", "S1"],
                     trip_id = ["T1", "T2", "T3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -250,8 +250,8 @@ end
                     service_id = ["S1", "S1", "S1"],
                     trip_id = ["T1", "T1", "T3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -267,8 +267,8 @@ end
                     stop_id = ["S1", "S2", "S3"],
                     stop_sequence = [0, 1, 100]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -280,8 +280,8 @@ end
                     stop_id = ["S1", "S2", "S3"],
                     stop_sequence = [-1, 0, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -293,8 +293,8 @@ end
                     stop_id = ["S1", "S2", "S3"],
                     stop_sequence = [0, missing, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -309,8 +309,8 @@ end
                     stop_sequence = [1, 2, 3],
                     shape_dist_traveled = [0.0, 1.5, 100.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -323,8 +323,8 @@ end
                     stop_sequence = [1, 2, 3],
                     shape_dist_traveled = [-1.0, 0.0, 1.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -337,8 +337,8 @@ end
                     stop_sequence = [1, 2, 3],
                     shape_dist_traveled = [0.0, missing, 1.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -359,8 +359,8 @@ end
                     start_date = ["20240101", "20240101", "20240101"],
                     end_date = ["20241231", "20241231", "20241231"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -377,8 +377,8 @@ end
                     start_date = ["20240101", "20240101", "20240101"],
                     end_date = ["20241231", "20241231", "20241231"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -393,8 +393,8 @@ end
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -405,8 +405,8 @@ end
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -419,8 +419,8 @@ end
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -431,8 +431,8 @@ end
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -443,8 +443,8 @@ end
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -458,8 +458,8 @@ end
                     payment_method = [0, 0, 0],
                     transfer_duration = [0, 1800, 3600]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -471,8 +471,8 @@ end
                     payment_method = [0, 0, 0],
                     transfer_duration = [-1, 0, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -484,8 +484,8 @@ end
                     payment_method = [0, 0, 0],
                     transfer_duration = [0, missing, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -499,8 +499,8 @@ end
                     rider_category_name = ["Adult", "Child", "Senior"],
                     is_default_fare_category = [1, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -510,8 +510,8 @@ end
                     rider_category_name = ["Adult", "Adult Duplicate", "Senior"],
                     is_default_fare_category = [1, 0, 0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -525,8 +525,8 @@ end
                     fare_media_name = ["Card", "Mobile", "Cash"],
                     fare_media_type = [2, 2, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -536,8 +536,8 @@ end
                     fare_media_name = ["Card", "Card Duplicate", "Cash"],
                     fare_media_type = [2, 2, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -550,8 +550,8 @@ end
                     leg_group_id = ["LG1", "LG2", "LG3"],
                     rule_priority = [0, 1, 100]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -560,8 +560,8 @@ end
                     leg_group_id = ["LG1", "LG2", "LG3"],
                     rule_priority = [-1, 0, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -570,8 +570,8 @@ end
                     leg_group_id = ["LG1", "LG2", "LG3"],
                     rule_priority = [0, missing, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -585,8 +585,8 @@ end
                     to_leg_group_id = ["LG2", "LG3", "LG1"],
                     transfer_count = [1, 2, 3]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Zero Value" begin
@@ -596,8 +596,8 @@ end
                     to_leg_group_id = ["LG2", "LG3", "LG1"],
                     transfer_count = [0, 1, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -607,8 +607,8 @@ end
                     to_leg_group_id = ["LG2", "LG3", "LG1"],
                     transfer_count = [1, missing, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -621,8 +621,8 @@ end
                     transfer_count = [1, 2, 3],
                     duration_limit = [1, 1800, 3600]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Zero or Negative" begin
@@ -633,8 +633,8 @@ end
                     transfer_count = [1, 2, 3],
                     duration_limit = [0, 1, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -645,8 +645,8 @@ end
                     transfer_count = [1, 2, 3],
                     duration_limit = [1, missing, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -659,8 +659,8 @@ end
                     area_id = ["A1", "A2", "A3"],
                     area_name = ["Area 1", "Area 2", "Area 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -669,8 +669,8 @@ end
                     area_id = ["A1", "A1", "A3"],
                     area_name = ["Area 1", "Area 1 Duplicate", "Area 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -683,8 +683,8 @@ end
                     network_id = ["N1", "N2", "N3"],
                     network_name = ["Network 1", "Network 2", "Network 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -693,8 +693,8 @@ end
                     network_id = ["N1", "N1", "N3"],
                     network_name = ["Network 1", "Network 1 Duplicate", "Network 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -709,8 +709,8 @@ end
                     shape_pt_lon = [-74.0, -74.1, -74.2],
                     shape_pt_sequence = [0, 1, 100]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -721,8 +721,8 @@ end
                     shape_pt_lon = [-74.0, -74.1, -74.2],
                     shape_pt_sequence = [-1, 0, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -733,8 +733,8 @@ end
                     shape_pt_lon = [-74.0, -74.1, -74.2],
                     shape_pt_sequence = [0, missing, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -748,8 +748,8 @@ end
                     shape_pt_sequence = [1, 2, 3],
                     shape_dist_traveled = [0.0, 1.5, 100.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -761,8 +761,8 @@ end
                     shape_pt_sequence = [1, 2, 3],
                     shape_dist_traveled = [-1.0, 0.0, 1.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -774,8 +774,8 @@ end
                     shape_pt_sequence = [1, 2, 3],
                     shape_dist_traveled = [0.0, missing, 1.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -790,8 +790,8 @@ end
                     end_time = ["10:00:00", "14:00:00", "20:00:00"],
                     headway_secs = [1, 1800, 3600]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Zero or Negative" begin
@@ -802,8 +802,8 @@ end
                     end_time = ["10:00:00", "14:00:00", "20:00:00"],
                     headway_secs = [0, 1, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -814,8 +814,8 @@ end
                     end_time = ["10:00:00", "14:00:00", "20:00:00"],
                     headway_secs = [1, missing, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -830,8 +830,8 @@ end
                     transfer_type = [0, 0, 0],
                     min_transfer_time = [0, 60, 300]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -842,8 +842,8 @@ end
                     transfer_type = [0, 0, 0],
                     min_transfer_time = [-1, 0, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -854,8 +854,8 @@ end
                     transfer_type = [0, 0, 0],
                     min_transfer_time = [0, missing, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -871,8 +871,8 @@ end
                     pathway_mode = [1, 1, 1],
                     is_bidirectional = [1, 1, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -884,8 +884,8 @@ end
                     pathway_mode = [1, 1, 1],
                     is_bidirectional = [1, 1, 1]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -900,8 +900,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     length = [0.0, 10.5, 100.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Negative Values" begin
@@ -914,8 +914,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     length = [-1.0, 0.0, 1.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -928,8 +928,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     length = [0.0, missing, 1.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -944,8 +944,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     traversal_time = [1, 30, 300]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Zero or Negative" begin
@@ -958,8 +958,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     traversal_time = [0, 1, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -972,8 +972,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     traversal_time = [1, missing, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -988,8 +988,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     min_width = [1.0, 2.5, 10.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Zero or Negative" begin
@@ -1002,8 +1002,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     min_width = [0.0, 1.0, 2.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid - With Missing Values" begin
@@ -1016,8 +1016,8 @@ end
                     is_bidirectional = [1, 1, 1],
                     min_width = [1.0, missing, 2.0]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1031,8 +1031,8 @@ end
                     level_index = [0.0, 1.0, 2.0],
                     level_name = ["Ground", "Level 1", "Level 2"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -1042,8 +1042,8 @@ end
                     level_index = [0.0, 0.0, 2.0],
                     level_name = ["Ground", "Ground Duplicate", "Level 2"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1056,8 +1056,8 @@ end
                     location_group_id = ["LG1", "LG2", "LG3"],
                     location_group_name = ["Group 1", "Group 2", "Group 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -1066,8 +1066,8 @@ end
                     location_group_id = ["LG1", "LG1", "LG3"],
                     location_group_name = ["Group 1", "Group 1 Duplicate", "Group 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1080,8 +1080,8 @@ end
                     booking_rule_id = ["BR1", "BR2", "BR3"],
                     booking_type = [0, 1, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -1090,8 +1090,8 @@ end
                     booking_rule_id = ["BR1", "BR1", "BR3"],
                     booking_type = [0, 0, 2]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1104,8 +1104,8 @@ end
                     attribution_id = ["A1", "A2", "A3"],
                     organization_name = ["Org 1", "Org 2", "Org 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid - Duplicates" begin
@@ -1114,8 +1114,8 @@ end
                     attribution_id = ["A1", "A1", "A3"],
                     organization_name = ["Org 1", "Org 1 Duplicate", "Org 3"]
                 )
-                result = GTFS.Validations.validate_field_constraints(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -1123,9 +1123,9 @@ end
     @testset "Edge Cases" begin
         @testset "Empty GTFS Dataset" begin
             gtfs = GTFSSchedule()
-            result = GTFS.Validations.validate_field_constraints(gtfs)
-            @test result isa GTFS.Validations.ValidationResult
-            @test !GTFS.Validations.has_validation_errors(result)  # No fields to validate
+            result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+            @test result isa GTFSSchedules.Validations.ValidationResult
+            @test !GTFSSchedules.Validations.has_validation_errors(result)  # No fields to validate
         end
 
         @testset "Missing Field" begin
@@ -1136,8 +1136,8 @@ end
                 agency_url = ["http://example.com"],
                 agency_timezone = ["America/New_York"]
             )
-            result = GTFS.Validations.validate_field_constraints(gtfs)
-            @test !GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Multiple Violations" begin
@@ -1150,8 +1150,8 @@ end
                 route_type = [3, 3, 3],
                 route_sort_order = [-1, -2, -3]  # Multiple negative values
             )
-            result = GTFS.Validations.validate_field_constraints(gtfs)
-            @test GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
             @test length(result.messages) >= 3
         end
 
@@ -1165,8 +1165,8 @@ end
                 route_type = [3, 3, 3],
                 route_sort_order = [0.0, 1, 2.5]  # Mix of float and integer
             )
-            result = GTFS.Validations.validate_field_constraints(gtfs)
-            @test !GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Boundary Values" begin
@@ -1179,8 +1179,8 @@ end
                 route_type = [3, 3, 3],
                 route_sort_order = [0, 0, 0]  # Boundary value for non-negative
             )
-            result = GTFS.Validations.validate_field_constraints(gtfs)
-            @test !GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_field_constraints(gtfs)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
     end
 end

@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification and FIELD_ID_REFERENCES.
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 
 # =============================================================================
@@ -101,8 +101,8 @@ end
                     stop_lon = [-74.0, -74.1],
                     parent_station = [missing, "S1"]  # S2 references S1 (self-reference)
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -115,8 +115,8 @@ end
                     stop_lon = [-74.0],
                     parent_station = ["NONEXISTENT"]  # Invalid reference
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Empty Values" begin
@@ -129,8 +129,8 @@ end
                     stop_lon = [-74.0],
                     parent_station = [missing]  # Missing value
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -153,8 +153,8 @@ end
                     route_type = [3],
                     agency_id = ["DTA"]  # Valid reference
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -173,8 +173,8 @@ end
                     route_type = [3],
                     agency_id = ["INVALID_AGENCY"]  # Invalid reference
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Missing Referenced Table" begin
@@ -187,9 +187,9 @@ end
                     route_type = [3],
                     agency_id = ["DTA"]  # References missing agency.txt
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
                 # When referenced table is missing, validation is skipped (no errors)
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -211,8 +211,8 @@ end
                     service_id = ["SERVICE1"],
                     trip_id = ["T1"]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -230,8 +230,8 @@ end
                     service_id = ["SERVICE1"],
                     trip_id = ["T1"]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -256,8 +256,8 @@ end
                     service_id = ["SERVICE1"],  # Valid reference to calendar
                     trip_id = ["T1"]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Valid References to calendar_dates" begin
@@ -273,8 +273,8 @@ end
                     service_id = ["SERVICE2"],  # Valid reference to calendar_dates
                     trip_id = ["T1"]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -297,8 +297,8 @@ end
                     service_id = ["INVALID_SERVICE"],  # Invalid reference
                     trip_id = ["T1"]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -318,8 +318,8 @@ end
                     trip_id = ["T1"],
                     shape_id = ["SHAPE1"]  # Valid reference
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -337,8 +337,8 @@ end
                     trip_id = ["T1"],
                     shape_id = ["INVALID_SHAPE"]  # Invalid reference
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Missing Referenced Table" begin
@@ -350,9 +350,9 @@ end
                     trip_id = ["T1"],
                     shape_id = ["SHAPE1"]  # References missing shapes.txt
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
                 # When referenced table is missing, validation is skipped (no errors)
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -374,8 +374,8 @@ end
                     stop_id = ["S1"],
                     stop_sequence = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -393,8 +393,8 @@ end
                     stop_id = ["S1"],
                     stop_sequence = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
 
@@ -415,8 +415,8 @@ end
                     stop_id = ["S1"],  # Valid reference
                     stop_sequence = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Invalid References" begin
@@ -435,8 +435,8 @@ end
                     stop_id = ["INVALID_STOP"],  # Invalid reference
                     stop_sequence = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -463,8 +463,8 @@ end
                     date = ["20240101"],
                     exception_type = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Independent Service IDs" begin
@@ -488,8 +488,8 @@ end
                     date = ["20240101"],
                     exception_type = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Mixed References" begin
@@ -513,8 +513,8 @@ end
                     date = ["20240101", "20240102"],
                     exception_type = [1, 1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
-                @test !GTFS.Validations.has_validation_errors(result)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
 
             @testset "Missing Referenced Table" begin
@@ -525,9 +525,9 @@ end
                     date = ["20240101"],
                     exception_type = [1]
                 )
-                result = GTFS.Validations.validate_id_references(gtfs)
+                result = GTFSSchedules.Validations.validate_id_references(gtfs)
                 # For conditional references, missing referenced table should be valid
-                @test !GTFS.Validations.has_validation_errors(result)
+                @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
         end
     end
@@ -535,9 +535,9 @@ end
     @testset "Edge Cases" begin
         @testset "Empty GTFS Dataset" begin
             gtfs = GTFSSchedule()
-            result = GTFS.Validations.validate_id_references(gtfs)
-            @test result isa GTFS.Validations.ValidationResult
-            @test !GTFS.Validations.has_validation_errors(result)  # No foreign key fields to validate
+            result = GTFSSchedules.Validations.validate_id_references(gtfs)
+            @test result isa GTFSSchedules.Validations.ValidationResult
+            @test !GTFSSchedules.Validations.has_validation_errors(result)  # No foreign key fields to validate
         end
 
         @testset "Empty Values" begin
@@ -550,8 +550,8 @@ end
                 stop_lon = [-74.0],
                 parent_station = [""]  # Empty string
             )
-            result = GTFS.Validations.validate_id_references(gtfs)
-            @test !GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_id_references(gtfs)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Zero Values" begin
@@ -564,8 +564,8 @@ end
                 stop_lon = [-74.0],
                 parent_station = ["0"]  # Zero string
             )
-            result = GTFS.Validations.validate_id_references(gtfs)
-            @test !GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_id_references(gtfs)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Missing Values" begin
@@ -578,8 +578,8 @@ end
                 stop_lon = [-74.0],
                 parent_station = [missing]  # Missing value
             )
-            result = GTFS.Validations.validate_id_references(gtfs)
-            @test !GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_id_references(gtfs)
+            @test !GTFSSchedules.Validations.has_validation_errors(result)
         end
 
         @testset "Multiple Invalid References" begin
@@ -598,8 +598,8 @@ end
                 route_type = [3, 3, 3],
                 agency_id = ["INVALID1", "INVALID2", "INVALID3"]  # Multiple invalid references
             )
-            result = GTFS.Validations.validate_id_references(gtfs)
-            @test GTFS.Validations.has_validation_errors(result)
+            result = GTFSSchedules.Validations.validate_id_references(gtfs)
+            @test GTFSSchedules.Validations.has_validation_errors(result)
             # Should have multiple error messages
             @test length(result.messages) >= 3
         end

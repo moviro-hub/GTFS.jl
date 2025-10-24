@@ -6,7 +6,7 @@ ZIP files, directories, CSV parsing, GeoJSON support, error handling, and edge c
 """
 
 using Test
-using GTFSSchedule
+using GTFSSchedules
 using DataFrames
 using CSV
 using GeoJSON
@@ -351,14 +351,14 @@ using GeoJSON
     @testset "Internal Function Tests" begin
         # Test _read_gtfs_from_directory
         feed_path = joinpath(@__DIR__, "fixtures", "basic-example")
-        gtfs = GTFS._read_gtfs_from_directory(feed_path, GTFS.FIELD_TYPES)
+        gtfs = GTFSSchedules._read_gtfs_from_directory(feed_path, GTFSSchedules.FIELD_TYPES)
         @test gtfs !== nothing
         @test isa(gtfs, GTFSSchedule)
 
         # Test _read_csv_file
         agency_file = joinpath(feed_path, "agency.txt")
         if isfile(agency_file)
-            df = GTFS._read_csv_file(agency_file, GTFS.FIELD_TYPES)
+            df = GTFSSchedules._read_csv_file(agency_file, GTFSSchedules.FIELD_TYPES)
             @test df !== nothing
             @test isa(df, DataFrame)
             @test nrow(df) > 0
@@ -387,7 +387,7 @@ using GeoJSON
             geo_file = joinpath(temp_dir, "locations.geojson")
             write(geo_file, geojson_content)
 
-            df = GTFS._read_geojson_file(geo_file)
+            df = GTFSSchedules._read_geojson_file(geo_file)
             @test df !== nothing
             @test isa(df, DataFrame)
         finally
@@ -397,7 +397,7 @@ using GeoJSON
         # Test _read_gtfs_from_zip
         zip_path = joinpath(@__DIR__, "fixtures", "official-sample-feed.zip")
         if isfile(zip_path)
-            gtfs_zip = GTFS._read_gtfs_from_zip(zip_path, GTFS.FIELD_TYPES)
+            gtfs_zip = GTFSSchedules._read_gtfs_from_zip(zip_path, GTFSSchedules.FIELD_TYPES)
             @test gtfs_zip !== nothing
             @test isa(gtfs_zip, GTFSSchedule)
         end
