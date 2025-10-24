@@ -27,6 +27,7 @@ function validate_all_field_rules!(messages::Vector{ValidationMessage}, gtfs::GT
     for (filename, rules) in FIELD_RULES
         validate_file_rules!(messages, gtfs, filename, rules)
     end
+    return
 end
 
 """
@@ -41,6 +42,7 @@ function validate_file_rules!(messages::Vector{ValidationMessage}, gtfs::GTFSSch
     for rule in rules
         validate_single_rule!(messages, gtfs, df, filename, rule)
     end
+    return
 end
 
 """
@@ -83,7 +85,7 @@ end
 Handle cases where a required column is missing.
 """
 function handle_missing_column!(messages::Vector{ValidationMessage}, filename::String, field_name::String, presence::String)
-    if presence == "Required"
+    return if presence == "Required"
         push!(messages, ValidationMessage(filename, field_name, "Required field '$field_name' not present in table", :error))
     elseif presence == "Optional"
         push!(messages, ValidationMessage(filename, field_name, "Optional field '$field_name' validation skipped", :info))
@@ -99,7 +101,7 @@ Check a required field for missing values.
 """
 function check_required_field!(messages::Vector{ValidationMessage}, filename::String, field_name::String, col_data)
     missing_count = count(ismissing, col_data)
-    if missing_count > 0
+    return if missing_count > 0
         push!(messages, ValidationMessage(filename, field_name, "Required field '$field_name' has $missing_count missing values", :error))
     else
         push!(messages, ValidationMessage(filename, field_name, "Required field '$field_name' has no missing values", :info))
@@ -131,9 +133,12 @@ function check_conditional_field!(messages::Vector{ValidationMessage}, gtfs::GTF
 
     # Validate each row
     for (row_idx, row) in enumerate(eachrow(df))
-        _validate_conditional_row!(messages, gtfs, df, filename, rule, row, row_idx,
-                                 same_file_conditions, cross_file_met, field_exists, column)
+        _validate_conditional_row!(
+            messages, gtfs, df, filename, rule, row, row_idx,
+            same_file_conditions, cross_file_met, field_exists, column
+        )
     end
+    return
 end
 
 """
@@ -143,7 +148,7 @@ Evaluate cross-file conditions once for the entire validation.
 """
 function _evaluate_cross_file_conditions(gtfs::GTFSSchedule, cross_file_conditions)
     return isempty(cross_file_conditions) ||
-           any(c -> _condition_holds_for_row_cross_file(gtfs, c), cross_file_conditions)
+        any(c -> _condition_holds_for_row_cross_file(gtfs, c), cross_file_conditions)
 end
 
 """
@@ -152,16 +157,18 @@ end
 
 Validate a single row for conditional field requirements.
 """
-function _validate_conditional_row!(messages::Vector{ValidationMessage}, gtfs::GTFSSchedule, df,
-                                   filename::String, rule, row, row_idx,
-                                   same_file_conditions, cross_file_met, field_exists, column)
+function _validate_conditional_row!(
+        messages::Vector{ValidationMessage}, gtfs::GTFSSchedule, df,
+        filename::String, rule, row, row_idx,
+        same_file_conditions, cross_file_met, field_exists, column
+    )
     field_name = rule.field
 
     # Evaluate same-file conditions for this row
     same_file_met = _evaluate_same_file_conditions(row, same_file_conditions, rule)
 
     # Both conditions must be met
-        conditions_met = same_file_met && cross_file_met
+    conditions_met = same_file_met && cross_file_met
 
     if !conditions_met
         return
@@ -171,7 +178,7 @@ function _validate_conditional_row!(messages::Vector{ValidationMessage}, gtfs::G
     cell_value = field_exists ? column[row_idx] : missing
 
     # Validate based on rule type
-    if get(rule, :required, false)
+    return if get(rule, :required, false)
         _validate_conditionally_required!(messages, filename, field_name, row_idx, cell_value)
     elseif get(rule, :forbidden, false)
         _validate_conditionally_forbidden!(messages, filename, field_name, row_idx, cell_value)
@@ -186,9 +193,9 @@ Evaluate same-file conditions for a specific row.
 function _evaluate_same_file_conditions(row, same_file_conditions, rule)
     if isempty(same_file_conditions)
         return true
-            end
+    end
 
-            if get(rule, :required, false)
+    if get(rule, :required, false)
         # Required rules: use AND logic (all conditions must be true)
         return all(cond -> _condition_holds_for_row(row, cond), same_file_conditions)
     elseif get(rule, :forbidden, false)
@@ -204,16 +211,20 @@ end
 
 Validate a conditionally required field.
 """
-function _validate_conditionally_required!(messages::Vector{ValidationMessage}, filename::String,
-                                          field_name::String, row_idx::Int, cell_value)
-                if ismissing(cell_value)
-                    push!(messages, ValidationMessage(
-                        filename,
-                        field_name,
-                        "Row $row_idx: Conditionally required field '$field_name' is missing (condition met)",
-                        :error
-                    ))
-                end
+function _validate_conditionally_required!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, row_idx::Int, cell_value
+    )
+    return if ismissing(cell_value)
+        push!(
+            messages, ValidationMessage(
+                filename,
+                field_name,
+                "Row $row_idx: Conditionally required field '$field_name' is missing (condition met)",
+                :error
+            )
+        )
+    end
 end
 
 """
@@ -221,15 +232,19 @@ end
 
 Validate a conditionally forbidden field.
 """
-function _validate_conditionally_forbidden!(messages::Vector{ValidationMessage}, filename::String,
-                                           field_name::String, row_idx::Int, cell_value)
-                if !ismissing(cell_value) && cell_value != ""
-                    push!(messages, ValidationMessage(
-                        filename,
-                        field_name,
-                        "Row $row_idx: Conditionally forbidden field '$field_name' has value '$cell_value' (condition met)",
-                        :error
-                    ))
+function _validate_conditionally_forbidden!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, row_idx::Int, cell_value
+    )
+    return if !ismissing(cell_value) && cell_value != ""
+        push!(
+            messages, ValidationMessage(
+                filename,
+                field_name,
+                "Row $row_idx: Conditionally forbidden field '$field_name' has value '$cell_value' (condition met)",
+                :error
+            )
+        )
     end
 end
 
@@ -264,7 +279,7 @@ Evaluate a field condition for a specific row.
 function _evaluate_field_condition_for_row(row::DataFrames.DataFrameRow, cond)
     field_name = _extract_field_name(cond[:field])
     row_value = _get_row_field_value(row, field_name)
-        expected_value = cond[:value]
+    expected_value = cond[:value]
 
     return _compare_field_values(row_value, expected_value)
 end
@@ -294,16 +309,16 @@ end
 Compare field values based on expected value type.
 """
 function _compare_field_values(row_value, expected_value)
-        if expected_value == ""
-            # Empty string condition: check if field is missing or empty
-            return ismissing(row_value) || string(row_value) == ""
-        elseif expected_value == "defined"
-            # Defined condition: check if field is not missing and not empty
-            return !ismissing(row_value) && string(row_value) != ""
-        else
-            # Exact match: compare string representations
+    if expected_value == ""
+        # Empty string condition: check if field is missing or empty
+        return ismissing(row_value) || string(row_value) == ""
+    elseif expected_value == "defined"
+        # Defined condition: check if field is not missing and not empty
+        return !ismissing(row_value) && string(row_value) != ""
+    else
+        # Exact match: compare string representations
         return !ismissing(row_value) && string(row_value) == string(expected_value)
-        end
+    end
 end
 
 """

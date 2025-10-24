@@ -146,7 +146,7 @@ end
                 gtfs = create_basic_gtfs()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1"],
-                    price = [10.50],
+                    price = [10.5],
                     currency_type = [code],
                     payment_method = [0],
                     transfers = [0]
@@ -164,7 +164,7 @@ end
                 gtfs = create_basic_gtfs()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1"],
-                    price = [10.50],
+                    price = [10.5],
                     currency_type = [code],
                     payment_method = [0],
                     transfers = [0]
@@ -580,7 +580,7 @@ end
                 gtfs = create_basic_gtfs()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1"],
-                    price = [10.50],
+                    price = [10.5],
                     currency_type = ["USD"],
                     payment_method = [0],
                     transfers = [0]
@@ -594,7 +594,7 @@ end
                 gtfs = create_basic_gtfs()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1"],
-                    price = [10.50],
+                    price = [10.5],
                     currency_type = ["INVALID"],
                     payment_method = [0],
                     transfers = [0]

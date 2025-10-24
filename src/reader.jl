@@ -24,7 +24,7 @@ println("Loaded GTFS feed with \$(DataFrames.nrow(feed.agency)) agencies")
 - `ArgumentError`: If the file/directory doesn't exist or is not a valid GTFS source
 - `GTFSError`: If required files are missing or data is invalid
 """
-function read_gtfs(filepath::String, field_types::Dict{String,Vector}=FIELD_TYPES)
+function read_gtfs(filepath::String, field_types::Dict{String, Vector} = FIELD_TYPES)
     if !isfile(filepath) && !isdir(filepath)
         throw(ArgumentError("File or directory does not exist: $filepath"))
     end
@@ -46,7 +46,7 @@ end
 
 Internal function to read GTFS data from a ZIP file.
 """
-function _read_gtfs_from_zip(filepath::String, field_types::Dict{String,Vector})
+function _read_gtfs_from_zip(filepath::String, field_types::Dict{String, Vector})
     # Extract ZIP file to temporary directory
     temp_dir = mktempdir()
     try
@@ -66,7 +66,7 @@ function _read_gtfs_from_zip(filepath::String, field_types::Dict{String,Vector})
     finally
         # Clean up temp directory
         try
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         catch
             # Ignore cleanup errors
         end
@@ -78,7 +78,7 @@ end
 
 Internal function to read GTFS data from an unzipped directory.
 """
-function _read_gtfs_from_directory(dirpath::String, field_types::Dict{String,Vector})
+function _read_gtfs_from_directory(dirpath::String, field_types::Dict{String, Vector})
     if !isdir(dirpath)
         throw(ArgumentError("Directory does not exist: $dirpath"))
     end
@@ -120,20 +120,20 @@ end
 Read a single GTFS CSV file with appropriate column types.
 Flexible reader - only applies types for columns that actually exist in the file.
 """
-function _read_csv_file(filepath::String, field_types::Dict{String,Vector})
+function _read_csv_file(filepath::String, field_types::Dict{String, Vector})
     # Read CSV file with CSV.jl type inference and custom column types
     # The reader is forgiving and doesn't require specific column types
     try
         file_field_types = get(field_types, basename(filepath), [])
-        column_types = Dict{String,Type}(field_def.field => GTFS_TYPES[field_def.type_symbol] for field_def in file_field_types)
+        column_types = Dict{String, Type}(field_def.field => GTFS_TYPES[field_def.type_symbol] for field_def in file_field_types)
         df = CSV.read(
             filepath,
             DataFrames.DataFrame;
-            silencewarnings=true,
-            strict=false,
-            missingstring=["", "NA", "N/A", "null"],
-            types=column_types,
-            validate=false
+            silencewarnings = true,
+            strict = false,
+            missingstring = ["", "NA", "N/A", "null"],
+            types = column_types,
+            validate = false
         )
         return df
     catch e
@@ -142,9 +142,9 @@ function _read_csv_file(filepath::String, field_types::Dict{String,Vector})
         df = CSV.read(
             filepath,
             DataFrames.DataFrame;
-            silencewarnings=true,
-            strict=false,
-            missingstring=["", "NA", "N/A", "null"]
+            silencewarnings = true,
+            strict = false,
+            missingstring = ["", "NA", "N/A", "null"]
         )
         return df
     end

@@ -27,7 +27,7 @@ const SIGN_ENTRY_PATTERN = r"^([A-Za-z][A-Za-z0-9\-]*)\s*[-–:]\s*(.+)$"
 # =============================================================================
 
 const TABLE_HEADER_PATTERNS = [
-    "Field Name", "File Name", "Type", "Presence", "Description"
+    "Field Name", "File Name", "Type", "Presence", "Description",
 ]
 
 # =============================================================================
@@ -37,7 +37,7 @@ const TABLE_HEADER_PATTERNS = [
 # HTML break replacements
 const HTML_BREAK_REPLACEMENTS = (
     "<br><br>" => "\n\n",
-    "<br>" => "\n"
+    "<br>" => "\n",
 )
 
 # Common separators for parsing
@@ -156,7 +156,7 @@ function is_section_header(line::String, section_name::String, level::Int)
         return false
     end
 
-    header_prefix = "#" ^ level
+    header_prefix = "#"^level
     expected_header = "$header_prefix $section_name"
     return occursin(expected_header, strip(line))
 end
@@ -184,7 +184,7 @@ function is_section_boundary(line::String, level::Int)
         return false
     end
 
-    header_prefix = "#" ^ level
+    header_prefix = "#"^level
     return startswith(strip(line), header_prefix)
 end
 
@@ -281,7 +281,7 @@ julia> parse_markdown_row("| Field | Type | Description |")
 ["Field", "Type", "Description"]
 ```
 """
-function parse_markdown_row(line::String, skip_headers::Bool=true)
+function parse_markdown_row(line::String, skip_headers::Bool = true)
     if isempty(line)
         return nothing
     end
@@ -293,10 +293,10 @@ function parse_markdown_row(line::String, skip_headers::Bool=true)
         return nothing
     end
 
-            # Skip header and separator rows if requested
-            if skip_headers && is_header_or_separator_row(String(cleaned_parts[1]))
-                return nothing
-            end
+    # Skip header and separator rows if requested
+    if skip_headers && is_header_or_separator_row(String(cleaned_parts[1]))
+        return nothing
+    end
 
     return cleaned_parts
 end
@@ -432,7 +432,7 @@ function flush_entry_description(result::Dict{String, String}, key::String, desc
         desc = rstrip(desc)
     end
 
-    result[key] = desc
+    return result[key] = desc
 end
 
 """
@@ -455,7 +455,7 @@ julia> parse_section_with_entries(lines, "Field Types", r"^([^:]+):\\s*(.+)\$")
 Dict("Text" => "A string of text", "URL" => "A valid URL")
 ```
 """
-function parse_section_with_entries(lines::Vector{String}, section_name::String, entry_pattern::Regex, skip_examples::Bool=false)
+function parse_section_with_entries(lines::Vector{String}, section_name::String, entry_pattern::Regex, skip_examples::Bool = false)
     if isempty(lines) || isempty(section_name)
         return Dict{String, String}()
     end

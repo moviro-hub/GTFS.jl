@@ -55,7 +55,7 @@ Extract type names from ingested field types.
 # Returns
 - `Vector{String}`: List of available type names
 """
-function extract_available_types(field_types::Dict{String,String})
+function extract_available_types(field_types::Dict{String, String})
     return collect(keys(field_types))
 end
 
@@ -105,7 +105,7 @@ function find_partial_type_match(type_str::String, available_types::Vector{Strin
 
     type_lower = lowercase(type_str)
     # Sort by length (longest first) to prioritize more specific matches
-    sorted_types = sort(available_types, by=length, rev=true)
+    sorted_types = sort(available_types, by = length, rev = true)
 
     for available_type in sorted_types
         if occursin(lowercase(available_type), type_lower)
@@ -227,7 +227,7 @@ Extract type information for all fields in all files.
 # Returns
 - `Vector{FileTypeInfo}`: List of file type information grouped by file
 """
-function extract_all_field_types(file_defs::Vector{FileDefinition}, field_types::Dict{String,String}, field_signs::Dict{String,String})
+function extract_all_field_types(file_defs::Vector{FileDefinition}, field_types::Dict{String, String}, field_signs::Dict{String, String})
     if isempty(file_defs)
         return FileTypeInfo[]
     end

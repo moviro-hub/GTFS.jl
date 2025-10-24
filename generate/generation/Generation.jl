@@ -72,12 +72,12 @@ julia> indent_line("field = value", 2)
 "        field = value"
 ```
 """
-function indent_line(line::String, level::Int=1)
+function indent_line(line::String, level::Int = 1)
     if isempty(line)
         return line
     end
 
-    indent = "    " ^ level
+    indent = "    "^level
     return indent * line
 end
 
@@ -93,7 +93,7 @@ Indent multiple lines by the specified number of levels.
 # Returns
 - `Vector{String}`: The indented lines
 """
-function indent_lines(lines::Vector{String}, level::Int=1)
+function indent_lines(lines::Vector{String}, level::Int = 1)
     return [indent_line(line, level) for line in lines]
 end
 
@@ -146,7 +146,7 @@ julia> format_julia_array("my_array", ["1", "2", "3"], "Int")
 ["const my_array::Vector{Int} = [", "    1,", "    2,", "    3", "]"]
 ```
 """
-function format_julia_array(array_name::String, elements::Vector{String}, element_type::String="")
+function format_julia_array(array_name::String, elements::Vector{String}, element_type::String = "")
     lines = String[]
 
     if isempty(element_type)
@@ -208,7 +208,7 @@ function write_source_file(file::String, lines::Vector{String})
     end
 
     # Write file
-    open(file, "w") do io
+    return open(file, "w") do io
         for line in lines
             println(io, line)
         end

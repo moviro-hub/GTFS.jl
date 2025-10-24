@@ -25,17 +25,17 @@ function validate_date(value::String)
         return false
     end
 
-        # Parse the date and check if it's valid
-        year = parse(Int, value[1:4])
-        month = parse(Int, value[5:6])
-        day = parse(Int, value[7:8])
+    # Parse the date and check if it's valid
+    year = parse(Int, value[1:4])
+    month = parse(Int, value[5:6])
+    day = parse(Int, value[7:8])
 
-        try
-            Date(year, month, day)
-            return true
-        catch
-            return false
-        end
+    try
+        Date(year, month, day)
+        return true
+    catch
+        return false
+    end
 end
 validate_date(value::Missing) = true
 validate_date(value::Any) = false
@@ -100,15 +100,15 @@ function validate_time(value::String)
         return false
     end
 
-        hours = parse(Int, m.captures[1])
-        minutes = parse(Int, m.captures[2])
-        seconds = parse(Int, m.captures[3])
+    hours = parse(Int, m.captures[1])
+    minutes = parse(Int, m.captures[2])
+    seconds = parse(Int, m.captures[3])
 
-        # Hours can exceed 24 (GTFS allows this for service days that span midnight)
-        # Minutes and seconds must be valid
+    # Hours can exceed 24 (GTFS allows this for service days that span midnight)
+    # Minutes and seconds must be valid
     return hours >= 0 &&
-           minutes >= 0 && minutes <= 59 &&
-           seconds >= 0 && seconds <= 59
+        minutes >= 0 && minutes <= 59 &&
+        seconds >= 0 && seconds <= 59
 end
 validate_time(value::Missing) = true
 validate_time(value::Any) = false
@@ -127,7 +127,7 @@ function validate_timezone(value::String)
 
     # Reject invalid formats
     if match(r"^GMT[+-]\d+$", value) !== nothing ||
-       match(r"^EST$|^EDT$|^CST$|^CDT$|^MST$|^MDT$|^PST$|^PDT$", value) !== nothing
+            match(r"^EST$|^EDT$|^CST$|^CDT$|^MST$|^MDT$|^PST$|^PDT$", value) !== nothing
         return false
     end
 
@@ -141,7 +141,7 @@ function validate_timezone(value::String)
         r"^Australia/[A-Za-z_]+$",
         r"^Europe/[A-Za-z_]+$",
         r"^Indian/[A-Za-z_]+$",
-        r"^Pacific/[A-Za-z_]+$"
+        r"^Pacific/[A-Za-z_]+$",
     ]
 
     for pattern in valid_patterns
@@ -185,7 +185,7 @@ validate_non_zero(value::Missing) = true
 validate_non_zero(value::Any) = false
 
 # per list validates
-validate_unique(values::Vector{T}) where T = allunique(skipmissing(values))
+validate_unique(values::Vector{T}) where {T} = allunique(skipmissing(values))
 # for pooled arrays
 validate_unique(values) = validate_unique(collect(values))
 
@@ -255,7 +255,7 @@ Count validation messages by severity level.
 function count_by_severity(messages::Vector{ValidationMessage})
     errors = count(m -> m.severity == :error, messages)
     warnings = count(m -> m.severity == :warning, messages)
-    return (errors=errors, warnings=warnings)
+    return (errors = errors, warnings = warnings)
 end
 
 """
@@ -313,6 +313,7 @@ function print_validation_results(result::ValidationResult)
         end
         println()
     end
+    return
 end
 
 """
@@ -385,10 +386,10 @@ end
 Evaluate file existence condition.
 """
 function _evaluate_file_condition(gtfs, cond)
-        tbl = replace(cond[:file], ".txt" => "", ".geojson" => "")
-        sym = Symbol(replace(tbl, "." => "_"))
-        exists = gtfs_has_table(gtfs, sym)
-        return cond[:must_exist] ? exists : !exists
+    tbl = replace(cond[:file], ".txt" => "", ".geojson" => "")
+    sym = Symbol(replace(tbl, "." => "_"))
+    exists = gtfs_has_table(gtfs, sym)
+    return cond[:must_exist] ? exists : !exists
 end
 
 """
@@ -397,22 +398,22 @@ end
 Evaluate field value condition.
 """
 function _evaluate_field_condition(gtfs, cond)
-        tbl = replace(cond[:file], ".txt" => "", ".geojson" => "")
-        tsym = Symbol(replace(tbl, "." => "_"))
-        if !gtfs_has_table(gtfs, tsym)
-            return false
-        end
+    tbl = replace(cond[:file], ".txt" => "", ".geojson" => "")
+    tsym = Symbol(replace(tbl, "." => "_"))
+    if !gtfs_has_table(gtfs, tsym)
+        return false
+    end
 
-        df = get(gtfs, cond[:file], nothing)
-        df === nothing && return false
+    df = get(gtfs, cond[:file], nothing)
+    df === nothing && return false
 
-        col = cond[:field]
-        if !df_has_column(df, col)
-            return false
-        end
+    col = cond[:field]
+    if !df_has_column(df, col)
+        return false
+    end
 
-        val = cond[:value]
-        if val == "defined"
+    val = cond[:value]
+    if val == "defined"
         return _check_field_defined(df, col)
     else
         return _check_field_value(df, col, val)
@@ -425,12 +426,12 @@ end
 Check if field has any defined (non-missing) values.
 """
 function _check_field_defined(df, col)
-            for row in eachrow(df)
-                if !ismissing(getproperty(row, col))
-                    return true
-                end
-            end
-            return false
+    for row in eachrow(df)
+        if !ismissing(getproperty(row, col))
+            return true
+        end
+    end
+    return false
 end
 
 """
@@ -439,18 +440,18 @@ end
 Check if field contains the specified value.
 """
 function _check_field_value(df, col, val)
-            parsed = tryparse(Float64, String(val))
-            for row in eachrow(df)
-                cell = getproperty(row, col)
-                if ismissing(cell)
-                    continue
-                end
-                if string(cell) == string(val)
-                    return true
-                end
-                if parsed !== nothing && (cell == parsed)
-                    return true
-                end
-            end
-            return false
+    parsed = tryparse(Float64, String(val))
+    for row in eachrow(df)
+        cell = getproperty(row, col)
+        if ismissing(cell)
+            continue
+        end
+        if string(cell) == string(val)
+            return true
+        end
+        if parsed !== nothing && (cell == parsed)
+            return true
+        end
+    end
+    return false
 end

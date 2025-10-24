@@ -27,6 +27,7 @@ function validate_all_enum_rules!(messages::Vector{ValidationMessage}, gtfs::GTF
     for (filename, rules) in ENUM_RULES
         validate_file_enum_rules!(messages, gtfs, filename, rules)
     end
+    return
 end
 
 """
@@ -41,6 +42,7 @@ function validate_file_enum_rules!(messages::Vector{ValidationMessage}, gtfs::GT
     for rule in rules
         validate_enum_field!(messages, df, filename, rule)
     end
+    return
 end
 
 """
@@ -59,6 +61,7 @@ function validate_enum_field!(messages::Vector{ValidationMessage}, df, filename:
     for (idx, value) in enumerate(column)
         _validate_enum_value!(messages, filename, field_name, idx, value, allowed_values, allow_empty)
     end
+    return
 end
 
 """
@@ -66,18 +69,20 @@ end
 
 Validate a single enum value.
 """
-function _validate_enum_value!(messages::Vector{ValidationMessage}, filename::String,
-                              field_name::String, idx::Int, value, allowed_values, allow_empty::Bool)
-        # Check if value is missing or empty
-        if ismissing(value) || (isa(value, AbstractString) && isempty(value))
-            if !allow_empty
+function _validate_enum_value!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, idx::Int, value, allowed_values, allow_empty::Bool
+    )
+    # Check if value is missing or empty
+    if ismissing(value) || (isa(value, AbstractString) && isempty(value))
+        if !allow_empty
             _add_enum_empty_error!(messages, filename, field_name, idx, allowed_values)
         end
         return
     end
 
     # Validate non-empty values
-    if !(value in allowed_values)
+    return if !(value in allowed_values)
         _add_enum_invalid_value_error!(messages, filename, field_name, idx, value, allowed_values)
     end
 end
@@ -87,29 +92,37 @@ end
 
 Add error message for empty enum value when not allowed.
 """
-function _add_enum_empty_error!(messages::Vector{ValidationMessage}, filename::String,
-                               field_name::String, idx::Int, allowed_values)
-                push!(messages, ValidationMessage(
-                    filename,
-                    field_name,
-                    "Row $idx: Field '$field_name' is empty but allow_empty=false. Allowed values: $(join(allowed_values, ", "))",
-                    :error
-                ))
-            end
+function _add_enum_empty_error!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, idx::Int, allowed_values
+    )
+    return push!(
+        messages, ValidationMessage(
+            filename,
+            field_name,
+            "Row $idx: Field '$field_name' is empty but allow_empty=false. Allowed values: $(join(allowed_values, ", "))",
+            :error
+        )
+    )
+end
 
 """
     _add_enum_invalid_value_error!(messages, filename, field_name, idx, value, allowed_values)
 
 Add error message for invalid enum value.
 """
-function _add_enum_invalid_value_error!(messages::Vector{ValidationMessage}, filename::String,
-                                       field_name::String, idx::Int, value, allowed_values)
-            push!(messages, ValidationMessage(
-                filename,
-                field_name,
-                "Row $idx: Invalid enum value '$value' for field '$field_name'. Allowed values: $(join(allowed_values, ", "))",
-                :error
-            ))
+function _add_enum_invalid_value_error!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, idx::Int, value, allowed_values
+    )
+    return push!(
+        messages, ValidationMessage(
+            filename,
+            field_name,
+            "Row $idx: Invalid enum value '$value' for field '$field_name'. Allowed values: $(join(allowed_values, ", "))",
+            :error
+        )
+    )
 end
 
 """

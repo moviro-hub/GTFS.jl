@@ -38,7 +38,7 @@ struct FieldEnumInfo
     field::String
     enum_values::Vector{EnumValue}
     allow_empty::Bool
-    empty_maps_to::Union{Nothing,String}
+    empty_maps_to::Union{Nothing, String}
 end
 
 """
@@ -86,7 +86,7 @@ function extract_enum_section(description::String)
         "Valid options are:",
         "Valid values are:",
         "The following values are supported:",
-        "Allowed values:"
+        "Allowed values:",
     ]
 
     return extract_condition_section(description, enum_markers)

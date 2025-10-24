@@ -389,7 +389,7 @@ end
                 gtfs = GTFSSchedule()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1", "F2", "F3"],
-                    price = [2.50, 3.00, 1.50],
+                    price = [2.5, 3.0, 1.5],
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
@@ -401,7 +401,7 @@ end
                 gtfs = GTFSSchedule()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1", "F1", "F3"],
-                    price = [2.50, 2.50, 1.50],
+                    price = [2.5, 2.5, 1.5],
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
@@ -415,7 +415,7 @@ end
                 gtfs = GTFSSchedule()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1", "F2", "F3"],
-                    price = [0.0, 2.50, 100.0],
+                    price = [0.0, 2.5, 100.0],
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0]
                 )
@@ -453,7 +453,7 @@ end
                 gtfs = GTFSSchedule()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1", "F2", "F3"],
-                    price = [2.50, 3.00, 1.50],
+                    price = [2.5, 3.0, 1.5],
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0],
                     transfer_duration = [0, 1800, 3600]
@@ -466,7 +466,7 @@ end
                 gtfs = GTFSSchedule()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1", "F2", "F3"],
-                    price = [2.50, 3.00, 1.50],
+                    price = [2.5, 3.0, 1.5],
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0],
                     transfer_duration = [-1, 0, 1]
@@ -479,7 +479,7 @@ end
                 gtfs = GTFSSchedule()
                 gtfs["fare_attributes.txt"] = DataFrame(
                     fare_id = ["F1", "F2", "F3"],
-                    price = [2.50, 3.00, 1.50],
+                    price = [2.5, 3.0, 1.5],
                     currency_type = ["USD", "USD", "USD"],
                     payment_method = [0, 0, 0],
                     transfer_duration = [0, missing, 1]

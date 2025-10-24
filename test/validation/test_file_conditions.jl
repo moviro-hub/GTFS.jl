@@ -181,53 +181,63 @@ end
             temp_dir = mktempdir()
             try
                 # Create required files
-                CSV.write(joinpath(temp_dir, "agency.txt"), DataFrame(
-                    agency_id = ["DTA"],
-                    agency_name = ["Demo Transit Authority"],
-                    agency_url = ["http://example.com"],
-                    agency_timezone = ["America/New_York"]
-                ))
-                CSV.write(joinpath(temp_dir, "routes.txt"), DataFrame(
-                    route_id = ["R1"],
-                    route_short_name = ["1"],
-                    route_long_name = ["Route 1"],
-                    route_type = [3]
-                ))
-                CSV.write(joinpath(temp_dir, "trips.txt"), DataFrame(
-                    route_id = ["R1"],
-                    service_id = ["S1"],
-                    trip_id = ["T1"]
-                ))
-                CSV.write(joinpath(temp_dir, "stop_times.txt"), DataFrame(
-                    trip_id = ["T1"],
-                    arrival_time = ["08:00:00"],
-                    departure_time = ["08:00:00"],
-                    stop_id = ["S1"],
-                    stop_sequence = [1]
-                ))
-                CSV.write(joinpath(temp_dir, "calendar.txt"), DataFrame(
-                    service_id = ["S1"], monday = [1], tuesday = [1], wednesday = [1],
-                    thursday = [1], friday = [1], saturday = [0], sunday = [0],
-                    start_date = ["20240101"], end_date = ["20241231"]
-                ))
+                CSV.write(
+                    joinpath(temp_dir, "agency.txt"), DataFrame(
+                        agency_id = ["DTA"],
+                        agency_name = ["Demo Transit Authority"],
+                        agency_url = ["http://example.com"],
+                        agency_timezone = ["America/New_York"]
+                    )
+                )
+                CSV.write(
+                    joinpath(temp_dir, "routes.txt"), DataFrame(
+                        route_id = ["R1"],
+                        route_short_name = ["1"],
+                        route_long_name = ["Route 1"],
+                        route_type = [3]
+                    )
+                )
+                CSV.write(
+                    joinpath(temp_dir, "trips.txt"), DataFrame(
+                        route_id = ["R1"],
+                        service_id = ["S1"],
+                        trip_id = ["T1"]
+                    )
+                )
+                CSV.write(
+                    joinpath(temp_dir, "stop_times.txt"), DataFrame(
+                        trip_id = ["T1"],
+                        arrival_time = ["08:00:00"],
+                        departure_time = ["08:00:00"],
+                        stop_id = ["S1"],
+                        stop_sequence = [1]
+                    )
+                )
+                CSV.write(
+                    joinpath(temp_dir, "calendar.txt"), DataFrame(
+                        service_id = ["S1"], monday = [1], tuesday = [1], wednesday = [1],
+                        thursday = [1], friday = [1], saturday = [0], sunday = [0],
+                        start_date = ["20240101"], end_date = ["20241231"]
+                    )
+                )
 
                 # Create locations.geojson file
                 geojson_content = """{
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": {
-                "location_id": "L1",
-                "location_name": "Location 1"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-74.0, 40.0]
-            }
-        }
-    ]
-}"""
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "properties": {
+                                "location_id": "L1",
+                                "location_name": "Location 1"
+                            },
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [-74.0, 40.0]
+                            }
+                        }
+                    ]
+                }"""
                 write(joinpath(temp_dir, "locations.geojson"), geojson_content)
 
                 # Read GTFS using the proper reader
@@ -235,7 +245,7 @@ end
                 result = GTFSSchedules.Validations.validate_file_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
             finally
-                rm(temp_dir, recursive=true)
+                rm(temp_dir, recursive = true)
             end
         end
 

@@ -50,7 +50,7 @@ function validate_all_fields!(messages::Vector{ValidationMessage}, gtfs_feed::GT
         end
     end
 
-    return (files=files_validated, fields=fields_validated)
+    return (files = files_validated, fields = fields_validated)
 end
 
 """
@@ -68,6 +68,7 @@ function validate_field!(messages::Vector{ValidationMessage}, df, field_info, fi
             _add_type_validation_error!(messages, filename, field_info.field, idx, value, type_name)
         end
     end
+    return
 end
 
 """
@@ -75,14 +76,18 @@ end
 
 Add a type validation error message.
 """
-function _add_type_validation_error!(messages::Vector{ValidationMessage}, filename::String,
-                                    field_name::String, row_idx::Int, value, type_name::String)
-    push!(messages, ValidationMessage(
-        filename,
-        field_name,
-        "Row $row_idx: Value '$value' does not match expected type $type_name",
-        :error
-    ))
+function _add_type_validation_error!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, row_idx::Int, value, type_name::String
+    )
+    return push!(
+        messages, ValidationMessage(
+            filename,
+            field_name,
+            "Row $row_idx: Value '$value' does not match expected type $type_name",
+            :error
+        )
+    )
 end
 
 """

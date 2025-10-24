@@ -27,7 +27,7 @@ Download the official Google Transit GTFS reference markdown file.
 # Throws
 - `ErrorException`: If download fails
 """
-function download_gtfs_spec(output_file::String=DEFAULT_FILENAME)
+function download_gtfs_spec(output_file::String = DEFAULT_FILENAME)
     println("Downloading GTFS specification from: $GTFS_SPEC_URL")
 
     try
@@ -51,7 +51,7 @@ Download the GTFS specification to a specific directory.
 # Returns
 - `String`: Full path to the downloaded file
 """
-function download_gtfs_spec_to_dir(directory::String=".")
+function download_gtfs_spec_to_dir(directory::String = ".")
     # Ensure directory exists
     if !isdir(directory)
         mkpath(directory)

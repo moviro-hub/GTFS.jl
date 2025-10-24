@@ -243,7 +243,7 @@ function parse_field_table(lines::Vector{String}, start_line::Int)
 
         # Stop at end of table
         if table_header_found && table_separator_found && !isempty(fields) &&
-           (isempty(stripped_line) || startswith(stripped_line, "###"))
+                (isempty(stripped_line) || startswith(stripped_line, "###"))
             break
         end
     end

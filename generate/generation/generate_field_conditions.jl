@@ -27,7 +27,7 @@ function generate_field_conditions(parsed_fields::Vector{FieldRelations})
             for c in fr.when_all_conditions
                 push!(lines, "        (type = :field, file = \"$(c.file)\", field = \"$(c.field)\", value = \"$(c.value)\"),")
             end
-            push!(lines, "      ]");
+            push!(lines, "      ]")
             push!(lines, "    ),")
         end
         push!(lines, "  ],")

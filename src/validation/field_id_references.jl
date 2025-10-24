@@ -34,6 +34,7 @@ function validate_all_id_references!(messages::Vector{ValidationMessage}, gtfs_f
     for (filename, ref_rules) in FIELD_ID_REFERENCES
         validate_file_id_references!(messages, gtfs_feed, filename, ref_rules)
     end
+    return
 end
 
 """
@@ -48,6 +49,7 @@ function validate_file_id_references!(messages::Vector{ValidationMessage}, gtfs_
     for ref_rule in ref_rules
         validate_reference!(messages, gtfs_feed, df, filename, ref_rule)
     end
+    return
 end
 
 """
@@ -76,6 +78,7 @@ function validate_reference!(messages::Vector{ValidationMessage}, gtfs_feed::GTF
     for (idx, value) in enumerate(column)
         _validate_reference_value!(messages, filename, field_name, idx, value, valid_values, ref_rule.references)
     end
+    return
 end
 
 """
@@ -83,16 +86,18 @@ end
 
 Validate a single reference value.
 """
-function _validate_reference_value!(messages::Vector{ValidationMessage}, filename::String,
-                                  field_name::String, idx::Int, value, valid_values, references)
+function _validate_reference_value!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, idx::Int, value, valid_values, references
+    )
     ismissing(value) && return
 
-        # Allow empty values for optional foreign ID references
-        if string(value) == "" || string(value) == "0"
+    # Allow empty values for optional foreign ID references
+    if string(value) == "" || string(value) == "0"
         return
-        end
+    end
 
-    if !(value in valid_values)
+    return if !(value in valid_values)
         ref_desc = _format_reference_description(references)
         _add_reference_error!(messages, filename, field_name, idx, value, ref_desc)
     end
@@ -103,14 +108,18 @@ end
 
 Add error message for invalid reference.
 """
-function _add_reference_error!(messages::Vector{ValidationMessage}, filename::String,
-                             field_name::String, idx::Int, value, ref_desc::String)
-            push!(messages, ValidationMessage(
-                filename,
-                field_name,
-                "Row $idx: Value '$value' does not reference any valid ID in $ref_desc",
-                :error
-            ))
+function _add_reference_error!(
+        messages::Vector{ValidationMessage}, filename::String,
+        field_name::String, idx::Int, value, ref_desc::String
+    )
+    return push!(
+        messages, ValidationMessage(
+            filename,
+            field_name,
+            "Row $idx: Value '$value' does not reference any valid ID in $ref_desc",
+            :error
+        )
+    )
 end
 
 """

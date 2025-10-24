@@ -31,7 +31,7 @@ function parse_presence(lines::Vector{String})
             content = replace(stripped, r"^\*\s*" => "")
 
             # Split on " - " to separate presence type from description
-            parts = split(content, " - ", limit=2)
+            parts = split(content, " - ", limit = 2)
             if length(parts) == 2
                 presence_type = strip(replace(parts[1], r"\*\*" => ""))
                 description = strip(parts[2])
@@ -82,7 +82,7 @@ function normalize_presence(presence_text::String, presence_types::Vector{Presen
     clean_text = strip(clean_text)
 
     # Sort presence types by length (longest first) to prioritize more specific matches
-    sorted_presence_types = sort(presence_types, by=x -> length(x.presence), rev=true)
+    sorted_presence_types = sort(presence_types, by = x -> length(x.presence), rev = true)
 
     # Find matching presence type (check longest first)
     for presence_info in sorted_presence_types

@@ -124,21 +124,21 @@ using GeoJSON
         try
             # Create a temporary GeoJSON file for testing
             geojson_content = """{
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": {
-                "location_id": "L1",
-                "location_name": "Test Location"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-74.0, 40.0]
-            }
-        }
-    ]
-}"""
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "location_id": "L1",
+                            "location_name": "Test Location"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [-74.0, 40.0]
+                        }
+                    }
+                ]
+            }"""
             geojson_file = joinpath(temp_dir, "locations.geojson")
             write(geojson_file, geojson_content)
 
@@ -147,7 +147,7 @@ using GeoJSON
             @test gtfs_geo["locations.geojson"] !== nothing
             @test isa(gtfs_geo["locations.geojson"], DataFrame)
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
 
         # Test column types are applied correctly
@@ -201,20 +201,20 @@ using GeoJSON
             # If ZIP creation fails, skip this test
             @warn "Skipping ZIP subdirectory test due to: $e"
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
     end
 
     @testset "Edge Cases & Special Scenarios" begin
         # Test with basic-example fixture
         fixture_path = joinpath(@__DIR__, "fixtures", "basic-example")
-            if isdir(fixture_path)
-                gtfs = read_gtfs(fixture_path)
-                @test gtfs !== nothing
-                @test isa(gtfs, GTFSSchedule)
+        if isdir(fixture_path)
+            gtfs = read_gtfs(fixture_path)
+            @test gtfs !== nothing
+            @test isa(gtfs, GTFSSchedule)
 
-                # Check that at least some files are loaded
-                @test length(gtfs) > 0
+            # Check that at least some files are loaded
+            @test length(gtfs) > 0
         end
 
         # Test empty files (create temporary test)
@@ -232,7 +232,7 @@ using GeoJSON
             @test nrow(gtfs["empty.txt"]) == 0
 
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
     end
 
@@ -249,7 +249,7 @@ using GeoJSON
         try
             @test_throws ArgumentError read_gtfs(temp_file)
         finally
-            rm(temp_file, force=true)
+            rm(temp_file, force = true)
         end
 
         # Test directory without GTFS files
@@ -266,7 +266,7 @@ using GeoJSON
             @test_throws ArgumentError read_gtfs(temp_dir)
 
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
 
         # Test corrupted ZIP (create invalid ZIP)
@@ -277,7 +277,7 @@ using GeoJSON
         try
             @test_throws Exception read_gtfs(temp_zip)
         finally
-            rm(temp_zip, force=true)
+            rm(temp_zip, force = true)
         end
 
         # Test malformed CSV
@@ -295,20 +295,20 @@ using GeoJSON
             @test haskey(gtfs, "malformed.txt")
 
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
     end
 
     @testset "Basic Feed Fixture Tests" begin
         # Test basic-example fixture
         fixture_path = joinpath(@__DIR__, "fixtures", "basic-example")
-            if isdir(fixture_path)
-                gtfs = read_gtfs(fixture_path)
-                @test gtfs !== nothing
-                @test isa(gtfs, GTFSSchedule)
+        if isdir(fixture_path)
+            gtfs = read_gtfs(fixture_path)
+            @test gtfs !== nothing
+            @test isa(gtfs, GTFSSchedule)
 
-                # Verify basic structure
-                @test length(gtfs) > 0
+            # Verify basic structure
+            @test length(gtfs) > 0
 
             # Check for expected files in basic-example
             @test haskey(gtfs, "agency.txt")
@@ -339,7 +339,7 @@ using GeoJSON
         end
 
         # Test with custom field_types parameter
-        custom_field_types = Dict{String,Vector}()
+        custom_field_types = Dict{String, Vector}()
         gtfs_custom = read_gtfs(feed_path, custom_field_types)
         @test gtfs_custom !== nothing
         @test isa(gtfs_custom, GTFSSchedule)
@@ -369,21 +369,21 @@ using GeoJSON
         try
             # Create a temporary GeoJSON file for testing
             geojson_content = """{
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": {
-                "location_id": "L1",
-                "location_name": "Test Location"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-74.0, 40.0]
-            }
-        }
-    ]
-}"""
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "location_id": "L1",
+                            "location_name": "Test Location"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [-74.0, 40.0]
+                        }
+                    }
+                ]
+            }"""
             geo_file = joinpath(temp_dir, "locations.geojson")
             write(geo_file, geojson_content)
 
@@ -391,7 +391,7 @@ using GeoJSON
             @test df !== nothing
             @test isa(df, DataFrame)
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
 
         # Test _read_gtfs_from_zip
@@ -457,7 +457,7 @@ using GeoJSON
             @test gtfs !== nothing
 
         finally
-            rm(temp_dir, recursive=true, force=true)
+            rm(temp_dir, recursive = true, force = true)
         end
     end
 

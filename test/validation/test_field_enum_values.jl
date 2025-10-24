@@ -162,7 +162,7 @@ function create_gtfs_with_enum_field(filename::String, field_name::String, value
         elseif filename == "fare_attributes.txt"
             gtfs[filename] = DataFrame(
                 fare_id = ["F1"],
-                price = [2.50],
+                price = [2.5],
                 currency_type = ["USD"]
             )
         elseif filename == "rider_categories.txt"
@@ -243,7 +243,7 @@ function create_gtfs_with_missing_field(filename::String, field_name::String)
         elseif filename == "fare_attributes.txt"
             gtfs[filename] = DataFrame(
                 fare_id = ["F1"],
-                price = [2.50],
+                price = [2.5],
                 currency_type = ["USD"],
                 payment_method = [0]
             )

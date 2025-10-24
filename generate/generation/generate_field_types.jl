@@ -15,7 +15,7 @@ function create_type_mapping(extracted_types::Vector{FileTypeInfo})
         end
     end
 
-    type_mapping = Dict{String,String}()
+    type_mapping = Dict{String, String}()
     for type_name in all_types
         gtfs_type = "GTFS" * join(uppercasefirst.(split(type_name, r"\s+")), "")
         type_mapping[type_name] = gtfs_type
@@ -29,7 +29,7 @@ end
 
 Map extracted type names to GTFS type constants using dynamic mapping.
 """
-function map_type_to_gtfs_type(type_name::String, type_mapping::Dict{String,String})
+function map_type_to_gtfs_type(type_name::String, type_mapping::Dict{String, String})
     if haskey(type_mapping, type_name)
         return type_mapping[type_name]
     else

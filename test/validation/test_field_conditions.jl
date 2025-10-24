@@ -79,7 +79,7 @@ end
 
 Create a stops.txt DataFrame with specific location_type values.
 """
-function create_stops_with_location_type(location_type::Int; parent_station=missing, stop_access=missing)
+function create_stops_with_location_type(location_type::Int; parent_station = missing, stop_access = missing)
     base_data = Dict(
         :stop_id => ["S1"],
         :location_type => [location_type]
@@ -110,7 +110,7 @@ end
 
 Create a routes.txt DataFrame with configurable name fields.
 """
-function create_routes_with_names(; short_name=missing, long_name=missing)
+function create_routes_with_names(; short_name = missing, long_name = missing)
     data = Dict(
         :route_id => ["R1"],
         :route_type => [3]
@@ -133,8 +133,10 @@ end
 
 Create stop_times.txt with specific pickup/drop-off configurations.
 """
-function create_stop_times_with_pickup_dropoff(; location_id=missing, location_group_id=missing, stop_id=missing,
-                                               start_window=missing, end_window=missing, pickup_type=missing, drop_off_type=missing)
+function create_stop_times_with_pickup_dropoff(;
+        location_id = missing, location_group_id = missing, stop_id = missing,
+        start_window = missing, end_window = missing, pickup_type = missing, drop_off_type = missing
+    )
     data = Dict(
         :trip_id => ["T1"],
         :stop_sequence => [1]
@@ -240,13 +242,13 @@ end
 
                 # location_type=2 (entrance) with all required fields
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(2, parent_station="STATION1")
+                gtfs["stops.txt"] = create_stops_with_location_type(2, parent_station = "STATION1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
                 # location_type=3 (generic node) with required parent_station
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(3, parent_station="STATION1")
+                gtfs["stops.txt"] = create_stops_with_location_type(3, parent_station = "STATION1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
@@ -274,19 +276,19 @@ end
             @testset "Valid cases" begin
                 # location_type=2 (entrance) with parent_station
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(2, parent_station="STATION1")
+                gtfs["stops.txt"] = create_stops_with_location_type(2, parent_station = "STATION1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
                 # location_type=3 (generic node) with parent_station
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(3, parent_station="STATION1")
+                gtfs["stops.txt"] = create_stops_with_location_type(3, parent_station = "STATION1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
                 # location_type=4 (boarding area) with parent_station
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(4, parent_station="PLATFORM1")
+                gtfs["stops.txt"] = create_stops_with_location_type(4, parent_station = "PLATFORM1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
@@ -312,7 +314,7 @@ end
 
                 # location_type=1 (station) with parent_station (forbidden)
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(1, parent_station="PARENT")
+                gtfs["stops.txt"] = create_stops_with_location_type(1, parent_station = "PARENT")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
             end
@@ -322,7 +324,7 @@ end
             @testset "Valid cases" begin
                 # location_type=0 with parent_station and stop_access
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(0, parent_station="STATION1", stop_access=1)
+                gtfs["stops.txt"] = create_stops_with_location_type(0, parent_station = "STATION1", stop_access = 1)
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
@@ -330,19 +332,19 @@ end
             @testset "Invalid cases" begin
                 # location_type=1 (station) with stop_access (forbidden)
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(1, stop_access=1)
+                gtfs["stops.txt"] = create_stops_with_location_type(1, stop_access = 1)
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
 
                 # location_type=2 (entrance) with stop_access (forbidden)
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(2, parent_station="STATION1", stop_access=1)
+                gtfs["stops.txt"] = create_stops_with_location_type(2, parent_station = "STATION1", stop_access = 1)
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
 
                 # parent_station empty with stop_access (forbidden)
                 gtfs = create_basic_gtfs()
-                gtfs["stops.txt"] = create_stops_with_location_type(0, stop_access=1)
+                gtfs["stops.txt"] = create_stops_with_location_type(0, stop_access = 1)
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
             end
@@ -355,19 +357,19 @@ end
             @testset "Valid cases" begin
                 # route_short_name present, route_long_name missing
                 gtfs = create_basic_gtfs()
-                gtfs["routes.txt"] = create_routes_with_names(short_name="1")
+                gtfs["routes.txt"] = create_routes_with_names(short_name = "1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
                 # route_long_name present, route_short_name missing
                 gtfs = create_basic_gtfs()
-                gtfs["routes.txt"] = create_routes_with_names(long_name="Route 1")
+                gtfs["routes.txt"] = create_routes_with_names(long_name = "Route 1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
                 # both present
                 gtfs = create_basic_gtfs()
-                gtfs["routes.txt"] = create_routes_with_names(short_name="1", long_name="Route 1")
+                gtfs["routes.txt"] = create_routes_with_names(short_name = "1", long_name = "Route 1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
             end
@@ -410,13 +412,13 @@ end
             @testset "Valid cases" begin
                 # stop_id present, others missing
                 gtfs = create_basic_gtfs()
-                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(stop_id="S1")
+                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(stop_id = "S1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test !GTFSSchedules.Validations.has_validation_errors(result)
 
                 # location_group_id present with time windows (on-demand service)
                 gtfs = create_basic_gtfs()
-                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(location_group_id="LG1", start_window="08:00:00", end_window="18:00:00")
+                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(location_group_id = "LG1", start_window = "08:00:00", end_window = "18:00:00")
                 # Add required location_groups.txt file
                 gtfs["location_groups.txt"] = DataFrame(
                     location_group_id = ["LG1"],
@@ -427,7 +429,7 @@ end
 
                 # location_id present with time windows (on-demand service)
                 gtfs = create_basic_gtfs()
-                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(location_id="L1", start_window="08:00:00", end_window="18:00:00")
+                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(location_id = "L1", start_window = "08:00:00", end_window = "18:00:00")
                 # Add required locations.geojson file
                 gtfs["locations.geojson"] = DataFrame(
                     id = ["L1"],
@@ -441,7 +443,7 @@ end
             @testset "Invalid cases" begin
                 # stop_id and location_group_id both present
                 gtfs = create_basic_gtfs()
-                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(stop_id="S1", location_group_id="LG1")
+                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(stop_id = "S1", location_group_id = "LG1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
 
@@ -461,9 +463,9 @@ end
                 # location_group_id present (stop_id forbidden, time windows required)
                 gtfs = create_basic_gtfs()
                 gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(
-                    location_group_id="LG1",
-                    start_window="08:00:00",
-                    end_window="18:00:00"
+                    location_group_id = "LG1",
+                    start_window = "08:00:00",
+                    end_window = "18:00:00"
                 )
                 # Add required location_groups.txt file
                 gtfs["location_groups.txt"] = DataFrame(
@@ -476,9 +478,9 @@ end
                 # location_id present (stop_id forbidden, time windows required)
                 gtfs = create_basic_gtfs()
                 gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(
-                    location_id="L1",
-                    start_window="08:00:00",
-                    end_window="18:00:00"
+                    location_id = "L1",
+                    start_window = "08:00:00",
+                    end_window = "18:00:00"
                 )
                 # Add required locations.geojson file
                 gtfs["locations.geojson"] = DataFrame(
@@ -494,15 +496,15 @@ end
                 # only start_pickup_drop_off_window present
                 gtfs = create_basic_gtfs()
                 gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(
-                    location_group_id="LG1",
-                    start_window="08:00:00"
+                    location_group_id = "LG1",
+                    start_window = "08:00:00"
                 )
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
 
                 # both missing when location_group_id defined
                 gtfs = create_basic_gtfs()
-                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(location_group_id="LG1")
+                gtfs["stop_times.txt"] = create_stop_times_with_pickup_dropoff(location_group_id = "LG1")
                 result = GTFSSchedules.Validations.validate_field_conditions(gtfs)
                 @test GTFSSchedules.Validations.has_validation_errors(result)
             end

@@ -49,31 +49,31 @@ using DataFrames
     @testset "Basic Fixture Validation" begin
         # Test basic-example fixture
         fixture_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
-            if isdir(fixture_path)
+        if isdir(fixture_path)
             println("Testing validation on basic-example...")
 
-                gtfs = read_gtfs(fixture_path)
-                @test gtfs !== nothing
-                @test isa(gtfs, GTFSSchedule)
+            gtfs = read_gtfs(fixture_path)
+            @test gtfs !== nothing
+            @test isa(gtfs, GTFSSchedule)
 
-                # Test comprehensive validation
-                result = GTFSSchedules.Validations.validate_gtfs(gtfs)
-                @test result isa GTFSSchedules.Validations.ValidationResult
-                @test result.summary isa String
-                @test result.messages isa Vector{GTFSSchedules.Validations.ValidationMessage}
+            # Test comprehensive validation
+            result = GTFSSchedules.Validations.validate_gtfs(gtfs)
+            @test result isa GTFSSchedules.Validations.ValidationResult
+            @test result.summary isa String
+            @test result.messages isa Vector{GTFSSchedules.Validations.ValidationMessage}
 
-                # Test validation utilities
-                @test GTFSSchedules.Validations.has_validation_errors(result) isa Bool
+            # Test validation utilities
+            @test GTFSSchedules.Validations.has_validation_errors(result) isa Bool
 
-                # Count message types
-                error_count = count(m -> m.severity == :error, result.messages)
-                warning_count = count(m -> m.severity == :warning, result.messages)
-                info_count = count(m -> m.severity == :info, result.messages)
+            # Count message types
+            error_count = count(m -> m.severity == :error, result.messages)
+            warning_count = count(m -> m.severity == :warning, result.messages)
+            info_count = count(m -> m.severity == :info, result.messages)
 
-                @test error_count >= 0
-                @test warning_count >= 0
-                @test info_count >= 0
-                @test error_count + warning_count + info_count == length(result.messages)
+            @test error_count >= 0
+            @test warning_count >= 0
+            @test info_count >= 0
+            @test error_count + warning_count + info_count == length(result.messages)
 
             println("  basic-example: $error_count errors, $warning_count warnings, $info_count info")
         end
@@ -148,7 +148,7 @@ using DataFrames
 
         # Test with GTFS feed missing required files
         incomplete_gtfs = GTFSSchedule()
-        incomplete_gtfs["agency.txt"] = DataFrame(agency_id=["1"], agency_name=["Test"])
+        incomplete_gtfs["agency.txt"] = DataFrame(agency_id = ["1"], agency_name = ["Test"])
         result = GTFSSchedules.Validations.validate_gtfs(incomplete_gtfs)
         @test result isa GTFSSchedules.Validations.ValidationResult
         @test GTFSSchedules.Validations.has_validation_errors(result) isa Bool
@@ -288,47 +288,47 @@ using DataFrames
         # Test with minimal valid GTFS
         minimal_gtfs = GTFSSchedule()
         minimal_gtfs["agency.txt"] = DataFrame(
-            agency_id=["1"],
-            agency_name=["Test Agency"],
-            agency_url=["http://test.com"],
-            agency_timezone=["America/New_York"]
+            agency_id = ["1"],
+            agency_name = ["Test Agency"],
+            agency_url = ["http://test.com"],
+            agency_timezone = ["America/New_York"]
         )
         minimal_gtfs["stops.txt"] = DataFrame(
-            stop_id=["1"],
-            stop_name=["Test Stop"],
-            stop_lat=[40.0],
-            stop_lon=[-74.0]
+            stop_id = ["1"],
+            stop_name = ["Test Stop"],
+            stop_lat = [40.0],
+            stop_lon = [-74.0]
         )
         minimal_gtfs["routes.txt"] = DataFrame(
-            route_id=["1"],
-            agency_id=["1"],
-            route_short_name=["1"],
-            route_long_name=["Test Route"],
-            route_type=[3]
+            route_id = ["1"],
+            agency_id = ["1"],
+            route_short_name = ["1"],
+            route_long_name = ["Test Route"],
+            route_type = [3]
         )
         minimal_gtfs["trips.txt"] = DataFrame(
-            route_id=["1"],
-            service_id=["1"],
-            trip_id=["1"]
+            route_id = ["1"],
+            service_id = ["1"],
+            trip_id = ["1"]
         )
         minimal_gtfs["stop_times.txt"] = DataFrame(
-            trip_id=["1"],
-            arrival_time=["08:00:00"],
-            departure_time=["08:00:00"],
-            stop_id=["1"],
-            stop_sequence=[1]
+            trip_id = ["1"],
+            arrival_time = ["08:00:00"],
+            departure_time = ["08:00:00"],
+            stop_id = ["1"],
+            stop_sequence = [1]
         )
         minimal_gtfs["calendar.txt"] = DataFrame(
-            service_id=["1"],
-            monday=[1],
-            tuesday=[1],
-            wednesday=[1],
-            thursday=[1],
-            friday=[1],
-            saturday=[0],
-            sunday=[0],
-            start_date=["20240101"],
-            end_date=["20241231"]
+            service_id = ["1"],
+            monday = [1],
+            tuesday = [1],
+            wednesday = [1],
+            thursday = [1],
+            friday = [1],
+            saturday = [0],
+            sunday = [0],
+            start_date = ["20240101"],
+            end_date = ["20241231"]
         )
 
         result = GTFSSchedules.Validations.validate_gtfs(minimal_gtfs)

@@ -27,6 +27,7 @@ function validate_all_constraints!(messages::Vector{ValidationMessage}, gtfs_fee
     for (filename, constraints) in FIELD_CONSTRAINTS
         validate_file_constraints!(messages, gtfs_feed, filename, constraints)
     end
+    return
 end
 
 """
@@ -41,6 +42,7 @@ function validate_file_constraints!(messages::Vector{ValidationMessage}, gtfs_fe
     for constraint_rule in constraints
         validate_constraint!(messages, df, filename, constraint_rule)
     end
+    return
 end
 
 """
@@ -59,7 +61,7 @@ function validate_constraint!(messages::Vector{ValidationMessage}, df, filename:
     constraint_name = constraint_rule.constraint
 
     # Use unified constraint checking
-    _validate_field_constraint!(messages, column, validator, filename, field_name, constraint_name)
+    return _validate_field_constraint!(messages, column, validator, filename, field_name, constraint_name)
 end
 
 """
@@ -67,9 +69,11 @@ end
 
 Unified constraint validation that handles both column-level and element-level constraints.
 """
-function _validate_field_constraint!(messages::Vector{ValidationMessage}, column, validator,
-                                   filename::String, field_name::String, constraint_name::String)
-    if constraint_name == "Unique"
+function _validate_field_constraint!(
+        messages::Vector{ValidationMessage}, column, validator,
+        filename::String, field_name::String, constraint_name::String
+    )
+    return if constraint_name == "Unique"
         _validate_column_constraint!(messages, column, validator, filename, field_name, constraint_name)
     else
         _validate_element_constraint!(messages, column, validator, filename, field_name, constraint_name)
@@ -81,15 +85,19 @@ end
 
 Validate a constraint that applies to the entire column (e.g., Unique).
 """
-function _validate_column_constraint!(messages::Vector{ValidationMessage}, column, validator,
-                                   filename::String, field_name::String, constraint_name::String)
-    if !validator(column)
-        push!(messages, ValidationMessage(
-            filename,
-            field_name,
-            "Field '$field_name' violates constraint: $constraint_name",
-            :error
-        ))
+function _validate_column_constraint!(
+        messages::Vector{ValidationMessage}, column, validator,
+        filename::String, field_name::String, constraint_name::String
+    )
+    return if !validator(column)
+        push!(
+            messages, ValidationMessage(
+                filename,
+                field_name,
+                "Field '$field_name' violates constraint: $constraint_name",
+                :error
+            )
+        )
     end
 end
 
@@ -98,18 +106,23 @@ end
 
 Validate a constraint that applies to individual elements (e.g., Non-negative, Positive).
 """
-function _validate_element_constraint!(messages::Vector{ValidationMessage}, column, validator,
-                                     filename::String, field_name::String, constraint_name::String)
+function _validate_element_constraint!(
+        messages::Vector{ValidationMessage}, column, validator,
+        filename::String, field_name::String, constraint_name::String
+    )
     for (idx, value) in enumerate(column)
         ismissing(value) && continue
 
         if !validator(value)
-            push!(messages, ValidationMessage(
-                filename,
-                field_name,
-                "Row $idx: Value '$value' violates constraint: $constraint_name",
-                :error
-            ))
+            push!(
+                messages, ValidationMessage(
+                    filename,
+                    field_name,
+                    "Row $idx: Value '$value' violates constraint: $constraint_name",
+                    :error
+                )
+            )
         end
     end
+    return
 end

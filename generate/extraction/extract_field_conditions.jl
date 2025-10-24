@@ -101,7 +101,7 @@ function extract_field_condition_section(description::String)
         "Conditionally Required:",
         "Conditionally Forbidden:",
         "**Conditionally Required**:",
-        "**Conditionally Forbidden**:"
+        "**Conditionally Forbidden**:",
     ]
 
     return extract_condition_section(description, condition_markers)
@@ -247,7 +247,7 @@ Parse a field reference string into a FieldCondition.
 # Returns
 - `Union{FieldCondition, Nothing}`: Parsed condition or nothing if invalid
 """
-function parse_field_reference(field_reference::String, current_file::String, line::String="")
+function parse_field_reference(field_reference::String, current_file::String, line::String = "")
     if isempty(field_reference)
         return nothing
     end
@@ -264,7 +264,7 @@ function parse_field_reference(field_reference::String, current_file::String, li
         line_lower = lowercase(line)
         if occursin("`" * field_reference * "`", line)
             # Check what comes after this specific field reference
-            after_field = split(line, "`" * field_reference * "`", limit=2)
+            after_field = split(line, "`" * field_reference * "`", limit = 2)
             if length(after_field) > 1
                 after_text = lowercase(strip(after_field[2]))
                 if occursin(r"^\s*(is|are)\s+defined", after_text)
@@ -284,8 +284,8 @@ function parse_field_reference(field_reference::String, current_file::String, li
             # Look for the field reference followed by "or" and then "is/are defined"
             # Use a more flexible approach to handle the "or" condition
             if occursin("`" * field_reference * "`", line_lower) &&
-               occursin("or", line_lower) &&
-               (occursin("is defined", line_lower) || occursin("are defined", line_lower))
+                    occursin("or", line_lower) &&
+                    (occursin("is defined", line_lower) || occursin("are defined", line_lower))
                 ref_value = "defined"
             end
         end
@@ -294,8 +294,8 @@ function parse_field_reference(field_reference::String, current_file::String, li
         if isempty(ref_value) && (occursin("is NOT defined", line_lower) || occursin("are NOT defined", line_lower))
             # Look for the field reference followed by "or" and then "is/are NOT defined"
             if occursin("`" * field_reference * "`", line_lower) &&
-               occursin("or", line_lower) &&
-               (occursin("is NOT defined", line_lower) || occursin("are NOT defined", line_lower))
+                    occursin("or", line_lower) &&
+                    (occursin("is NOT defined", line_lower) || occursin("are NOT defined", line_lower))
                 ref_value = ""
             end
         end
@@ -386,7 +386,7 @@ Extract field-level conditional requirements for all files.
 # Returns
 - `Vector{FieldRelations}`: List of field relations grouped by file
 """
-function extract_all_field_conditions(file_definitions::Vector{FileDefinition}, presence_types::Vector=PresenceInfo[])
+function extract_all_field_conditions(file_definitions::Vector{FileDefinition}, presence_types::Vector = PresenceInfo[])
     if isempty(file_definitions)
         return FieldRelations[]
     end

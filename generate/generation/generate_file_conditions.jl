@@ -36,7 +36,7 @@ function generate_file_conditions(parsed_files::Vector{FileRelations})
             end
             push!(lines, "      ]),")
         end
-        push!(lines, "    ]");
+        push!(lines, "    ]")
         push!(lines, "  ),")
     end
     push!(lines, ")")

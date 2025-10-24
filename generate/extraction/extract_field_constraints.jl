@@ -15,7 +15,7 @@ end
 Extract constraint names from field_signs keys plus "Unique".
 These are the constraint types that can appear in field type strings.
 """
-function extract_available_constraints(field_signs::Dict{String,String})
+function extract_available_constraints(field_signs::Dict{String, String})
     constraints = collect(keys(field_signs))
     push!(constraints, "Unique")  # Always include "Unique" as a special case
     return constraints
@@ -45,7 +45,7 @@ end
 Extract constraint information for all fields in all files.
 Only includes fields that have constraints.
 """
-function extract_all_field_constraints(file_defs::Vector{FileDefinition}, field_signs::Dict{String,String})
+function extract_all_field_constraints(file_defs::Vector{FileDefinition}, field_signs::Dict{String, String})
     result = FileFieldConstraintInfo[]
 
     # Get all available constraints from field_signs + "Unique"

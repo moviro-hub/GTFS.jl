@@ -87,7 +87,6 @@ struct FileRelations
 end
 
 
-
 # =============================================================================
 # CONDITION PARSING
 # =============================================================================
@@ -135,10 +134,10 @@ function parse_file_level_condition_line(line::String, presence::String, field_t
     # Special case: "Optional if... Required otherwise" pattern
     if occursin("optional if", line_lower) && (occursin("required otherwise", line_lower) || occursin("**required** otherwise", line_lower))
         should_invert = true
-    # Special case: "Required unless... Optional otherwise" pattern
+        # Special case: "Required unless... Optional otherwise" pattern
     elseif occursin("required unless", line_lower) || occursin("**required** unless", line_lower)
         should_invert = true
-    # Check for inversion keywords in the condition text
+        # Check for inversion keywords in the condition text
     elseif any(occursin(keyword, line_lower) for keyword in ["unless", "omitted", "not defined", "not provided"])
         should_invert = true
     end
@@ -451,7 +450,7 @@ Extract file-level conditional requirements for all dataset files.
 # Returns
 - `Vector{FileRelations}`: List of file relations grouped by file
 """
-function extract_all_file_conditions(dataset_files::Vector, file_definitions::Vector, presence_types::Vector=PresenceInfo[])
+function extract_all_file_conditions(dataset_files::Vector, file_definitions::Vector, presence_types::Vector = PresenceInfo[])
     if isempty(dataset_files)
         return FileRelations[]
     end
@@ -499,7 +498,7 @@ function validate_known_either_or_pairs(file_relations::Vector{FileRelations})
     # Known either/or pairs from GTFS specification
     known_pairs = [
         ("stops.txt", "locations.geojson"),
-        ("calendar.txt", "calendar_dates.txt")
+        ("calendar.txt", "calendar_dates.txt"),
     ]
 
     # Create lookup for file relations
@@ -542,6 +541,7 @@ function validate_known_either_or_pairs(file_relations::Vector{FileRelations})
             end
         end
     end
+    return
 end
 
 """

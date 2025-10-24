@@ -27,6 +27,7 @@ function validate_all_file_rules!(messages::Vector{ValidationMessage}, gtfs::GTF
     for (filename, spec) in FILE_RULES
         validate_file_spec!(messages, gtfs, filename, spec)
     end
+    return
 end
 
 """
@@ -38,7 +39,7 @@ function validate_file_spec!(messages::Vector{ValidationMessage}, gtfs::GTFSSche
     presence = spec.presence
     exists = gtfs_has_table(gtfs, filename_to_table_symbol(filename))
 
-    if presence == "Required"
+    return if presence == "Required"
         check_required_file!(messages, filename, exists)
     elseif presence == "Optional"
         push!(messages, ValidationMessage(filename, nothing, "Optional file '$filename' validation skipped", :info))
@@ -54,7 +55,7 @@ end
 Check if a required file is present.
 """
 function check_required_file!(messages::Vector{ValidationMessage}, filename::String, exists::Bool)
-    if !exists
+    return if !exists
         push!(messages, ValidationMessage(filename, nothing, "Required file '$filename' is missing", :error))
     else
         push!(messages, ValidationMessage(filename, nothing, "Required file '$filename' is present", :info))
@@ -77,7 +78,7 @@ function check_conditional_file!(messages::Vector{ValidationMessage}, gtfs::GTFS
         end
     end
 
-    if !any_relation_met
+    return if !any_relation_met
         push!(messages, ValidationMessage(filename, nothing, "File '$filename' conditions not met - no validation required", :info))
     end
 end
@@ -98,7 +99,7 @@ end
 Validate a file relation based on its type.
 """
 function _validate_file_relation!(messages::Vector{ValidationMessage}, filename::String, exists::Bool, rel)
-    if get(rel, :required, false)
+    return if get(rel, :required, false)
         _validate_conditionally_required_file!(messages, filename, exists)
     elseif get(rel, :forbidden, false)
         _validate_conditionally_forbidden_file!(messages, filename, exists)
@@ -114,7 +115,7 @@ end
 Validate a conditionally required file.
 """
 function _validate_conditionally_required_file!(messages::Vector{ValidationMessage}, filename::String, exists::Bool)
-    if !exists
+    return if !exists
         push!(messages, ValidationMessage(filename, nothing, "Conditionally required file '$filename' is missing", :error))
     else
         push!(messages, ValidationMessage(filename, nothing, "Conditionally required file '$filename' is present", :info))
@@ -127,7 +128,7 @@ end
 Validate a conditionally forbidden file.
 """
 function _validate_conditionally_forbidden_file!(messages::Vector{ValidationMessage}, filename::String, exists::Bool)
-    if exists
+    return if exists
         push!(messages, ValidationMessage(filename, nothing, "Conditionally forbidden file '$filename' is present", :error))
     else
         push!(messages, ValidationMessage(filename, nothing, "Conditionally forbidden file '$filename' is correctly absent", :info))

@@ -52,7 +52,7 @@ using DataFrames: DataFrames
 using CSV: CSV
 using GeoJSON: GeoJSON
 
-const GTFSSchedule = Dict{String,Union{DataFrames.DataFrame,Nothing}}
+const GTFSSchedule = Dict{String, Union{DataFrames.DataFrame, Nothing}}
 
 # Include submodules
 include("gtfs_types.jl")
