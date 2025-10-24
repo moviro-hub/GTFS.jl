@@ -1,12 +1,12 @@
-using Documenter, GTFS
+using Documenter, GTFSSchedule
 
 # Set up the documentation environment
 makedocs(;
-    sitename="GTFS.jl",
+    sitename="GTFSSchedule.jl",
     authors="MOVIRO",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://moviro-hub.github.io/GTFS.jl",
+        canonical="https://moviro-hub.github.io/GTFSSchedule.jl",
         assets=String[],
     ),
     pages=[
@@ -18,7 +18,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/moviro-hub/GTFS.jl.git",
+    repo="github.com/moviro-hub/GTFSSchedule.jl.git",
     target="build",
     branch="gh-pages",
     devbranch="main",

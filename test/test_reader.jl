@@ -6,7 +6,7 @@ ZIP files, directories, CSV parsing, GeoJSON support, error handling, and edge c
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 using CSV
 using GeoJSON

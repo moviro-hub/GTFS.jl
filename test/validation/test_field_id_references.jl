@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification and FIELD_ID_REFERENCES.
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 
 # =============================================================================

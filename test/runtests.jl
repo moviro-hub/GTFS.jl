@@ -1,14 +1,14 @@
 """
-Test suite for GTFS.jl package
+Test suite for GTFSSchedule.jl package
 
 This module contains comprehensive tests for the GTFS package functionality.
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 
-@testset "GTFS.jl Tests" begin
+@testset "GTFSSchedule.jl Tests" begin
     include("test_reader.jl")
     include("validation/test_gtfs.jl")
     include("validation/test_file_conditions.jl")

@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification and ENUM_RULES.
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 using CSV
 

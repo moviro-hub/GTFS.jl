@@ -5,7 +5,7 @@ This module contains tests for the GTFS field-level conditional requirements val
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 using CSV
 

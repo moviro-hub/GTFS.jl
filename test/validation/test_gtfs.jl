@@ -6,7 +6,7 @@ all available fixtures, individual validators, error detection, and validation u
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 
 @testset "GTFS Validation Comprehensive Tests" begin

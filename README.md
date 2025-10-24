@@ -1,6 +1,6 @@
-# GTFS.jl
+# GTFSSchedule.jl
 
-[Documentation](https://moviro-hub.github.io/GTFS.jl)
+[Documentation](https://moviro-hub.github.io/GTFSSchedule.jl)
 
 A Julia package for reading and validating GTFS (General Transit Feed Specification) Schedule data.
 
@@ -15,13 +15,13 @@ A Julia package for reading and validating GTFS (General Transit Feed Specificat
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/moviro-hub/GTFS.jl.git")
+Pkg.add(url="https://github.com/moviro-hub/GTFSSchedule.jl.git")
 ```
 
 ## Quick Start
 
 ```julia
-using GTFS
+using GTFSSchedule
 
 # Read a GTFS feed from ZIP file
 gtfs = read_gtfs("path/to/transit_feed.zip")

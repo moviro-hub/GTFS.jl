@@ -22,7 +22,7 @@ This function runs:
 
 # Examples
 ```julia
-using GTFS
+using GTFSSchedule
 
 gtfs = read_gtfs("path/to/gtfs")
 result = GTFS.Validations.validate_gtfs(gtfs)

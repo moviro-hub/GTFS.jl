@@ -1,5 +1,5 @@
 """
-GTFS.jl - A Julia package for reading and validating GTFS Schedule data
+GTFSSchedule.jl - A Julia package for reading and validating GTFS Schedule data
 
 This package provides functionality to read, validate, and work with GTFS (General Transit Feed Specification)
 Schedule data in Julia. It supports the official GTFS Schedule specification and includes comprehensive
@@ -45,7 +45,7 @@ https://gtfs.org/documentation/schedule/reference/
 - `GTFSSchedule`: Main data structure containing all GTFS tables
 - `ValidationResult`: Detailed validation results
 """
-module GTFS
+module GTFSSchedule
 
 # Import dependencies
 using DataFrames: DataFrames

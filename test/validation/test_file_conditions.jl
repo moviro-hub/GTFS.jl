@@ -5,7 +5,7 @@ This module contains tests for the GTFS file presence validation functionality.
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 using CSV
 

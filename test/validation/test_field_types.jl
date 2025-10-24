@@ -6,7 +6,7 @@ Tests are derived from the GTFS specification field types section.
 """
 
 using Test
-using GTFS
+using GTFSSchedule
 using DataFrames
 
 # =============================================================================
