@@ -1,28 +1,28 @@
-```@meta
-CurrentModule = GTFSSchedules
-```
-
 # API Reference
 
 **Complete API documentation for GTFSSchedules.jl functions and types.**
 
-The API reference below is generated directly from the package's docstrings.
+## Main Functions
+
+```@docs
+GTFSSchedules.read_gtfs
+```
+
+## Validation Functions
+
+```@docs
+GTFSSchedules.Validations.validate_gtfs
+GTFSSchedules.Validations.print_validation_results
+GTFSSchedules.Validations.has_validation_errors
+```
 
 ## Types
 
 ```@docs
-GTFSSchedule
-ValidationResult
-ValidationMessage
+GTFSSchedules.Validations.ValidationResult
+GTFSSchedules.Validations.ValidationMessage
 ```
 
-## Functions
+## Data Structures
 
-```@docs
-read_gtfs
-list_gtfs_files
-validate_gtfs_structure
-validate
-```
-
-<!-- Full-module autodocs omitted to prevent duplicates with explicit @docs blocks -->
+`GTFSSchedule` is a type alias for `Dict{String,Union{DataFrames.DataFrame,Nothing}}` that stores GTFS data tables.

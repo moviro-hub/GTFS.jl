@@ -57,5 +57,3 @@ This package is licensed under the MIT License. See LICENSE file for details.
 ## References
 
 - [GTFS Schedule Specification](https://gtfs.org/documentation/schedule/reference/)
-- [GTFS Best Practices](https://gtfs.org/documentation/schedule/best-practices/)
-- [GTFS Examples](https://gtfs.org/documentation/schedule/data-examples/)
