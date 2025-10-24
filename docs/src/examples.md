@@ -1,5 +1,7 @@
 # Examples
 
+**Practical examples for using GTFSSchedule.jl to analyze transit data.**
+
 This page provides practical examples of how to use GTFSSchedule.jl for common transit data analysis tasks.
 
 ## Basic Data Exploration
@@ -7,32 +9,37 @@ This page provides practical examples of how to use GTFSSchedule.jl for common t
 ### Loading and Inspecting a GTFS Feed
 
 ```julia
-using GTFSSchedule
+using GTFSSchedules
+using DataFrames
 
 # Load a GTFS feed
 gtfs = read_gtfs("transit_feed.zip")
 
 # Basic information about the feed
 println("=== GTFS Feed Overview ===")
-println("Agencies: ", nrow(gtfs.agency))
-println("Stops: ", nrow(gtfs.stops))
-println("Routes: ", nrow(gtfs.routes))
-println("Trips: ", nrow(gtfs.trips))
-println("Stop Times: ", nrow(gtfs.stop_times))
+println("Agencies: ", nrow(gtfs["agency.txt"]))
+println("Stops: ", nrow(gtfs["stops.txt"]))
+println("Routes: ", nrow(gtfs["routes.txt"]))
+println("Trips: ", nrow(gtfs["trips.txt"]))
+println("Stop Times: ", nrow(gtfs["stop_times.txt"]))
 
 # Check for optional files
 optional_files = [
-    ("Calendar", gtfs.calendar),
-    ("Calendar Dates", gtfs.calendar_dates),
-    ("Fare Attributes", gtfs.fare_attributes),
-    ("Shapes", gtfs.shapes),
-    ("Transfers", gtfs.transfers),
-    ("Feed Info", gtfs.feed_info)
+    ("Calendar", "calendar.txt"),
+    ("Calendar Dates", "calendar_dates.txt"),
+    ("Fare Attributes", "fare_attributes.txt"),
+    ("Shapes", "shapes.txt"),
+    ("Transfers", "transfers.txt"),
+    ("Feed Info", "feed_info.txt")
 ]
 
 println("\n=== Optional Files ===")
-for (name, df) in optional_files
-    status = df !== nothing ? "✓ Present ($(nrow(df)) records)" : "✗ Not present"
+for (name, filename) in optional_files
+    if haskey(gtfs, filename) && gtfs[filename] !== nothing
+        status = "✓ Present ($(nrow(gtfs[filename])) records)"
+    else
+        status = "✗ Not present"
+    end
     println("$name: $status")
 end
 ```
@@ -42,7 +49,7 @@ end
 ```julia
 # Display all agencies
 println("=== Transit Agencies ===")
-for row in eachrow(gtfs.agency)
+for row in eachrow(gtfs["agency.txt"])
     println("$(row.agency_name)")
     println("  URL: $(row.agency_url)")
     println("  Timezone: $(row.agency_timezone)")
@@ -73,8 +80,9 @@ route_type_names = Dict(
     12 => "Monorail"
 )
 
+routes_df = gtfs["routes.txt"]
 route_counts = Dict{Int, Int}()
-for row in eachrow(gtfs.routes)
+for row in eachrow(routes_df)
     route_type = row.route_type
     route_counts[route_type] = get(route_counts, route_type, 0) + 1
 end
@@ -89,7 +97,8 @@ end
 
 ```julia
 # Focus on bus routes
-bus_routes = filter(row -> row.route_type == 3, gtfs.routes)
+routes_df = gtfs["routes.txt"]
+bus_routes = filter(row -> row.route_type == 3, routes_df)
 
 println("=== Bus Routes ===")
 println("Total bus routes: ", nrow(bus_routes))
@@ -223,7 +232,7 @@ end
 ```julia
 # Validate the feed
 println("=== Validation ===")
-result = validate(gtfs)
+result = GTFSSchedules.Validations.validate_gtfs(gtfs)
 
 println("Validation result: ", result.summary)
 
@@ -231,8 +240,8 @@ if !result.is_valid
     println("\nIssues found:")
 
     # Separate errors and warnings
-    errors = filter(e -> e.severity == :error, result.errors)
-    warnings = filter(e -> e.severity == :warning, result.errors)
+    errors = filter(e -> e.severity == :error, result.messages)
+    warnings = filter(e -> e.severity == :warning, result.messages)
 
     if !isempty(errors)
         println("\nErrors:")
@@ -260,7 +269,7 @@ end
 
 ```julia
 # Validate with limited warnings
-result = validate(gtfs; max_warnings_per_file=20)
+result = GTFSSchedules.Validations.validate_gtfs(gtfs)
 println("Validation with limited warnings: ", result.summary)
 ```
 

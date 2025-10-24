@@ -13,13 +13,13 @@ validation to ensure data compliance.
 # Quick Start
 
 ```julia
-using GTFS
+using GTFSSchedules
 
 # Read a GTFS feed
 gtfs = read_gtfs("path/to/transit_feed.zip")
 
 # Validate the feed
-result = validate(gtfs)
+result = GTFSSchedules.Validations.validate_gtfs(gtfs)
 if result.is_valid
     println("GTFS feed is valid!")
 else
@@ -28,9 +28,9 @@ else
 end
 
 # Access data using DataFrames
-println("Number of agencies: ", DataFrames.nrow(gtfs.agency))
-println("Number of stops: ", DataFrames.nrow(gtfs.stops))
-println("Number of routes: ", DataFrames.nrow(gtfs.routes))
+println("Number of agencies: ", DataFrames.nrow(gtfs["agency.txt"]))
+println("Number of stops: ", DataFrames.nrow(gtfs["stops.txt"]))
+println("Number of routes: ", DataFrames.nrow(gtfs["routes.txt"]))
 ```
 
 # GTFS Specification
@@ -41,7 +41,7 @@ https://gtfs.org/documentation/schedule/reference/
 # Package Structure
 
 - `read_gtfs()`: Read GTFS feeds from ZIP files
-- `validate()`: Validate GTFS feeds against the specification
+- `validate_gtfs()`: Validate GTFS feeds against the specification
 - `GTFSSchedule`: Main data structure containing all GTFS tables
 - `ValidationResult`: Detailed validation results
 """

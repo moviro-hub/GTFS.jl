@@ -1,8 +1,10 @@
 ```@meta
-CurrentModule = GTFSSchedule
+CurrentModule = GTFSSchedules
 ```
 
 # API Reference
+
+**Complete API documentation for GTFSSchedules.jl functions and types.**
 
 The API reference below is generated directly from the package's docstrings.
 
