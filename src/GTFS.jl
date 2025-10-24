@@ -50,73 +50,26 @@ module GTFS
 # Import dependencies
 using DataFrames: DataFrames
 using CSV: CSV
-using JSON3: JSON3
+using GeoJSON: GeoJSON
 
-# Export main types and functions
-export GTFSSchedule, ValidationResult, ValidationMessage
-export read_gtfs, COLUMN_TYPES, FILE_TO_FIELD
-export ENUM_VALID_VALUES, validate_enum
-export validate_file_presence
-export validate_field_presence
-export validate_field_values
-export validate
+const GTFSSchedule = Dict{String,Union{DataFrames.DataFrame,Nothing}}
 
 # Include submodules
-include("validation_types.jl")
 include("gtfs_types.jl")
-include("column_types.jl")
-include("file_mapping.jl")
-include("enum_validator.jl")
-include("file_validator.jl")
-include("field_validator.jl")
-include("value_validator.jl")
+include("rules/field_types.jl")
+include("rules/field_conditions.jl")
+include("rules/file_conditions.jl")
+include("rules/field_enum_values.jl")
+include("rules/field_constraints.jl")
+include("rules/field_id_references.jl")
 include("reader.jl")
+include("validation/Validations.jl")
 
-"""
-    validate(gtfs::GTFSSchedule) -> ValidationResult
+# Export only essential functions and types
+export read_gtfs, GTFSSchedule
 
-Comprehensive validation function that runs all validation checks on a GTFS feed.
-
-This function combines:
-- File presence validation
-- Field presence validation
-- Field value validation
-
-# Arguments
-- `gtfs::GTFSSchedule`: The GTFS feed to validate
-
-# Returns
-- `ValidationResult`: Combined validation results from all validation types
-"""
-function validate(gtfs::GTFSSchedule)
-    all_messages = ValidationMessage[]
-
-    # Run file presence validation
-    file_result = validate_file_presence(gtfs)
-    append!(all_messages, file_result.messages)
-
-    # Run field presence validation
-    field_result = validate_field_presence(gtfs)
-    append!(all_messages, field_result.messages)
-
-    # Run field value validation
-    value_result = validate_field_values(gtfs)
-    append!(all_messages, value_result.messages)
-
-    # Determine overall validity
-    error_count = count(msg -> msg.severity == :error, all_messages)
-    warning_count = count(msg -> msg.severity == :warning, all_messages)
-    is_valid = error_count == 0
-
-    # Generate comprehensive summary
-    summary = "GTFS validation: $error_count errors, $warning_count warnings"
-    if is_valid
-        summary *= " - Feed is valid"
-    else
-        summary *= " - Feed validation failed"
-    end
-
-    return ValidationResult(is_valid, all_messages, summary)
-end
+# Validation functions are available through the Validations submodule
+# Import the submodule to make it accessible
+using .Validations
 
 end

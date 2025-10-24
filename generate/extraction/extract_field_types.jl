@@ -148,6 +148,11 @@ function parse_type_string(field_type_str::String, available_types::Vector{Strin
 
     field_lower = lowercase(field_type_str)
 
+    # Handle Foreign ID referencing pattern
+    if occursin("foreign id referencing", field_lower)
+        return ("ID", String[])
+    end
+
     # Handle "or" pattern
     if occursin(" or ", field_lower)
         return parse_or_pattern(field_type_str, available_types)
@@ -232,6 +237,11 @@ function extract_all_field_types(file_defs::Vector{FileDefinition}, field_types:
 
     result = FileTypeInfo[]
     for file_def in file_defs
+        # Skip non-txt files (e.g., .geojson)
+        if !endswith(lowercase(file_def.filename), ".txt")
+            continue
+        end
+
         field_infos = extract_field_types_for_file(file_def, available_types)
         file_info = FileTypeInfo(file_def.filename, field_infos)
         push!(result, file_info)

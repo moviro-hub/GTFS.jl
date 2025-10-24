@@ -36,3 +36,4 @@ JuliaLocalPreferences.toml
 
 # Temporary files
 tmp/
+test/real_world_feeds/

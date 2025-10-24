@@ -19,13 +19,13 @@ function generate_field_conditions(parsed_fields::Vector{FieldRelations})
         for fr in pf.fields
             # Each entry: field, presence, required, forbidden, conditions
             push!(lines, "    (")
-            push!(lines, "      field = Symbol(\"$(fr.field)\"),")
+            push!(lines, "      field = \"$(fr.field)\",")
             push!(lines, "      presence = \"$(fr.presence)\",")
             push!(lines, "      required = $(fr.required),")
             push!(lines, "      forbidden = $(fr.forbidden),")
             push!(lines, "      conditions = [")
             for c in fr.when_all_conditions
-                push!(lines, "        (type = :field, file = \"$(c.file)\", field = Symbol(\"$(c.field)\"), value = \"$(c.value)\"),")
+                push!(lines, "        (type = :field, file = \"$(c.file)\", field = \"$(c.field)\", value = \"$(c.value)\"),")
             end
             push!(lines, "      ]");
             push!(lines, "    ),")

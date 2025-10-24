@@ -5,163 +5,163 @@
 const FIELD_CONSTRAINTS = Dict(
   "agency.txt" => [
     (
-      field = Symbol("agency_id"),
+      field = "agency_id",
       constraint = "Unique",
     ),
   ],
   "stops.txt" => [
     (
-      field = Symbol("stop_id"),
+      field = "stop_id",
       constraint = "Unique",
     ),
   ],
   "routes.txt" => [
     (
-      field = Symbol("route_id"),
+      field = "route_id",
       constraint = "Unique",
     ),
     (
-      field = Symbol("route_sort_order"),
+      field = "route_sort_order",
       constraint = "Non-negative",
     ),
   ],
   "trips.txt" => [
     (
-      field = Symbol("trip_id"),
+      field = "trip_id",
       constraint = "Unique",
     ),
   ],
   "stop_times.txt" => [
     (
-      field = Symbol("stop_sequence"),
+      field = "stop_sequence",
       constraint = "Non-negative",
     ),
     (
-      field = Symbol("shape_dist_traveled"),
+      field = "shape_dist_traveled",
       constraint = "Non-negative",
     ),
   ],
   "calendar.txt" => [
     (
-      field = Symbol("service_id"),
+      field = "service_id",
       constraint = "Unique",
     ),
   ],
   "fare_attributes.txt" => [
     (
-      field = Symbol("fare_id"),
+      field = "fare_id",
       constraint = "Unique",
     ),
     (
-      field = Symbol("price"),
+      field = "price",
       constraint = "Non-negative",
     ),
     (
-      field = Symbol("transfer_duration"),
+      field = "transfer_duration",
       constraint = "Non-negative",
     ),
   ],
   "rider_categories.txt" => [
     (
-      field = Symbol("rider_category_id"),
+      field = "rider_category_id",
       constraint = "Unique",
     ),
   ],
   "fare_media.txt" => [
     (
-      field = Symbol("fare_media_id"),
+      field = "fare_media_id",
       constraint = "Unique",
     ),
   ],
   "fare_leg_rules.txt" => [
     (
-      field = Symbol("rule_priority"),
+      field = "rule_priority",
       constraint = "Non-negative",
     ),
   ],
   "fare_transfer_rules.txt" => [
     (
-      field = Symbol("transfer_count"),
+      field = "transfer_count",
       constraint = "Non-zero",
     ),
     (
-      field = Symbol("duration_limit"),
+      field = "duration_limit",
       constraint = "Positive",
     ),
   ],
   "areas.txt" => [
     (
-      field = Symbol("area_id"),
+      field = "area_id",
       constraint = "Unique",
     ),
   ],
   "networks.txt" => [
     (
-      field = Symbol("network_id"),
+      field = "network_id",
       constraint = "Unique",
     ),
   ],
   "shapes.txt" => [
     (
-      field = Symbol("shape_pt_sequence"),
+      field = "shape_pt_sequence",
       constraint = "Non-negative",
     ),
     (
-      field = Symbol("shape_dist_traveled"),
+      field = "shape_dist_traveled",
       constraint = "Non-negative",
     ),
   ],
   "frequencies.txt" => [
     (
-      field = Symbol("headway_secs"),
+      field = "headway_secs",
       constraint = "Positive",
     ),
   ],
   "transfers.txt" => [
     (
-      field = Symbol("min_transfer_time"),
+      field = "min_transfer_time",
       constraint = "Non-negative",
     ),
   ],
   "pathways.txt" => [
     (
-      field = Symbol("pathway_id"),
+      field = "pathway_id",
       constraint = "Unique",
     ),
     (
-      field = Symbol("length"),
+      field = "length",
       constraint = "Non-negative",
     ),
     (
-      field = Symbol("traversal_time"),
+      field = "traversal_time",
       constraint = "Positive",
     ),
     (
-      field = Symbol("min_width"),
+      field = "min_width",
       constraint = "Positive",
     ),
   ],
   "levels.txt" => [
     (
-      field = Symbol("level_id"),
+      field = "level_id",
       constraint = "Unique",
     ),
   ],
   "location_groups.txt" => [
     (
-      field = Symbol("location_group_id"),
+      field = "location_group_id",
       constraint = "Unique",
     ),
   ],
   "booking_rules.txt" => [
     (
-      field = Symbol("booking_rule_id"),
+      field = "booking_rule_id",
       constraint = "Unique",
     ),
   ],
   "attributions.txt" => [
     (
-      field = Symbol("attribution_id"),
+      field = "attribution_id",
       constraint = "Unique",
     ),
   ],

@@ -9,5 +9,9 @@ using GTFS
 using DataFrames
 
 @testset "GTFS.jl Tests" begin
-    include("test_examples.jl")
+    include("test_reader.jl")
+    include("validation/test_gtfs.jl")
+    include("validation/test_file_conditions.jl")
+    include("validation/test_field_conditions.jl")
+    include("validation/test_field_types.jl")
 end

@@ -1,10 +1,10 @@
 """
     create_type_mapping(extracted_types::Vector{FileTypeInfo}) -> Dict{String,String}
 
-Create a dynamic mapping from extracted type names to GTFS type constants.
+Create a dynamic mapping from extracted type names to GTFS type constants using rule-based logic.
 """
 function create_type_mapping(extracted_types::Vector{FileTypeInfo})
-    # Collect all unique type names from the extracted data
+    # Collect all unique type names
     all_types = Set{String}()
     for file_type_info in extracted_types
         for field_type_info in file_type_info.fields
@@ -15,11 +15,9 @@ function create_type_mapping(extracted_types::Vector{FileTypeInfo})
         end
     end
 
-    # Create mapping by converting type names to GTFS format
     type_mapping = Dict{String,String}()
     for type_name in all_types
-        # Convert to GTFS format: capitalize and add GTFS prefix
-        gtfs_type = "GTFS" * titlecase(replace(type_name, " " => ""))
+        gtfs_type = "GTFS" * join(uppercasefirst.(split(type_name, r"\s+")), "")
         type_mapping[type_name] = gtfs_type
     end
 
@@ -76,13 +74,13 @@ function generate_field_types(extracted_types::Vector{FileTypeInfo})
 
             # Create field type entry
             push!(lines, "    (")
-            push!(lines, "      field = Symbol(\"$fieldname\"),")
-            push!(lines, "      primary_type = $primary_gtfs_type,")
+            push!(lines, "      field = \"$fieldname\",")
+            push!(lines, "      type_symbol = :$primary_gtfs_type,")
 
             if !isempty(alternative_gtfs_types)
                 push!(lines, "      alternative_types = [")
                 for alt_gtfs_type in alternative_gtfs_types
-                    push!(lines, "        $alt_gtfs_type,")
+                    push!(lines, "        :$alt_gtfs_type,")
                 end
                 push!(lines, "      ],")
             else

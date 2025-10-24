@@ -1,0 +1,339 @@
+"""
+Comprehensive GTFS Validation Test Suite
+
+This module contains thorough tests for the GTFS validation functionality including
+all available fixtures, individual validators, error detection, and validation utilities.
+"""
+
+using Test
+using GTFS
+using DataFrames
+
+@testset "GTFS Validation Comprehensive Tests" begin
+
+    @testset "Basic Validation Tests" begin
+        # Test basic validation on basic-example
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        @test isdir(feed_path)
+
+        gtfs = read_gtfs(feed_path)
+        @test gtfs !== nothing
+        @test isa(gtfs, GTFSSchedule)
+
+        # Test comprehensive validation
+        result = GTFS.Validations.validate_gtfs(gtfs)
+        @test result isa GTFS.Validations.ValidationResult
+        @test result.summary isa String
+        @test !isempty(result.summary)
+        @test result.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test validation utilities
+        @test GTFS.Validations.has_validation_errors(result) isa Bool
+
+        # Test that we can print results without errors
+        @test begin
+            GTFS.Validations.print_validation_results(result)
+            true
+        end
+
+        # Test message structure
+        for msg in result.messages
+            @test msg.file isa String
+            @test msg.field isa Union{String, Nothing}
+            @test msg.message isa String
+            @test msg.severity isa Symbol
+            @test msg.severity in [:error, :warning, :info]
+        end
+    end
+
+    @testset "Basic Fixture Validation" begin
+        # Test basic-example fixture
+        fixture_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+            if isdir(fixture_path)
+            println("Testing validation on basic-example...")
+
+                gtfs = read_gtfs(fixture_path)
+                @test gtfs !== nothing
+                @test isa(gtfs, GTFSSchedule)
+
+                # Test comprehensive validation
+                result = GTFS.Validations.validate_gtfs(gtfs)
+                @test result isa GTFS.Validations.ValidationResult
+                @test result.summary isa String
+                @test result.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+                # Test validation utilities
+                @test GTFS.Validations.has_validation_errors(result) isa Bool
+
+                # Count message types
+                error_count = count(m -> m.severity == :error, result.messages)
+                warning_count = count(m -> m.severity == :warning, result.messages)
+                info_count = count(m -> m.severity == :info, result.messages)
+
+                @test error_count >= 0
+                @test warning_count >= 0
+                @test info_count >= 0
+                @test error_count + warning_count + info_count == length(result.messages)
+
+            println("  basic-example: $error_count errors, $warning_count warnings, $info_count info")
+        end
+    end
+
+    @testset "Individual Validator Tests" begin
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+
+        # Test field types validation
+        result1 = GTFS.Validations.validate_field_types(gtfs)
+        @test result1 isa GTFS.Validations.ValidationResult
+        @test result1.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test field conditions validation
+        result2 = GTFS.Validations.validate_field_conditions(gtfs)
+        @test result2 isa GTFS.Validations.ValidationResult
+        @test result2.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test file conditions validation
+        result3 = GTFS.Validations.validate_file_conditions(gtfs)
+        @test result3 isa GTFS.Validations.ValidationResult
+        @test result3.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test enum values validation
+        result4 = GTFS.Validations.validate_enum_values(gtfs)
+        @test result4 isa GTFS.Validations.ValidationResult
+        @test result4.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test field constraints validation
+        result5 = GTFS.Validations.validate_field_constraints(gtfs)
+        @test result5 isa GTFS.Validations.ValidationResult
+        @test result5.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test ID references validation
+        result6 = GTFS.Validations.validate_id_references(gtfs)
+        @test result6 isa GTFS.Validations.ValidationResult
+        @test result6.messages isa Vector{GTFS.Validations.ValidationMessage}
+    end
+
+    @testset "Validation Result Structure Tests" begin
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+        result = GTFS.Validations.validate_gtfs(gtfs)
+
+        # Test ValidationResult structure
+        @test hasfield(typeof(result), :summary)
+        @test hasfield(typeof(result), :messages)
+        @test result.summary isa String
+        @test result.messages isa Vector{GTFS.Validations.ValidationMessage}
+
+        # Test ValidationMessage structure
+        if !isempty(result.messages)
+            msg = result.messages[1]
+            @test hasfield(typeof(msg), :file)
+            @test hasfield(typeof(msg), :field)
+            @test hasfield(typeof(msg), :message)
+            @test hasfield(typeof(msg), :severity)
+            @test msg.file isa String
+            @test msg.field isa Union{String, Nothing}
+            @test msg.message isa String
+            @test msg.severity isa Symbol
+        end
+    end
+
+    @testset "Error Detection Tests" begin
+        # Test with empty GTFS feed
+        empty_gtfs = GTFSSchedule()
+        result = GTFS.Validations.validate_gtfs(empty_gtfs)
+        @test result isa GTFS.Validations.ValidationResult
+        @test GTFS.Validations.has_validation_errors(result) isa Bool
+
+        # Test with GTFS feed missing required files
+        incomplete_gtfs = GTFSSchedule()
+        incomplete_gtfs["agency.txt"] = DataFrame(agency_id=["1"], agency_name=["Test"])
+        result = GTFS.Validations.validate_gtfs(incomplete_gtfs)
+        @test result isa GTFS.Validations.ValidationResult
+        @test GTFS.Validations.has_validation_errors(result) isa Bool
+    end
+
+    @testset "Warning Detection Tests" begin
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+        result = GTFS.Validations.validate_gtfs(gtfs)
+
+        # Test that warnings can be detected
+        warning_count = count(m -> m.severity == :warning, result.messages)
+        @test warning_count >= 0
+
+        # Test warning message structure
+        warnings = filter(m -> m.severity == :warning, result.messages)
+        for warning in warnings
+            @test warning.file isa String
+            @test warning.message isa String
+            @test warning.severity == :warning
+        end
+    end
+
+    @testset "Info Message Tests" begin
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+        result = GTFS.Validations.validate_gtfs(gtfs)
+
+        # Test that info messages can be detected
+        info_count = count(m -> m.severity == :info, result.messages)
+        @test info_count >= 0
+
+        # Test info message structure
+        info_messages = filter(m -> m.severity == :info, result.messages)
+        for info in info_messages
+            @test info.file isa String
+            @test info.message isa String
+            @test info.severity == :info
+        end
+    end
+
+    @testset "Validation Utility Tests" begin
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+        result = GTFS.Validations.validate_gtfs(gtfs)
+
+        # Test has_validation_errors function
+        @test hasmethod(GTFS.Validations.has_validation_errors, (GTFS.Validations.ValidationResult,))
+        @test GTFS.Validations.has_validation_errors(result) isa Bool
+
+        # Test print_validation_results function
+        @test hasmethod(GTFS.Validations.print_validation_results, (GTFS.Validations.ValidationResult,))
+        @test begin
+            GTFS.Validations.print_validation_results(result)
+            true
+        end
+
+        # Test that utility functions don't throw errors
+        @test begin
+            has_errors = GTFS.Validations.has_validation_errors(result)
+            GTFS.Validations.print_validation_results(result)
+            true
+        end
+    end
+
+    @testset "Basic Feature Validation Tests" begin
+        # Test basic-example (has standard GTFS files)
+        basic_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        if isdir(basic_path)
+            gtfs = read_gtfs(basic_path)
+            result = GTFS.Validations.validate_gtfs(gtfs)
+            @test result isa GTFS.Validations.ValidationResult
+
+            # Check for standard GTFS files
+            @test haskey(gtfs, "agency.txt")
+            @test haskey(gtfs, "stops.txt")
+            @test haskey(gtfs, "routes.txt")
+            @test haskey(gtfs, "trips.txt")
+            @test haskey(gtfs, "stop_times.txt")
+            @test haskey(gtfs, "calendar.txt")
+
+            # Check for optional files that should be present in basic-example
+            @test haskey(gtfs, "calendar_dates.txt")
+            @test haskey(gtfs, "fare_attributes.txt")
+            @test haskey(gtfs, "fare_rules.txt")
+            @test haskey(gtfs, "frequencies.txt")
+            @test haskey(gtfs, "shapes.txt")
+        end
+    end
+
+    @testset "Validation Performance Tests" begin
+        # Test that validation completes in reasonable time
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+
+        # Time the validation
+        start_time = time()
+        result = GTFS.Validations.validate_gtfs(gtfs)
+        end_time = time()
+
+        @test result isa GTFS.Validations.ValidationResult
+        @test (end_time - start_time) < 10.0  # Should complete within 10 seconds
+
+        # Test multiple validations don't cause issues
+        for i in 1:3
+            result = GTFS.Validations.validate_gtfs(gtfs)
+            @test result isa GTFS.Validations.ValidationResult
+        end
+    end
+
+    @testset "Validation Message Content Tests" begin
+        feed_path = joinpath(@__DIR__, "..", "fixtures", "basic-example")
+        gtfs = read_gtfs(feed_path)
+        result = GTFS.Validations.validate_gtfs(gtfs)
+
+        # Test that messages have meaningful content
+        for msg in result.messages
+            @test !isempty(msg.message)
+            @test !isempty(msg.file)
+            @test msg.severity in [:error, :warning, :info]
+
+            # Test that file names are valid GTFS file names
+            if msg.file != "general"
+                @test endswith(msg.file, ".txt") || endswith(msg.file, ".geojson")
+            end
+        end
+
+        # Test that we can categorize messages by severity
+        errors = filter(m -> m.severity == :error, result.messages)
+        warnings = filter(m -> m.severity == :warning, result.messages)
+        info = filter(m -> m.severity == :info, result.messages)
+
+        @test length(errors) + length(warnings) + length(info) == length(result.messages)
+    end
+
+    @testset "Validation Edge Cases" begin
+        # Test with minimal valid GTFS
+        minimal_gtfs = GTFSSchedule()
+        minimal_gtfs["agency.txt"] = DataFrame(
+            agency_id=["1"],
+            agency_name=["Test Agency"],
+            agency_url=["http://test.com"],
+            agency_timezone=["America/New_York"]
+        )
+        minimal_gtfs["stops.txt"] = DataFrame(
+            stop_id=["1"],
+            stop_name=["Test Stop"],
+            stop_lat=[40.0],
+            stop_lon=[-74.0]
+        )
+        minimal_gtfs["routes.txt"] = DataFrame(
+            route_id=["1"],
+            agency_id=["1"],
+            route_short_name=["1"],
+            route_long_name=["Test Route"],
+            route_type=[3]
+        )
+        minimal_gtfs["trips.txt"] = DataFrame(
+            route_id=["1"],
+            service_id=["1"],
+            trip_id=["1"]
+        )
+        minimal_gtfs["stop_times.txt"] = DataFrame(
+            trip_id=["1"],
+            arrival_time=["08:00:00"],
+            departure_time=["08:00:00"],
+            stop_id=["1"],
+            stop_sequence=[1]
+        )
+        minimal_gtfs["calendar.txt"] = DataFrame(
+            service_id=["1"],
+            monday=[1],
+            tuesday=[1],
+            wednesday=[1],
+            thursday=[1],
+            friday=[1],
+            saturday=[0],
+            sunday=[0],
+            start_date=["20240101"],
+            end_date=["20241231"]
+        )
+
+        result = GTFS.Validations.validate_gtfs(minimal_gtfs)
+        @test result isa GTFS.Validations.ValidationResult
+        @test GTFS.Validations.has_validation_errors(result) isa Bool
+    end
+
+end

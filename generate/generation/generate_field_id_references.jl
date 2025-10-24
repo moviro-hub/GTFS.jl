@@ -21,10 +21,11 @@ function generate_field_id_references(extracted_references::Vector{FileForeignIn
         for field_foreign_info in file_foreign_info.fields
             fieldname = field_foreign_info.fieldname
             references = field_foreign_info.references
+            is_conditional = field_foreign_info.is_conditional
 
             # Create field reference entry
             push!(lines, "    (")
-            push!(lines, "      field = Symbol(\"$fieldname\"),")
+            push!(lines, "      field = \"$fieldname\",")
             push!(lines, "      references = [")
 
             for ref in references
@@ -35,6 +36,7 @@ function generate_field_id_references(extracted_references::Vector{FileForeignIn
             end
 
             push!(lines, "      ],")
+            push!(lines, "      is_conditional = $is_conditional,")
             push!(lines, "    ),")
         end
 

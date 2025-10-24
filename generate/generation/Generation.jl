@@ -23,7 +23,7 @@ module Generation
 
 using ..Extraction: FileRelations, FileRelation, FileCondition, FileFieldCondition
 using ..Extraction: FieldRelations, FieldRelation, FieldCondition
-using ..Extraction: EnumField, FileTypeInfo, FieldTypeInfo, FileForeignInfo, FieldForeignInfo, ForeignReference
+using ..Extraction: FileEnumInfo, FieldEnumInfo, FileTypeInfo, FieldTypeInfo, FileForeignInfo, FieldForeignInfo, ForeignReference
 using ..Extraction: FileFieldConstraintInfo, FieldConstraintInfo
 using ..Ingestion: FileDefinition, FieldDefinition
 

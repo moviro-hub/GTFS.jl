@@ -24,7 +24,7 @@ function generate_field_constraints(extracted_constraints::Vector{FileFieldConst
 
             # Create field constraint entry
             push!(lines, "    (")
-            push!(lines, "      field = Symbol(\"$fieldname\"),")
+            push!(lines, "      field = \"$fieldname\",")
             push!(lines, "      constraint = \"$constraint\",")
             push!(lines, "    ),")
         end

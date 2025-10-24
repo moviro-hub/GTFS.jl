@@ -9,8 +9,14 @@ const FILE_RULES = Dict(
     ]
   ),
   "stops.txt" => (
-    presence = "Required",
+    presence = "Conditionally Required",
     relations = [
+      (required = true, forbidden = false, when_all = [
+        (type = :file, file = "locations.geojson", must_exist = false),
+      ]),
+      (required = false, forbidden = false, when_all = [
+        (type = :file, file = "locations.geojson", must_exist = true),
+      ]),
     ]
   ),
   "routes.txt" => (
@@ -29,13 +35,27 @@ const FILE_RULES = Dict(
     ]
   ),
   "calendar.txt" => (
-    presence = "Required",
+    presence = "Conditionally Required",
     relations = [
+      (required = true, forbidden = false, when_all = [
+        (type = :file, file = "calendar_dates.txt", must_exist = false),
+      ]),
+      (required = false, forbidden = false, when_all = [
+        (type = :file, file = "calendar_dates.txt", must_exist = true),
+      ]),
     ]
   ),
   "calendar_dates.txt" => (
-    presence = "Required",
+    presence = "Conditionally Required",
     relations = [
+      (required = true, forbidden = false, when_all = [
+        (type = :file, file = "calendar.txt", must_exist = true),
+        (type = :file, file = "calendar_dates.txt", must_exist = true),
+      ]),
+      (required = false, forbidden = false, when_all = [
+        (type = :file, file = "calendar.txt", must_exist = false),
+        (type = :file, file = "calendar_dates.txt", must_exist = false),
+      ]),
     ]
   ),
   "fare_attributes.txt" => (
@@ -98,7 +118,7 @@ const FILE_RULES = Dict(
     relations = [
       (required = false, forbidden = true, when_all = [
         (type = :file, file = "routes.txt", must_exist = true),
-        (type = :field, file = "route_networks.txt", field = Symbol("network_id"), value = ""),
+        (type = :field, file = "routes.txt", field = "network_id", value = "defined"),
       ]),
     ]
   ),
@@ -107,7 +127,7 @@ const FILE_RULES = Dict(
     relations = [
       (required = false, forbidden = true, when_all = [
         (type = :file, file = "routes.txt", must_exist = true),
-        (type = :field, file = "route_networks.txt", field = Symbol("network_id"), value = ""),
+        (type = :field, file = "routes.txt", field = "network_id", value = "defined"),
       ]),
     ]
   ),
@@ -132,8 +152,11 @@ const FILE_RULES = Dict(
     ]
   ),
   "levels.txt" => (
-    presence = "Required",
+    presence = "Conditionally Required",
     relations = [
+      (required = true, forbidden = false, when_all = [
+        (type = :field, file = "pathways.txt", field = "pathway_mode", value = "5"),
+      ]),
     ]
   ),
   "location_groups.txt" => (
@@ -162,8 +185,11 @@ const FILE_RULES = Dict(
     ]
   ),
   "feed_info.txt" => (
-    presence = "Required",
+    presence = "Conditionally Required",
     relations = [
+      (required = true, forbidden = false, when_all = [
+        (type = :file, file = "translations.txt", must_exist = true),
+      ]),
     ]
   ),
   "attributions.txt" => (

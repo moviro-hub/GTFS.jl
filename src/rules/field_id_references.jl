@@ -5,47 +5,51 @@
 const FIELD_ID_REFERENCES = Dict(
   "stops.txt" => [
     (
-      field = Symbol("parent_station"),
+      field = "parent_station",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("level_id"),
+      field = "level_id",
       references = [
         (
           table = "levels",
           field = "level_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "routes.txt" => [
     (
-      field = Symbol("agency_id"),
+      field = "agency_id",
       references = [
         (
           table = "agency",
           field = "agency_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "trips.txt" => [
     (
-      field = Symbol("route_id"),
+      field = "route_id",
       references = [
         (
           table = "routes",
           field = "route_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("service_id"),
+      field = "service_id",
       references = [
         (
           table = "calendar",
@@ -56,145 +60,160 @@ const FIELD_ID_REFERENCES = Dict(
           field = "service_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("shape_id"),
+      field = "shape_id",
       references = [
         (
           table = "shapes",
           field = "shape_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "stop_times.txt" => [
     (
-      field = Symbol("trip_id"),
+      field = "trip_id",
       references = [
         (
           table = "trips",
           field = "trip_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("stop_id"),
+      field = "stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("location_group_id"),
+      field = "location_group_id",
       references = [
         (
           table = "location_groups",
           field = "location_group_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("location_id"),
+      field = "location_id",
       references = [
         (
           table = "locations",
           field = "geojson",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("pickup_booking_rule_id"),
+      field = "pickup_booking_rule_id",
       references = [
         (
           table = "booking_rules",
           field = "booking_rule_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("drop_off_booking_rule_id"),
+      field = "drop_off_booking_rule_id",
       references = [
         (
           table = "booking_rules",
           field = "booking_rule_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "calendar_dates.txt" => [
     (
-      field = Symbol("service_id"),
+      field = "service_id",
       references = [
         (
           table = "calendar",
           field = "service_id",
         ),
       ],
+      is_conditional = true,
     ),
   ],
   "fare_attributes.txt" => [
     (
-      field = Symbol("agency_id"),
+      field = "agency_id",
       references = [
         (
           table = "agency",
           field = "agency_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "fare_rules.txt" => [
     (
-      field = Symbol("fare_id"),
+      field = "fare_id",
       references = [
         (
           table = "fare_attributes",
           field = "fare_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("route_id"),
+      field = "route_id",
       references = [
         (
           table = "routes",
           field = "route_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("origin_id"),
+      field = "origin_id",
       references = [
         (
           table = "stops",
           field = "zone_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("destination_id"),
+      field = "destination_id",
       references = [
         (
           table = "stops",
           field = "zone_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("contains_id"),
+      field = "contains_id",
       references = [
         (
           table = "stops",
           field = "zone_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "timeframes.txt" => [
     (
-      field = Symbol("service_id"),
+      field = "service_id",
       references = [
         (
           table = "calendar",
@@ -205,31 +224,34 @@ const FIELD_ID_REFERENCES = Dict(
           field = "service_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "fare_products.txt" => [
     (
-      field = Symbol("rider_category_id"),
+      field = "rider_category_id",
       references = [
         (
           table = "rider_categories",
           field = "rider_category_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("fare_media_id"),
+      field = "fare_media_id",
       references = [
         (
           table = "fare_media",
           field = "fare_media_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "fare_leg_rules.txt" => [
     (
-      field = Symbol("network_id"),
+      field = "network_id",
       references = [
         (
           table = "routes",
@@ -240,56 +262,62 @@ const FIELD_ID_REFERENCES = Dict(
           field = "network_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("from_area_id"),
+      field = "from_area_id",
       references = [
         (
           table = "areas",
           field = "area_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_area_id"),
+      field = "to_area_id",
       references = [
         (
           table = "areas",
           field = "area_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("from_timeframe_group_id"),
+      field = "from_timeframe_group_id",
       references = [
         (
           table = "timeframes",
           field = "timeframe_group_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_timeframe_group_id"),
+      field = "to_timeframe_group_id",
       references = [
         (
           table = "timeframes",
           field = "timeframe_group_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("fare_product_id"),
+      field = "fare_product_id",
       references = [
         (
           table = "fare_products",
           field = "fare_product_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "fare_leg_join_rules.txt" => [
     (
-      field = Symbol("from_network_id"),
+      field = "from_network_id",
       references = [
         (
           table = "routes",
@@ -300,9 +328,10 @@ const FIELD_ID_REFERENCES = Dict(
           field = "network_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_network_id"),
+      field = "to_network_id",
       references = [
         (
           table = "routes",
@@ -313,240 +342,265 @@ const FIELD_ID_REFERENCES = Dict(
           field = "network_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("from_stop_id"),
+      field = "from_stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_stop_id"),
+      field = "to_stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "fare_transfer_rules.txt" => [
     (
-      field = Symbol("from_leg_group_id"),
+      field = "from_leg_group_id",
       references = [
         (
           table = "fare_leg_rules",
           field = "leg_group_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_leg_group_id"),
+      field = "to_leg_group_id",
       references = [
         (
           table = "fare_leg_rules",
           field = "leg_group_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("fare_product_id"),
+      field = "fare_product_id",
       references = [
         (
           table = "fare_products",
           field = "fare_product_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "stop_areas.txt" => [
     (
-      field = Symbol("area_id"),
+      field = "area_id",
       references = [
         (
           table = "areas",
           field = "area_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("stop_id"),
+      field = "stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "route_networks.txt" => [
     (
-      field = Symbol("network_id"),
+      field = "network_id",
       references = [
         (
           table = "networks",
           field = "network_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("route_id"),
+      field = "route_id",
       references = [
         (
           table = "routes",
           field = "route_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "frequencies.txt" => [
     (
-      field = Symbol("trip_id"),
+      field = "trip_id",
       references = [
         (
           table = "trips",
           field = "trip_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "transfers.txt" => [
     (
-      field = Symbol("from_stop_id"),
+      field = "from_stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_stop_id"),
+      field = "to_stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("from_route_id"),
+      field = "from_route_id",
       references = [
         (
           table = "routes",
           field = "route_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_route_id"),
+      field = "to_route_id",
       references = [
         (
           table = "routes",
           field = "route_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("from_trip_id"),
+      field = "from_trip_id",
       references = [
         (
           table = "trips",
           field = "trip_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_trip_id"),
+      field = "to_trip_id",
       references = [
         (
           table = "trips",
           field = "trip_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "pathways.txt" => [
     (
-      field = Symbol("from_stop_id"),
+      field = "from_stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("to_stop_id"),
+      field = "to_stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "location_group_stops.txt" => [
     (
-      field = Symbol("location_group_id"),
+      field = "location_group_id",
       references = [
         (
           table = "location_groups",
           field = "location_group_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("stop_id"),
+      field = "stop_id",
       references = [
         (
           table = "stops",
           field = "stop_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "booking_rules.txt" => [
     (
-      field = Symbol("prior_notice_service_id"),
+      field = "prior_notice_service_id",
       references = [
         (
           table = "calendar",
           field = "service_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
   "attributions.txt" => [
     (
-      field = Symbol("agency_id"),
+      field = "agency_id",
       references = [
         (
           table = "agency",
           field = "agency_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("route_id"),
+      field = "route_id",
       references = [
         (
           table = "routes",
           field = "route_id",
         ),
       ],
+      is_conditional = false,
     ),
     (
-      field = Symbol("trip_id"),
+      field = "trip_id",
       references = [
         (
           table = "trips",
           field = "trip_id",
         ),
       ],
+      is_conditional = false,
     ),
   ],
 )

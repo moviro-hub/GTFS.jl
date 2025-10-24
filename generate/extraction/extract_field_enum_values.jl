@@ -24,23 +24,35 @@ struct EnumValue
 end
 
 """
-    EnumField
+    FieldEnumInfo
 
-Represents an enum field with all its possible values.
+Represents enum information for a single field.
 
 # Fields
-- `file::String`: The GTFS file name (e.g., "routes.txt")
 - `field::String`: The field name (e.g., "route_type")
 - `enum_values::Vector{EnumValue}`: List of possible enum values
 - `allow_empty::Bool`: Whether "empty" is listed as a valid option
 - `empty_maps_to::Union{Nothing,String}`: If "X or empty" appears, maps empty to X
 """
-struct EnumField
-    file::String
+struct FieldEnumInfo
     field::String
     enum_values::Vector{EnumValue}
     allow_empty::Bool
     empty_maps_to::Union{Nothing,String}
+end
+
+"""
+    FileEnumInfo
+
+Groups enum field information by filename.
+
+# Fields
+- `filename::String`: The GTFS file name
+- `fields::Vector{FieldEnumInfo}`: List of enum field information for this file
+"""
+struct FileEnumInfo
+    filename::String
+    fields::Vector{FieldEnumInfo}
 end
 
 # =============================================================================
@@ -125,6 +137,11 @@ function parse_enum_line(line::String)
     end
 
     result = try_parse_empty_or_pattern(normalized_line)
+    if result !== nothing
+        return result
+    end
+
+    result = try_parse_empty_standalone_pattern(normalized_line)
     if result !== nothing
         return result
     end
@@ -247,6 +264,31 @@ function try_parse_empty_or_pattern(line::String)
 end
 
 """
+    try_parse_empty_standalone_pattern(line::String) -> Union{Tuple{Union{EnumValue, Nothing}, Bool, Union{Nothing, String}}, Nothing}
+
+Try to parse an "empty - Description" enum pattern.
+
+# Arguments
+- `line::String`: The normalized line
+
+# Returns
+- `Union{Tuple{Union{EnumValue, Nothing}, Bool, Union{Nothing, String}}, Nothing}`: Parsed result or nothing
+"""
+function try_parse_empty_standalone_pattern(line::String)
+    # Pattern: empty - Description
+    empty_standalone_pattern = r"^(?i:empty)\s*[-–:]\s*(.+)"
+
+    match_result = match(empty_standalone_pattern, line)
+    if match_result === nothing
+        return nothing
+    end
+
+    description = clean_description(String(strip(match_result.captures[1])))
+
+    return (nothing, true, nothing)
+end
+
+"""
     clean_description(description::String) -> String
 
 Clean up enum description text by removing trailing punctuation and whitespace.
@@ -266,18 +308,17 @@ end
 # =============================================================================
 
 """
-    parse_enum_field(field::FieldDefinition, filename::String) -> Union{EnumField, Nothing}
+    parse_enum_field(field::FieldDefinition) -> Union{FieldEnumInfo, Nothing}
 
-Parse a field definition into an EnumField if it contains enum values.
+Parse a field definition into a FieldEnumInfo if it contains enum values.
 
 # Arguments
 - `field::FieldDefinition`: The field definition to parse
-- `filename::String`: The file name containing this field
 
 # Returns
-- `Union{EnumField, Nothing}`: Parsed enum field or nothing if not an enum field
+- `Union{FieldEnumInfo, Nothing}`: Parsed enum field or nothing if not an enum field
 """
-function parse_enum_field(field::FieldDefinition, filename::String)
+function parse_enum_field(field::FieldDefinition)
     if field.field_type != "Enum"
         return nothing
     end
@@ -288,15 +329,21 @@ function parse_enum_field(field::FieldDefinition, filename::String)
     end
 
     # Parse enum values from section
-    enum_values, allow_empty, empty_maps_to = parse_enum_section_values(section)
+    enum_values, section_allow_empty, empty_maps_to = parse_enum_section_values(section)
 
     if isempty(enum_values)
         return nothing
     end
 
+    # Determine allow_empty based on field presence
+    # Optional, Conditionally Required, and Conditionally Forbidden fields should allow empty values
+    # because the field might not be required/forbidden in all cases
+    # Only strictly Required fields should not allow empty values (unless specified in description)
+    allow_empty = (field.presence != "Required") || section_allow_empty
+
     # Clean field name
     cleaned_field_name = clean_field_name(field.fieldname)
-    return EnumField(filename, cleaned_field_name, enum_values, allow_empty, empty_maps_to)
+    return FieldEnumInfo(cleaned_field_name, enum_values, allow_empty, empty_maps_to)
 end
 
 """
@@ -338,26 +385,39 @@ end
 
 
 """
-    extract_all_field_enum_values(file_definitions::Vector{FileDefinition}) -> Vector{EnumField}
+    extract_all_field_enum_values(file_definitions::Vector{FileDefinition}) -> Vector{FileEnumInfo}
 
-Extract enum values for all fields in all file definitions.
+Extract enum values for all fields in all file definitions, grouped by file.
 
 # Arguments
 - `file_definitions::Vector{FileDefinition}`: List of file definitions to process
 
 # Returns
-- `Vector{EnumField}`: List of enum fields found
+- `Vector{FileEnumInfo}`: List of file enum information grouped by file
 """
 function extract_all_field_enum_values(file_definitions::Vector{FileDefinition})
     if isempty(file_definitions)
-        return EnumField[]
+        return FileEnumInfo[]
     end
 
-    result = EnumField[]
-    for (file_def, field) in iterate_all_fields(file_definitions)
-        enum_field = parse_enum_field(field, file_def.filename)
-        if enum_field !== nothing
-            push!(result, enum_field)
+    result = FileEnumInfo[]
+    for file_def in file_definitions
+        # Skip non-txt files (e.g., .geojson)
+        if !endswith(lowercase(file_def.filename), ".txt")
+            continue
+        end
+
+        field_enums = FieldEnumInfo[]
+        for field in file_def.fields
+            enum_field = parse_enum_field(field)
+            if enum_field !== nothing
+                push!(field_enums, enum_field)
+            end
+        end
+
+        if !isempty(field_enums)
+            file_enum_info = FileEnumInfo(file_def.filename, field_enums)
+            push!(result, file_enum_info)
         end
     end
 

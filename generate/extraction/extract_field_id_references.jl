@@ -7,6 +7,7 @@ end
 struct FieldForeignInfo
     fieldname::String
     references::Vector{ForeignReference}  # Can have multiple refs (e.g., "X or Y")
+    is_conditional::Bool  # Whether this field has conditional references
 end
 
 struct FileForeignInfo
@@ -39,26 +40,35 @@ function parse_foreign_reference(ref_str::String)
 end
 
 """
-    extract_foreign_references(field_type_str::String) -> Vector{ForeignReference}
+    extract_foreign_references(field_type_str::String) -> Tuple{Vector{ForeignReference}, Bool}
 
 Extract all foreign references from field type string.
 Checks if field_type contains "Foreign ID" and extracts references.
+Returns (references, is_conditional) where is_conditional indicates if any references are conditional.
 """
 function extract_foreign_references(field_type_str::String)
     references = ForeignReference[]
+    is_conditional = false
 
     # Early return if no "Foreign ID" present
-    !occursin("Foreign ID", field_type_str) && return references
+    !occursin("Foreign ID", field_type_str) && return (references, is_conditional)
+
+    # Check if this is a conditional reference (contains "or ID")
+    if occursin(r"or\s+ID", field_type_str)
+        is_conditional = true
+    end
 
     # Extract all backtick-wrapped references
     backtick_pattern = r"`([^`]+)`"
     for match in eachmatch(backtick_pattern, field_type_str)
-        ref = parse_foreign_reference(String(match[1]))
+        ref_str = String(match[1])
+        ref = parse_foreign_reference(ref_str)
         ref !== nothing && push!(references, ref)
     end
 
-    return references
+    return (references, is_conditional)
 end
+
 
 """
     extract_all_field_id_references(file_defs::Vector{FileDefinition}) -> Vector{FileForeignInfo}
@@ -74,13 +84,14 @@ function extract_all_field_id_references(file_defs::Vector{FileDefinition})
 
         for (_, field_def) in iterate_all_fields([file_def])
             # Extract foreign references from this field's type
-            references = extract_foreign_references(field_def.field_type)
+            references, is_conditional = extract_foreign_references(field_def.field_type)
 
             # Only include fields that have foreign references
             if !isempty(references)
                 field_info = FieldForeignInfo(
                     field_def.fieldname,
-                    references
+                    references,
+                    is_conditional
                 )
                 push!(field_foreign_infos, field_info)
             end

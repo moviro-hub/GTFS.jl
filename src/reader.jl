@@ -1,60 +1,4 @@
 """
-GTFS.jl - Reader module for GTFS Schedule data
-
-This module provides functions to read GTFS Schedule data from ZIP files
-or unzipped directories and construct GTFSSchedule structs.
-
-All file information is spec-driven - no hardcoded file lists!
-"""
-
-# DataFrames, CSV, JSON3 imported in main module
-using GeoJSON
-
-"""
-    _read_geojson_file(filepath::String, filename::String) -> DataFrames.DataFrame
-
-Read a GeoJSON file and convert it to a DataFrame format.
-"""
-function _read_geojson_file(filepath::String, filename::String)
-    # Read the GeoJSON file using GeoJSON.jl
-    geojson_data = GeoJSON.read(read(filepath, String))
-
-    # Extract features array
-    features = geojson_data.features
-
-    if isempty(features)
-        # Return empty DataFrame with expected columns
-        return DataFrames.DataFrame(
-            id = String[],
-            type = String[],
-            geometry = String[],
-            properties = String[]
-        )
-    end
-
-    # Extract data from features
-    ids = String[]
-    types = String[]
-    geometries = String[]
-    properties = String[]
-
-    for feature in features
-        push!(ids, string(feature.id))
-        push!(types, string(feature.type))
-        push!(geometries, string(feature.geometry))
-        push!(properties, string(feature.properties))
-    end
-
-    # Create DataFrame
-    return DataFrames.DataFrame(
-        id = ids,
-        type = types,
-        geometry = geometries,
-        properties = properties
-    )
-end
-
-"""
     read_gtfs(filepath::String) -> GTFSSchedule
 
 Read a GTFS Schedule feed from a ZIP file or unzipped directory and return a GTFSSchedule struct.
@@ -80,7 +24,7 @@ println("Loaded GTFS feed with \$(DataFrames.nrow(feed.agency)) agencies")
 - `ArgumentError`: If the file/directory doesn't exist or is not a valid GTFS source
 - `GTFSError`: If required files are missing or data is invalid
 """
-function read_gtfs(filepath::String)
+function read_gtfs(filepath::String, field_types::Dict{String,Vector}=FIELD_TYPES)
     if !isfile(filepath) && !isdir(filepath)
         throw(ArgumentError("File or directory does not exist: $filepath"))
     end
@@ -89,9 +33,9 @@ function read_gtfs(filepath::String)
         if !endswith(filepath, ".zip")
             throw(ArgumentError("File must be a ZIP archive: $filepath"))
         end
-        return _read_gtfs_from_zip(filepath)
+        return _read_gtfs_from_zip(filepath, field_types)
     elseif isdir(filepath)
-        return _read_gtfs_from_directory(filepath)
+        return _read_gtfs_from_directory(filepath, field_types)
     else
         throw(ArgumentError("Path must be either a ZIP file or directory: $filepath"))
     end
@@ -102,7 +46,7 @@ end
 
 Internal function to read GTFS data from a ZIP file.
 """
-function _read_gtfs_from_zip(filepath::String)
+function _read_gtfs_from_zip(filepath::String, field_types::Dict{String,Vector})
     # Extract ZIP file to temporary directory
     temp_dir = mktempdir()
     try
@@ -118,7 +62,7 @@ function _read_gtfs_from_zip(filepath::String)
         end
 
         # Read GTFS data from the directory
-        return _read_gtfs_from_directory(temp_dir)
+        return _read_gtfs_from_directory(temp_dir, field_types)
     finally
         # Clean up temp directory
         try
@@ -134,7 +78,7 @@ end
 
 Internal function to read GTFS data from an unzipped directory.
 """
-function _read_gtfs_from_directory(dirpath::String)
+function _read_gtfs_from_directory(dirpath::String, field_types::Dict{String,Vector})
     if !isdir(dirpath)
         throw(ArgumentError("Directory does not exist: $dirpath"))
     end
@@ -148,140 +92,70 @@ function _read_gtfs_from_directory(dirpath::String)
     end
 
     # Read all available GTFS files
-    files_data = Dict{String, Union{DataFrames.DataFrame, Nothing}}()
+    gtfs_schedule = GTFSSchedule()
 
     for filename in gtfs_files
         filepath = joinpath(dirpath, filename)
-        if haskey(COLUMN_TYPES, filename)
-            try
-                # Route to appropriate parser based on file extension
-                if endswith(filename, ".geojson")
-                    df = _read_geojson_file(filepath, filename)
-                else
-                    df = _read_csv_file(filepath, filename)
-                end
-                files_data[filename] = df
-            catch e
-                @warn "Error reading $filename: $e"
-                files_data[filename] = nothing
+        try
+            # Route to appropriate parser based on file extension
+            if endswith(filename, ".geojson")
+                df = _read_geojson_file(filepath)
+            else
+                df = _read_csv_file(filepath, field_types)
             end
+            gtfs_schedule[filename] = df
+        catch e
+            @warn "Error reading $filename: $e"
+            gtfs_schedule[filename] = nothing
         end
     end
 
-    # Validate required files are present
-    for required_file in REQUIRED_FILES
-        if !haskey(files_data, required_file) || files_data[required_file] === nothing
-            throw(ArgumentError("Required file '$required_file' not found or could not be read"))
-        end
-    end
-
-    # Validate calendar requirement (at least one must be present)
-    if !haskey(files_data, "calendar.txt") && !haskey(files_data, "calendar_dates.txt")
-        throw(ArgumentError("At least one of calendar.txt or calendar_dates.txt must be present"))
-    end
-
-    # Build GTFSSchedule struct dynamically using field mapping
-    return _construct_gtfs_schedule(files_data)
+    return gtfs_schedule
 end
 
-"""
-    _construct_gtfs_schedule(files_data::Dict{String, Union{DataFrames.DataFrame, Nothing}}) -> GTFSSchedule
-
-Construct a GTFSSchedule struct from a dictionary of file data using the generated FILE_TO_FIELD mapping.
-"""
-function _construct_gtfs_schedule(files_data::Dict{String, Union{DataFrames.DataFrame, Nothing}})
-    # Get all struct field names in order
-    struct_fields = fieldnames(GTFSSchedule)
-
-    # Build field values in the correct order
-    field_values = []
-
-    for field_name in struct_fields
-        # Find the filename that maps to this field
-        filename = nothing
-        for (file, field) in FILE_TO_FIELD
-            if field == field_name
-                filename = file
-                break
-            end
-        end
-
-        if filename === nothing
-            # Field doesn't have a corresponding file (shouldn't happen with generated code)
-            push!(field_values, nothing)
-        else
-            # Get the data for this file, or nothing if not present
-            push!(field_values, get(files_data, filename, nothing))
-        end
-    end
-
-    # Construct the struct with values in the correct order
-    return GTFSSchedule(field_values...)
-end
 
 """
-    _read_csv_file(filepath::String, filename::String) -> DataFrames.DataFrame
+    _read_csv_file(filepath::String, field_types::Dict{String,Vector}) -> DataFrames.DataFrame
 
 Read a single GTFS CSV file with appropriate column types.
 Flexible reader - only applies types for columns that actually exist in the file.
 """
-function _read_csv_file(filepath::String, filename::String)
-    # Get column types from generated COLUMN_TYPES
-    if !haskey(COLUMN_TYPES, filename)
-        throw(ArgumentError("Unknown GTFS file: $filename"))
+function _read_csv_file(filepath::String, field_types::Dict{String,Vector})
+    # Read CSV file with CSV.jl type inference and custom column types
+    # The reader is forgiving and doesn't require specific column types
+    try
+        file_field_types = get(field_types, basename(filepath), [])
+        column_types = Dict{String,Type}(field_def.field => GTFS_TYPES[field_def.type_symbol] for field_def in file_field_types)
+        df = CSV.read(
+            filepath,
+            DataFrames.DataFrame;
+            silencewarnings=true,
+            strict=false,
+            missingstring=["", "NA", "N/A", "null"],
+            types=column_types,
+            validate=false
+        )
+        return df
+    catch e
+        # If type mapping fails, try reading without type constraints
+        @warn "Type mapping failed for $filepath, reading with default types: $e"
+        df = CSV.read(
+            filepath,
+            DataFrames.DataFrame;
+            silencewarnings=true,
+            strict=false,
+            missingstring=["", "NA", "N/A", "null"]
+        )
+        return df
     end
-
-    spec_col_types = COLUMN_TYPES[filename]
-
-    # First, read the file to detect which columns actually exist
-    # Read just the header to get column names
-    header_df = CSV.read(filepath, DataFrames.DataFrame; limit=0, silencewarnings=true)
-    actual_columns = names(header_df)
-
-    # Build a types dict with only the columns that exist in the file
-    col_types_symbols = Dict{Symbol, Type}()
-    for col_name in actual_columns
-        col_symbol = Symbol(col_name)
-        if haskey(spec_col_types, col_name)
-            col_types_symbols[col_symbol] = spec_col_types[col_name]
-        end
-        # If column not in spec, let CSV.jl infer the type
-    end
-
-    # Read CSV with specified types for known columns only
-    df = CSV.read(
-        filepath,
-        DataFrames.DataFrame;
-        types=col_types_symbols,
-        silencewarnings=true,
-        strict=false,
-        missingstring=["", "NA", "N/A", "null"]
-    )
-
-    return df
 end
 
 """
-    validate_gtfs_structure(gtfs::GTFSSchedule) -> Bool
+    _read_geojson_file(filepath::String, column_types::Dict{String,Type}) -> DataFrames.DataFrame
 
-Validate that a GTFSSchedule has all required files.
+Read a GeoJSON file and convert it to a DataFrame format.
 """
-function validate_gtfs_structure(gtfs::GTFSSchedule)
-    # Check required files using generated REQUIRED_FILES list
-    for required_file in REQUIRED_FILES
-        field_name = FILE_TO_FIELD[required_file]
-        if !hasproperty(gtfs, field_name) || getproperty(gtfs, field_name) === nothing
-            return false
-        end
-    end
-
-    # Check calendar requirement
-    has_calendar = gtfs.calendar !== nothing
-    has_calendar_dates = gtfs.calendar_dates !== nothing
-
-    if !has_calendar && !has_calendar_dates
-        return false
-    end
-
-    return true
+function _read_geojson_file(filepath::String)
+    # Read the GeoJSON file using GeoJSON.jl as DataFrame
+    return DataFrames.DataFrame(GeoJSON.read(filepath))
 end

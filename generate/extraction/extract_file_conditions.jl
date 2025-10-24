@@ -110,6 +110,10 @@ function parse_file_level_condition_line(line::String, presence::String, field_t
         return nothing
     end
 
+    # Check for "unless" conditions (invert the logic)
+    line_lower = lowercase(line)
+    is_unless_condition = occursin("unless", line_lower)
+
     # Determine requirement flags based on presence type
     required, forbidden = parse_presence_flags(presence)
 
@@ -124,7 +128,71 @@ function parse_file_level_condition_line(line::String, presence::String, field_t
         return nothing
     end
 
+    # Handle conditional logic based on the condition text
+    line_lower = lowercase(line)
+    should_invert = false
+
+    # Special case: "Optional if... Required otherwise" pattern
+    if occursin("optional if", line_lower) && (occursin("required otherwise", line_lower) || occursin("**required** otherwise", line_lower))
+        should_invert = true
+    # Special case: "Required unless... Optional otherwise" pattern
+    elseif occursin("required unless", line_lower) || occursin("**required** unless", line_lower)
+        should_invert = true
+    # Check for inversion keywords in the condition text
+    elseif any(occursin(keyword, line_lower) for keyword in ["unless", "omitted", "not defined", "not provided"])
+        should_invert = true
+    end
+
+    if should_invert
+        new_conditions = Condition[]
+        for condition in conditions
+            if isa(condition, FileCondition)
+                # Create new FileCondition with inverted must_exist
+                new_condition = FileCondition(condition.file, !condition.must_exist)
+                push!(new_conditions, new_condition)
+            else
+                push!(new_conditions, condition)
+            end
+        end
+        conditions = new_conditions
+    end
+
     return FileRelation(required, forbidden, conditions)
+end
+
+"""
+    generate_complementary_relation(primary_relation::Union{FileRelation, Nothing}, field_to_file::Dict{String, String}) -> Union{FileRelation, Nothing}
+
+Generate a complementary relation for "either/or" patterns.
+The complementary relation makes the file optional when the alternative exists.
+
+# Arguments
+- `primary_relation::Union{FileRelation, Nothing}`: The primary relation to complement
+- `field_to_file::Dict{String, String}`: Mapping of field names to file names
+
+# Returns
+- `Union{FileRelation, Nothing}`: Complementary relation or nothing if generation fails
+"""
+function generate_complementary_relation(primary_relation::Union{FileRelation, Nothing}, field_to_file::Dict{String, String})
+    if primary_relation === nothing
+        return nothing
+    end
+
+    # Create complementary conditions by inverting file existence requirements
+    complementary_conditions = Condition[]
+    for condition in primary_relation.when_all_conditions
+        if isa(condition, FileCondition)
+            # Invert the must_exist flag
+            complementary_condition = FileCondition(condition.file, !condition.must_exist)
+            push!(complementary_conditions, complementary_condition)
+        else
+            # For field conditions, keep them as-is (they don't need inversion)
+            push!(complementary_conditions, condition)
+        end
+    end
+
+    # The complementary relation makes the file optional (not required, not forbidden)
+    return FileRelation(false, false, complementary_conditions)
 end
 
 
@@ -155,7 +223,7 @@ function parse_conditions_from_references(line::String, file_references::Vector{
 
     # Parse field conditions
     for field_ref in field_references
-        field_condition = parse_field_condition(field_ref, field_to_file)
+        field_condition = parse_field_condition(field_ref, field_to_file, file_references, line)
         if field_condition !== nothing
             push!(conditions, field_condition)
         end
@@ -201,10 +269,27 @@ Determine if a file must exist based on the condition line context.
 function determine_file_existence_requirement(line::String)
     line_lower = lowercase(line)
 
+    # Special case: "Optional if... Required otherwise" pattern - don't check for "otherwise"
+    is_optional_if_pattern = occursin("optional if", line_lower) && (occursin("required otherwise", line_lower) || occursin("**required** otherwise", line_lower))
+
+    # Special case: "Required unless... Optional otherwise" pattern - don't check for "otherwise"
+    is_required_unless_pattern = occursin("required unless", line_lower) || occursin("**required** unless", line_lower)
+
     # Check for negative indicators
-    negative_indicators = ["omitted", "is not", "not defined", "not provided"]
+    negative_indicators = if is_optional_if_pattern || is_required_unless_pattern
+        ["omitted", "is not", "not defined", "not provided"]
+    else
+        ["omitted", "is not", "not defined", "not provided", "unless", "otherwise"]
+    end
+
     if any(occursin(indicator, line_lower) for indicator in negative_indicators)
         return false
+    end
+
+    # Check for positive indicators
+    positive_indicators = ["defined", "exists", "present", "provided"]
+    if any(occursin(indicator, line_lower) for indicator in positive_indicators)
+        return true
     end
 
     # Default to file must exist
@@ -212,18 +297,20 @@ function determine_file_existence_requirement(line::String)
 end
 
 """
-    parse_field_condition(field_ref::String, field_to_file::Dict{String, String}) -> Union{FileFieldCondition, Nothing}
+    parse_field_condition(field_ref::String, field_to_file::Dict{String, String}, file_references::Vector{String}, line::String) -> Union{FileFieldCondition, Nothing}
 
 Parse a field reference into a FileFieldCondition.
 
 # Arguments
 - `field_ref::String`: The field reference
 - `field_to_file::Dict{String, String}`: Mapping of field names to file names
+- `file_references::Vector{String}`: List of file references found in the condition line
+- `line::String`: The original condition line for context
 
 # Returns
 - `Union{FileFieldCondition, Nothing}`: Parsed field condition or nothing if invalid
 """
-function parse_field_condition(field_ref::String, field_to_file::Dict{String, String})
+function parse_field_condition(field_ref::String, field_to_file::Dict{String, String}, file_references::Vector{String}, line::String)
     if isempty(field_ref)
         return nothing
     end
@@ -234,8 +321,21 @@ function parse_field_condition(field_ref::String, field_to_file::Dict{String, St
         return nothing
     end
 
-    # Determine file context
-    file_name = get(field_to_file, field_name, "")
+    # Check if the condition line contains "exists" or "defined" keywords
+    line_lower = lowercase(line)
+    if isempty(field_value) && (occursin("exists", line_lower) || occursin("defined", line_lower))
+        field_value = "defined"
+    end
+
+    # Determine file context - prioritize file references from the condition text
+    file_name = ""
+    if !isempty(file_references)
+        # Use the first file reference found in the condition text
+        file_name = file_references[1]
+    else
+        # Fall back to the field-to-file mapping
+        file_name = get(field_to_file, field_name, "")
+    end
     same_file = !isempty(file_name)
 
     return FileFieldCondition(file_name, field_name, field_value, same_file)
@@ -273,10 +373,41 @@ function parse_file_level_conditional_requirements(dataset_file, field_to_file::
     condition_lines = parse_condition_lines(section)
     conditions = FileRelation[]
 
-    for line in condition_lines
-        file_relation = parse_file_level_condition_line(line, dataset_file.presence, field_to_file)
-        if file_relation !== nothing
-            push!(conditions, file_relation)
+    # Check if this is an "Optional if... Required otherwise" pattern
+    has_optional_if = any(occursin("optional if", lowercase(line)) for line in condition_lines)
+    has_required_otherwise = any(occursin("required otherwise", lowercase(line)) || occursin("**required** otherwise", lowercase(line)) for line in condition_lines)
+
+    # Check if this is a "Required unless... Optional otherwise" pattern
+    has_required_unless = any(occursin("required unless", lowercase(line)) || occursin("**required** unless", lowercase(line)) for line in condition_lines)
+    has_optional_otherwise = any(occursin("optional otherwise", lowercase(line)) for line in condition_lines)
+
+    # Check if this is a "Required if... Optional otherwise" pattern
+    has_required_if = any(occursin("required if", lowercase(line)) || occursin("**required** if", lowercase(line)) for line in condition_lines)
+    has_optional_otherwise_alt = any(occursin("optional otherwise", lowercase(line)) for line in condition_lines)
+
+    if (has_optional_if && has_required_otherwise) || (has_required_unless && has_optional_otherwise) || (has_required_if && has_optional_otherwise_alt)
+        # This is an "either/or" pattern - generate complementary rules
+        combined_line = join(condition_lines, " ")
+
+        # Generate the primary rule (required when alternative doesn't exist)
+        primary_relation = parse_file_level_condition_line(combined_line, dataset_file.presence, field_to_file)
+        if primary_relation !== nothing
+            push!(conditions, primary_relation)
+        end
+
+        # Generate the complementary rule (optional when alternative exists)
+        # Invert the file existence conditions for the complementary rule
+        complementary_relation = generate_complementary_relation(primary_relation, field_to_file)
+        if complementary_relation !== nothing
+            push!(conditions, complementary_relation)
+        end
+    else
+        # Process each line separately
+        for line in condition_lines
+            file_relation = parse_file_level_condition_line(line, dataset_file.presence, field_to_file)
+            if file_relation !== nothing
+                push!(conditions, file_relation)
+            end
         end
     end
 
@@ -349,5 +480,93 @@ function extract_all_file_conditions(dataset_files::Vector, file_definitions::Ve
         push!(result, file_relations)
     end
 
+    # Validate known either/or pairs
+    validate_known_either_or_pairs(result)
+
     return result
+end
+
+"""
+    validate_known_either_or_pairs(file_relations::Vector{FileRelations})
+
+Validate that known either/or pairs have complementary rules.
+This ensures the extraction is working correctly and catches edge cases.
+
+# Arguments
+- `file_relations::Vector{FileRelations}`: List of file relations to validate
+"""
+function validate_known_either_or_pairs(file_relations::Vector{FileRelations})
+    # Known either/or pairs from GTFS specification
+    known_pairs = [
+        ("stops.txt", "locations.geojson"),
+        ("calendar.txt", "calendar_dates.txt")
+    ]
+
+    # Create lookup for file relations
+    relations_by_file = Dict{String, FileRelations}()
+    for rel in file_relations
+        relations_by_file[rel.filename] = rel
+    end
+
+    for (file1, file2) in known_pairs
+        has_file1 = haskey(relations_by_file, file1)
+        has_file2 = haskey(relations_by_file, file2)
+
+        if has_file1 && has_file2
+            # Check if the primary file (file1) has complementary rules
+            file1_relations = relations_by_file[file1]
+            file2_relations = relations_by_file[file2]
+
+            # Verify that file1 has a rule that makes it optional when file2 exists
+            file1_has_optional_rule = has_optional_rule_for_alternative(file1_relations, file2)
+
+            # For true either/or pairs, file2 should also have complementary rules
+            # But for cases where file2 is "Optional", it doesn't need complementary rules
+            file2_needs_complementary = file2_relations.presence == "Conditionally Required"
+            file2_has_optional_rule = if file2_needs_complementary
+                has_optional_rule_for_alternative(file2_relations, file1)
+            else
+                true  # Optional files don't need complementary rules
+            end
+
+            if !file1_has_optional_rule
+                println("WARNING: $file1 missing optional rule when $file2 exists")
+            end
+
+            if file2_needs_complementary && !file2_has_optional_rule
+                println("WARNING: $file2 missing optional rule when $file1 exists")
+            end
+
+            if file1_has_optional_rule && file2_has_optional_rule
+                println("✓ Either/or pair ($file1, $file2) has complete complementary rules")
+            end
+        end
+    end
+end
+
+"""
+    has_optional_rule_for_alternative(file_relations::FileRelations, alternative_file::String) -> Bool
+
+Check if a file has an optional rule when the alternative file exists.
+
+# Arguments
+- `file_relations::FileRelations`: The file relations to check
+- `alternative_file::String`: The alternative file name
+
+# Returns
+- `Bool`: true if the file has an optional rule when alternative exists
+"""
+function has_optional_rule_for_alternative(file_relations::FileRelations, alternative_file::String)
+    for relation in file_relations.conditions
+        # Check if this is an optional rule (required=false, forbidden=false)
+        if !relation.required && !relation.forbidden
+            # Check if the condition is that the alternative file exists
+            for condition in relation.when_all_conditions
+                if isa(condition, FileCondition) && condition.file == alternative_file && condition.must_exist
+                    return true
+                end
+            end
+        end
+    end
+    return false
 end

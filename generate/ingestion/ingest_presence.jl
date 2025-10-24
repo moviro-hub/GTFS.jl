@@ -81,8 +81,11 @@ function normalize_presence(presence_text::String, presence_types::Vector{Presen
     clean_text = strip_markdown_bold(presence_text)
     clean_text = strip(clean_text)
 
-    # Find matching presence type
-    for presence_info in presence_types
+    # Sort presence types by length (longest first) to prioritize more specific matches
+    sorted_presence_types = sort(presence_types, by=x -> length(x.presence), rev=true)
+
+    # Find matching presence type (check longest first)
+    for presence_info in sorted_presence_types
         if occursin(presence_info.presence, clean_text)
             return presence_info.presence
         end

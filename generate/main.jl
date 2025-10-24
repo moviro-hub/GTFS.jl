@@ -16,7 +16,9 @@ const STEP_GENERATION = "Generating validation types"
 Write data to JSON file with pretty formatting.
 """
 function write_json_artifact(filepath::String, data::Any)
-    JSON.json(filepath, data; pretty=true)
+    open(filepath, "w") do io
+        JSON.print(io, data, 2)
+    end
 end
 
 function main()

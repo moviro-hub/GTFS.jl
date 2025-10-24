@@ -164,6 +164,40 @@ function parse_presence_flags(presence::String)
 end
 
 """
+    parse_line_requirement_level(line::String, field_presence::String) -> Tuple{Bool, Bool}
+
+Parse the requirement level (Required/Optional/Forbidden) from a condition line.
+
+# Arguments
+- `line::String`: The condition line text
+- `field_presence::String`: The field's overall presence attribute
+
+# Returns
+- `Tuple{Bool, Bool}`: (required, forbidden) flags
+
+# Logic
+- If line contains "**Required**" or "Required" → (true, false)
+- If line contains "**Forbidden**" or "Forbidden" → (false, true)
+- If line contains "Optional" → (false, false) - will be skipped
+- Otherwise, use field_presence as fallback
+"""
+function parse_line_requirement_level(line::String, field_presence::String)
+    line_lower = lowercase(line)
+
+    # Check for explicit requirement markers in the line
+    if occursin(r"\*\*required\*\*|^-\s*required\s+for", line_lower)
+        return true, false
+    elseif occursin(r"\*\*forbidden\*\*|^-\s*forbidden\s+for", line_lower)
+        return false, true
+    elseif occursin(r"optional\s+for", line_lower)
+        return false, false  # Will be skipped
+    end
+
+    # Fallback to field presence if no explicit marker
+    return parse_presence_flags(field_presence)
+end
+
+"""
     parse_condition_lines(section::String) -> Vector{String}
 
 Parse condition section into individual condition lines.
@@ -242,6 +276,68 @@ end
 # =============================================================================
 
 """
+    is_valid_field_name(name::String) -> Bool
+
+Validate that a field name is not just a number and contains at least one letter.
+
+# Arguments
+- `name::String`: Field name to validate
+
+# Returns
+- `Bool`: True if the field name is valid
+
+# Examples
+```julia
+julia> is_valid_field_name("stop_id")
+true
+
+julia> is_valid_field_name("1")
+false
+
+julia> is_valid_field_name("route_type")
+true
+```
+"""
+function is_valid_field_name(name::String)
+    # Must contain at least one letter and not be empty
+    return !isempty(strip(name)) && occursin(r"[a-zA-Z]", name)
+end
+
+"""
+    clean_field_name(field_name::String, condition_file::String, target_file::String) -> String
+
+Clean field name by removing table prefixes for same-file conditions.
+
+# Arguments
+- `field_name::String`: Original field name
+- `condition_file::String`: File containing the condition
+- `target_file::String`: File being validated
+
+# Returns
+- `String`: Cleaned field name
+
+# Examples
+```julia
+julia> clean_field_name("routes.route_long_name", "routes.txt", "routes.txt")
+"route_long_name"
+
+julia> clean_field_name("stop_times.stop_id", "routes.txt", "routes.txt")
+"stop_times.stop_id"  # Cross-file reference, keep prefix
+```
+"""
+function clean_field_name(field_name::String, condition_file::String, target_file::String)
+    # If condition references the same file, remove table prefix
+    if condition_file == target_file && occursin(".", field_name)
+        parts = split(field_name, ".")
+        # Return last part if it matches the table name prefix
+        if length(parts) >= 2
+            return parts[end]
+        end
+    end
+    return field_name
+end
+
+"""
     parse_field_name_and_value(field_reference::String) -> Tuple{String, String}
 
 Parse a field reference string to extract field name and value.
@@ -266,6 +362,7 @@ function parse_field_name_and_value(field_reference::String)
         return "", ""
     end
 
+    # Handle "field=value" pattern
     if occursin("=", field_reference)
         field_parts = split(field_reference, "=")
         if length(field_parts) >= 2
@@ -275,9 +372,28 @@ function parse_field_name_and_value(field_reference::String)
         else
             return "", ""
         end
-    else
-        return field_reference, ""
     end
+
+    # Handle "field is defined" or "field is empty" patterns
+    # Check if the reference contains "is defined" or "is empty"
+    field_lower = lowercase(field_reference)
+    if occursin(r"is\s+defined", field_lower)
+        # Extract field name before "is defined"
+        field_name = strip(replace(field_reference, r"(?i)\s+is\s+defined.*" => ""))
+        return field_name, "defined"
+    elseif occursin(r"is\s+empty", field_lower)
+        # Extract field name before "is empty"
+        field_name = strip(replace(field_reference, r"(?i)\s+is\s+empty.*" => ""))
+        return field_name, ""
+    end
+
+    # Validate field name - must contain at least one letter
+    if !is_valid_field_name(field_reference)
+        return "", ""
+    end
+
+    # Default: just field name, no value
+    return field_reference, ""
 end
 
 """

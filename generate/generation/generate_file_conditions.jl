@@ -28,7 +28,7 @@ function generate_file_conditions(parsed_files::Vector{FileRelations})
                     push!(lines, "        (type = :file, file = \"$(c.file)\", must_exist = $(c.must_exist)),")
                 elseif isa(c, FileFieldCondition)
                     # normalize field symbol in emitted code by leaving it as a Symbol literal on read
-                    push!(lines, "        (type = :field, file = \"$(c.file)\", field = Symbol(\"$(c.field)\"), value = \"$(c.value)\"),")
+                    push!(lines, "        (type = :field, file = \"$(c.file)\", field = \"$(c.field)\", value = \"$(c.value)\"),")
                 else
                     # Unknown condition -> no-op true guard in evaluator
                     push!(lines, "        (type = :unknown),")
