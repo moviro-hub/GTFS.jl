@@ -61,6 +61,12 @@ function validate_reference!(messages::Vector{ValidationMessage}, gtfs_feed::GTF
 
     column = df[!, Symbol(field_name)]
 
+    # For conditional references (e.g., "Foreign ID referencing X or ID"),
+    # allow any value - it can be either a foreign ID or an independent ID
+    if ref_rule.is_conditional
+        return
+    end
+
     # Build set of valid values from all referenced tables
     valid_values = collect_valid_reference_values(gtfs_feed, ref_rule.references, ref_rule.is_conditional)
 

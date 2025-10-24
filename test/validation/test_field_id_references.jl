@@ -467,8 +467,9 @@ end
                 @test !GTFS.Validations.has_validation_errors(result)
             end
 
-            @testset "Invalid References" begin
-                # Test invalid service_id reference
+            @testset "Independent Service IDs" begin
+                # Test that calendar_dates.service_id can be independent IDs (not referencing calendar.service_id)
+                # This is valid according to GTFS spec: "Foreign ID referencing calendar.service_id or ID"
                 gtfs = GTFSSchedule()
                 gtfs["calendar.txt"] = DataFrame(
                     service_id = ["SERVICE1"],
@@ -483,12 +484,37 @@ end
                     end_date = ["20241231"]
                 )
                 gtfs["calendar_dates.txt"] = DataFrame(
-                    service_id = ["INVALID_SERVICE"],  # Invalid reference
+                    service_id = ["INDEPENDENT_SERVICE"],  # Independent ID, not in calendar.txt
                     date = ["20240101"],
                     exception_type = [1]
                 )
                 result = GTFS.Validations.validate_id_references(gtfs)
-                @test GTFS.Validations.has_validation_errors(result)
+                @test !GTFS.Validations.has_validation_errors(result)
+            end
+
+            @testset "Mixed References" begin
+                # Test that calendar_dates.service_id can mix references and independent IDs
+                # This is valid according to GTFS spec: "Foreign ID referencing calendar.service_id or ID"
+                gtfs = GTFSSchedule()
+                gtfs["calendar.txt"] = DataFrame(
+                    service_id = ["SERVICE1"],
+                    monday = [1],
+                    tuesday = [1],
+                    wednesday = [1],
+                    thursday = [1],
+                    friday = [1],
+                    saturday = [0],
+                    sunday = [0],
+                    start_date = ["20240101"],
+                    end_date = ["20241231"]
+                )
+                gtfs["calendar_dates.txt"] = DataFrame(
+                    service_id = ["SERVICE1", "INDEPENDENT_SERVICE"],  # Mix of reference and independent
+                    date = ["20240101", "20240102"],
+                    exception_type = [1, 1]
+                )
+                result = GTFS.Validations.validate_id_references(gtfs)
+                @test !GTFS.Validations.has_validation_errors(result)
             end
 
             @testset "Missing Referenced Table" begin

@@ -69,8 +69,9 @@ validate_id(value::Any) = false
 
 function validate_language_code(value::String)
     # Support BCP 47 language codes (e.g., "en", "en-US", "zh-CN")
-    # Also accept uppercase variants found in real data (e.g., "EN")
-    if match(r"^[a-zA-Z]{2}(-[A-Z]{2})?$", value) !== nothing
+    # Per GTFS spec: language part must be lowercase, country part must be uppercase
+    # Pattern: 2 lowercase letters, optionally followed by hyphen and 2 uppercase letters
+    if match(r"^[a-z]{2}(-[A-Z]{2})?$", value) !== nothing
         return true
     end
     return false

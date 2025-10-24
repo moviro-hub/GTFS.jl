@@ -551,7 +551,7 @@ end
 
             @testset "Invalid arrival time" begin
                 gtfs = create_basic_gtfs()
-                gtfs = create_gtfs_with_field_values(gtfs, "stop_times.txt", "arrival_time", ["49:00:00"])
+                gtfs = create_gtfs_with_field_values(gtfs, "stop_times.txt", "arrival_time", ["12:60:00"])
                 result = GTFS.Validations.validate_field_types(gtfs)
 
                 @test GTFS.Validations.has_validation_errors(result)

@@ -447,65 +447,11 @@ const FIELD_RULES = Dict(
       required = false,
       forbidden = true,
       conditions = [
-        (type = :field, file = "stop_times.txt", field = "pickup_type", value = "0"),
-      ]
-    ),
-    (
-      field = "pickup_type",
-      presence = "Conditionally Forbidden",
-      required = false,
-      forbidden = true,
-      conditions = [
         (type = :field, file = "stop_times.txt", field = "start_pickup_drop_off_window", value = "defined"),
       ]
     ),
     (
       field = "pickup_type",
-      presence = "Conditionally Forbidden",
-      required = false,
-      forbidden = true,
-      conditions = [
-        (type = :field, file = "stop_times.txt", field = "end_pickup_drop_off_window", value = "defined"),
-      ]
-    ),
-    (
-      field = "pickup_type",
-      presence = "Conditionally Forbidden",
-      required = false,
-      forbidden = true,
-      conditions = [
-        (type = :field, file = "stop_times.txt", field = "pickup_type", value = "3"),
-      ]
-    ),
-    (
-      field = "pickup_type",
-      presence = "Conditionally Forbidden",
-      required = false,
-      forbidden = true,
-      conditions = [
-        (type = :field, file = "stop_times.txt", field = "start_pickup_drop_off_window", value = "defined"),
-      ]
-    ),
-    (
-      field = "pickup_type",
-      presence = "Conditionally Forbidden",
-      required = false,
-      forbidden = true,
-      conditions = [
-        (type = :field, file = "stop_times.txt", field = "end_pickup_drop_off_window", value = "defined"),
-      ]
-    ),
-    (
-      field = "drop_off_type",
-      presence = "Conditionally Forbidden",
-      required = false,
-      forbidden = true,
-      conditions = [
-        (type = :field, file = "stop_times.txt", field = "drop_off_type", value = "0"),
-      ]
-    ),
-    (
-      field = "drop_off_type",
       presence = "Conditionally Forbidden",
       required = false,
       forbidden = true,
@@ -519,7 +465,7 @@ const FIELD_RULES = Dict(
       required = false,
       forbidden = true,
       conditions = [
-        (type = :field, file = "stop_times.txt", field = "end_pickup_drop_off_window", value = "defined"),
+        (type = :field, file = "stop_times.txt", field = "start_pickup_drop_off_window", value = "defined"),
       ]
     ),
     (
@@ -859,3 +805,4 @@ const FIELD_RULES = Dict(
     ),
   ],
 )
+

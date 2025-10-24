@@ -215,22 +215,17 @@ function parse_value_specific_forbidden_rules(fieldname::String, line::String, c
         return nothing
     end
 
-    # Create separate rules for each condition field AND the forbidden value
-    # This creates rules like: "pickup_type is forbidden when start_pickup_drop_off_window is defined AND pickup_type=0"
+    # Create separate rules for each condition field
+    # This creates rules like: "pickup_type=0 is forbidden when start_pickup_drop_off_window is defined"
     all_relations = FieldRelation[]
 
     for condition_field in condition_fields
         # Create a condition that checks for the window field being defined
         window_condition = FieldCondition(current_file, condition_field, "defined", true)
 
-        # Create a condition that checks for the specific forbidden value
-        value_condition = FieldCondition(current_file, fieldname, forbidden_value, true)
-
-        # Combine both conditions
-        combined_conditions = [window_condition, value_condition]
-
-        # Create the field relation
-        relation = FieldRelation(current_file, fieldname, presence, false, true, combined_conditions, forbidden_value)
+        # Create the field relation - the field is forbidden when the condition is met
+        # We don't need to check the field's own value as that would be circular
+        relation = FieldRelation(current_file, fieldname, presence, false, true, [window_condition], forbidden_value)
         push!(all_relations, relation)
     end
 
